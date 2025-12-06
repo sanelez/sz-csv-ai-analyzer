@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { FileUpload } from "~/app/_components/FileUpload";
 import { DataTable } from "./_components/DataTable";
 import { FullscreenCard } from "./_components/FullscreenCard";
 import { ChartSuggestions } from "~/app/_components/ChartSuggestions";
@@ -10,6 +9,7 @@ import { APIKeyButton } from "~/app/_components/APIKeySettings";
 import { CSVSettingsButton } from "~/app/_components/CSVSettings";
 import { AIAnalysis } from "~/app/_components/AIAnalysis";
 import { ClientOnly } from "./_components/ClientOnly";
+import { LandingPage } from "./_components/landing/LandingPage";
 import {
   type CSVData,
   type CSVSettings,
@@ -27,8 +27,7 @@ import {
   repairChartSuggestion,
 } from "~/lib/ai-service";
 import { loadApiSettings, type StoredSettings } from "~/lib/storage";
-import { SAMPLE_DATASETS, generateDatasetById } from "~/lib/sample-data";
-import { Sparkles, Play, Loader2, Database, ChevronDown } from "lucide-react";
+import { Sparkles, Play, Loader2 } from "lucide-react";
 
 
 export default function HomePage() {
@@ -37,9 +36,6 @@ export default function HomePage() {
   const [csvSettings, setCsvSettings] = useState<CSVSettings>(DEFAULT_CSV_SETTINGS);
   const [apiSettings, setApiSettings] = useState<StoredSettings | null>(null);
   const [generatedCharts, setGeneratedCharts] = useState<ChartSuggestion[]>([]);
-
-  // Sample data dropdown
-  const [showSampleDropdown, setShowSampleDropdown] = useState(false);
 
   // Parallel Analysis State
   const [isAnalyzingAll, setIsAnalyzingAll] = useState(false);
@@ -75,27 +71,11 @@ export default function HomePage() {
     setAnalysisResults({ summary: null, anomalies: null, charts: null });
   };
 
-  const handleLoadSample = (datasetId: string) => {
-    const dataset = generateDatasetById(datasetId);
-    if (!dataset) return;
-
-    // Convert to CSVData format
-    const data: CSVData = {
-      headers: dataset.headers,
-      rows: dataset.rows,
-      columns: dataset.headers.map((name, index) => ({
-        name,
-        type: "string" as const,
-        index,
-      })),
-      rowCount: dataset.rows.length,
-    };
-
+  const handleDataLoaded = (data: CSVData, fileName: string) => {
     setCsvData(data);
-    setCurrentFileName(dataset.name);
+    setCurrentFileName(fileName);
     setGeneratedCharts([]);
     setAnalysisResults({ summary: null, anomalies: null, charts: null });
-    setShowSampleDropdown(false);
   };
 
   const handleRunAllAnalysis = async () => {
@@ -205,161 +185,139 @@ export default function HomePage() {
         </div>
       </main>
     }>
-      <main className="min-h-screen bg-gradient-to-b from-slate-950 to-black text-white p-4 md:p-8">
-        <div className="max-w-7xl mx-auto space-y-8">
-          {/* Header */}
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4 animate-fade-in">
-            <div className="flex items-center gap-4">
-              <div className="p-3 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 shadow-lg shadow-violet-500/20">
-                <Sparkles className="w-8 h-8 text-white" />
-              </div>
-              <div>
-                <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">
-                  CSV AI Analyzer
-                </h1>
-                <p className="text-gray-400">
-                  Intelligent data analysis powered by AI
-                </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <CSVSettingsButton
-              settings={csvSettings}
-              onSettingsChange={setCsvSettings}
-            />
-            <APIKeyButton
-              onSettingsChange={setApiSettings}
-              currentSettings={apiSettings}
-            />
-          </div>
-        </div>
-
-        {/* File Upload & Sample Data */}
-        <div className="space-y-4">
-          <FileUpload
-            onFileLoaded={handleFileLoaded}
+      <main className="min-h-screen bg-gradient-to-b from-slate-950 to-black text-white">
+        {/* Landing Section - Only show when no data */}
+        {!csvData && (
+          <LandingPage
+            csvSettings={csvSettings}
+            apiSettings={apiSettings}
             currentFileName={currentFileName}
-            onClear={handleClearFile}
+            onSettingsChange={setCsvSettings}
+            onApiSettingsChange={setApiSettings}
+            onFileLoaded={handleFileLoaded}
+            onClearFile={handleClearFile}
+            onDataLoaded={handleDataLoaded}
           />
+        )}
 
-          {/* Sample Data Loader */}
-          {!csvData && (
-            <div className="flex items-center justify-center gap-3 animate-fade-in">
-              <span className="text-sm text-gray-500">Or try a sample:</span>
-              <div className="relative">
-                <button
-                  onClick={() => setShowSampleDropdown(!showSampleDropdown)}
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all text-sm text-gray-300"
-                >
-                  <Database className="w-4 h-4" />
-                  Load Sample Data
-                  <ChevronDown className={`w-4 h-4 transition-transform ${showSampleDropdown ? "rotate-180" : ""}`} />
-                </button>
-
-                {/* Dropdown */}
-                {showSampleDropdown && (
-                  <div className="absolute top-full left-0 mt-2 w-56 bg-gray-900 border border-gray-700 rounded-xl shadow-xl overflow-hidden z-20">
-                    <div className="py-1">
-                      {SAMPLE_DATASETS.map((dataset) => (
-                        <button
-                          key={dataset.id}
-                          onClick={() => handleLoadSample(dataset.id)}
-                          className="w-full text-left px-4 py-3 text-sm text-gray-300 hover:bg-white/10 hover:text-white transition-colors"
-                        >
-                          {dataset.name}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
-
+        {/* App Section - Show when data is loaded */}
         {csvData && (
-          <div className="space-y-8 animate-slide-up">
-            {/* Run Complete Analysis Button */}
-            <div className="flex justify-center">
-              <button
-                onClick={handleRunAllAnalysis}
-                disabled={isAnalyzingAll || !apiSettings?.apiKey}
-                className={`
-                    group relative px-8 py-4 rounded-2xl font-bold text-lg shadow-2xl transition-all duration-300
-                    ${!apiSettings?.apiKey
-                    ? "bg-gray-800 text-gray-500 cursor-not-allowed"
-                    : "bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-600 hover:scale-105 hover:shadow-violet-500/40 text-white"
-                  }
-                  `}
-              >
-                {isAnalyzingAll ? (
-                  <span className="flex items-center gap-3">
-                    <Loader2 className="w-6 h-6 animate-spin" />
-                    Running Full Analysis...
-                  </span>
-                ) : (
-                  <span className="flex items-center gap-3">
-                    <Sparkles className="w-6 h-6 animate-pulse" />
-                    Run Complete Analysis
-                    <Play className="w-5 h-5 fill-current opacity-80" />
-                  </span>
-                )}
+          <div className="p-4 md:p-8">
+            <div className="max-w-7xl mx-auto space-y-8">
+              {/* Header */}
+              <div className="flex flex-col md:flex-row items-center justify-between gap-4 animate-fade-in">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 shadow-lg shadow-violet-500/20">
+                    <Sparkles className="w-8 h-8 text-white" />
+                  </div>
+                  <div>
+                    <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">
+                      CSV AI Analyzer
+                    </h1>
+                    <p className="text-gray-400">
+                      Analyzing: <span className="text-violet-400 font-medium">{currentFileName}</span>
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={handleClearFile}
+                    className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all text-sm text-gray-300"
+                  >
+                    ← New File
+                  </button>
+                  <CSVSettingsButton
+                    settings={csvSettings}
+                    onSettingsChange={setCsvSettings}
+                  />
+                  <APIKeyButton
+                    onSettingsChange={setApiSettings}
+                    currentSettings={apiSettings}
+                  />
+                </div>
+              </div>
 
-                {/* Glow effect */}
-                {!isAnalyzingAll && apiSettings?.apiKey && (
-                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-600 blur-xl opacity-40 group-hover:opacity-60 transition-opacity -z-10" />
-                )}
-              </button>
-            </div>
+              {/* Run Complete Analysis Button */}
+              <div className="flex justify-center">
+                <button
+                  onClick={handleRunAllAnalysis}
+                  disabled={isAnalyzingAll || !apiSettings?.apiKey}
+                  className={`
+                      group relative px-8 py-4 rounded-2xl font-bold text-lg shadow-2xl transition-all duration-300
+                      ${!apiSettings?.apiKey
+                      ? "bg-gray-800 text-gray-500 cursor-not-allowed"
+                      : "bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-600 hover:scale-105 hover:shadow-violet-500/40 text-white"
+                    }
+                    `}
+                >
+                  {isAnalyzingAll ? (
+                    <span className="flex items-center gap-3">
+                      <Loader2 className="w-6 h-6 animate-spin" />
+                      Running Full Analysis...
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-3">
+                      <Sparkles className="w-6 h-6 animate-pulse" />
+                      Run Complete Analysis
+                      <Play className="w-5 h-5 fill-current opacity-80" />
+                    </span>
+                  )}
 
-            {!apiSettings?.apiKey && (
-              <p className="text-center text-amber-400 text-sm">
-                Please configure your API key to enable AI analysis
-              </p>
-            )}
+                  {/* Glow effect */}
+                  {!isAnalyzingAll && apiSettings?.apiKey && (
+                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-600 blur-xl opacity-40 group-hover:opacity-60 transition-opacity -z-10" />
+                  )}
+                </button>
+              </div>
 
-            {/* Full-width Cards Stack */}
-            <div className="space-y-8">
-              {/* Data Table - Full Width */}
-              <FullscreenCard className="bg-slate-900/50 rounded-2xl border border-white/10 overflow-hidden">
-                <DataTable data={csvData} />
-              </FullscreenCard>
+              {!apiSettings?.apiKey && (
+                <p className="text-center text-amber-400 text-sm">
+                  Please configure your API key to enable AI analysis
+                </p>
+              )}
 
-              {/* AI Analysis - Full Width */}
-              <FullscreenCard className="bg-slate-900/50 rounded-2xl border border-white/10 overflow-hidden">
-                <AIAnalysis
-                  data={csvData}
-                  apiSettings={apiSettings}
-                  externalSummary={analysisResults.summary}
-                  externalAnomalies={analysisResults.anomalies}
-                  disabled={isAnalyzingAll}
-                />
-              </FullscreenCard>
-
-              {/* Chart Suggestions - Full Width */}
-              <FullscreenCard className="bg-slate-900/50 rounded-2xl border border-white/10 overflow-hidden">
-                <ChartSuggestions
-                  data={csvData}
-                  apiSettings={apiSettings}
-                  onChartsGenerated={setGeneratedCharts}
-                  externalSuggestions={analysisResults.charts}
-                  disabled={isAnalyzingAll}
-                />
-              </FullscreenCard>
-
-              {generatedCharts && generatedCharts.length > 0 && (
+              {/* Full-width Cards Stack */}
+              <div className="space-y-8 animate-slide-up">
+                {/* Data Table - Full Width */}
                 <FullscreenCard className="bg-slate-900/50 rounded-2xl border border-white/10 overflow-hidden">
-                  <ChartDisplay
+                  <DataTable data={csvData} />
+                </FullscreenCard>
+
+                {/* AI Analysis - Full Width */}
+                <FullscreenCard className="bg-slate-900/50 rounded-2xl border border-white/10 overflow-hidden">
+                  <AIAnalysis
                     data={csvData}
-                    charts={generatedCharts}
-                    onRegenerate={handleRegenerateChart}
+                    apiSettings={apiSettings}
+                    externalSummary={analysisResults.summary}
+                    externalAnomalies={analysisResults.anomalies}
+                    disabled={isAnalyzingAll}
                   />
                 </FullscreenCard>
-              )}
+
+                {/* Chart Suggestions - Full Width */}
+                <FullscreenCard className="bg-slate-900/50 rounded-2xl border border-white/10 overflow-hidden">
+                  <ChartSuggestions
+                    data={csvData}
+                    apiSettings={apiSettings}
+                    onChartsGenerated={setGeneratedCharts}
+                    externalSuggestions={analysisResults.charts}
+                    disabled={isAnalyzingAll}
+                  />
+                </FullscreenCard>
+
+                {generatedCharts && generatedCharts.length > 0 && (
+                  <FullscreenCard className="bg-slate-900/50 rounded-2xl border border-white/10 overflow-hidden">
+                    <ChartDisplay
+                      data={csvData}
+                      charts={generatedCharts}
+                      onRegenerate={handleRegenerateChart}
+                    />
+                  </FullscreenCard>
+                )}
+              </div>
             </div>
           </div>
         )}
-        </div>
       </main>
     </ClientOnly>
   );
