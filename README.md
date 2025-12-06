@@ -8,6 +8,12 @@
 
 > 🚀 **[Try it live →](https://maxgfr.github.io/csv-ai-analyzer)**
 
+Aperçu de l'application :
+
+<div style="text-align:center;">
+    <img src=".github/assets/app.gif" alt="Aperçu de CSV AI Analyzer" width="700" />
+</div>
+
 A modern, elegant application to analyze your CSV files with Artificial Intelligence. **100% private** - everything stays local in your browser.
 
 ## ✨ Features
