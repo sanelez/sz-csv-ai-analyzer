@@ -34,12 +34,7 @@ export function Hero({
   onToggleSampleDropdown,
 }: HeroProps) {
   return (
-    <section className="relative overflow-hidden">
-      {/* Background gradient effects */}
-      <div className="absolute inset-0 bg-gradient-to-br from-violet-900/20 via-transparent to-fuchsia-900/20" />
-      <div className="absolute top-20 left-1/4 w-96 h-96 bg-violet-600/30 rounded-full blur-3xl" />
-      <div className="absolute bottom-20 right-1/4 w-96 h-96 bg-fuchsia-600/20 rounded-full blur-3xl" />
-      
+    <div>
       <div className="relative max-w-7xl mx-auto px-4 md:px-8 pt-12 pb-16">
         {/* Header */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-12">
@@ -120,6 +115,6 @@ export function Hero({
           </div>
         </div>
       </div>
-    </section>
+    </div>
   );
 }
