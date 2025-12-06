@@ -87,10 +87,11 @@ export function FileUpload({
           <button
             type="button"
             onClick={onClear}
-            className="p-2 rounded-lg hover:bg-red-500/10 text-gray-400 hover:text-red-400 transition-colors"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-red-600 border-2 border-red-500 text-white font-medium hover:bg-red-500 transition-all duration-200 shadow-lg shadow-red-500/25"
             title="Remove file"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
+            <span className="text-sm">Clear</span>
           </button>
         </div>
       </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { Sparkles, Database, ChevronDown } from "lucide-react";
+import { Sparkles, Database, ChevronDown, Github } from "lucide-react";
 import { FileUpload } from "../FileUpload";
 import { APIKeyButton } from "../APIKeySettings";
 import { CSVSettingsButton } from "../CSVSettings";
@@ -52,6 +52,16 @@ export function Hero({
             </div>
           </div>
           <div className="flex items-center gap-3">
+            <a
+              href="https://github.com/maxgfr/csv-ai-analyzer"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gray-700 border-2 border-gray-600 text-white font-medium hover:bg-gray-600 transition-all duration-200 shadow-lg shadow-gray-700/25"
+              title="View source code on GitHub"
+            >
+              <Github className="w-4 h-4" />
+              <span className="text-sm hidden sm:inline">Source Code</span>
+            </a>
             <CSVSettingsButton
               settings={csvSettings}
               onSettingsChange={onSettingsChange}

@@ -222,9 +222,9 @@ export default function HomePage() {
                 <div className="flex items-center gap-3">
                   <button
                     onClick={handleClearFile}
-                    className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all text-sm text-gray-300"
+                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gray-700 border-2 border-gray-600 text-white font-medium hover:bg-gray-600 transition-all duration-200 shadow-lg shadow-gray-700/25"
                   >
-                    ← New File
+                    <span className="text-sm">← New File</span>
                   </button>
                   <CSVSettingsButton
                     settings={csvSettings}
