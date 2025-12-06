@@ -8,7 +8,8 @@ interface ClientOnlyProps {
 }
 
 // Subscription function that never triggers updates (client state is stable)
-const subscribe = () => () => {};
+// Return an explicit undefined to avoid empty-function lint errors
+const subscribe = () => () => undefined;
 
 /**
  * Wrapper component that only renders children on the client side.
