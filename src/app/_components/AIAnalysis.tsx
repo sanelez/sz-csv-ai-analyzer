@@ -112,11 +112,15 @@ export function AIAnalysis({
   };
 
   const getConfig = (): AIServiceConfig | null => {
-    if (!apiSettings?.apiKey) return null;
+    // Allow custom endpoint without API key
+    const hasValidConfig = apiSettings?.customEndpoint ? !!apiSettings.customModel : !!apiSettings?.apiKey;
+    if (!hasValidConfig) return null;
     return {
-      apiKey: apiSettings.apiKey,
-      model: apiSettings.model,
-      language: apiSettings.language,
+      apiKey: apiSettings!.apiKey,
+      model: apiSettings!.model,
+      language: apiSettings!.language,
+      customEndpoint: apiSettings!.customEndpoint,
+      customModel: apiSettings!.customModel,
     };
   };
 

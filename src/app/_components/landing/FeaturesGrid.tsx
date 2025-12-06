@@ -1,4 +1,4 @@
-import { Upload, Sparkles, BarChart3, Shield, Zap, LineChart } from "lucide-react";
+import { Upload, Sparkles, BarChart3, Shield, Zap, Server } from "lucide-react";
 
 export function FeaturesGrid() {
   return (
@@ -64,12 +64,12 @@ export function FeaturesGrid() {
 
         {/* Feature 6 */}
         <div className="p-6 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all group">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-red-500 to-rose-500 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-            <LineChart className="w-6 h-6 text-white" />
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+            <Server className="w-6 h-6 text-white" />
           </div>
-          <h4 className="text-lg font-semibold text-white mb-2">Interactive Visualizations</h4>
+          <h4 className="text-lg font-semibold text-white mb-2">Self-Hostable</h4>
           <p className="text-gray-400 text-sm">
-            Beautiful, responsive charts with tooltips, legends, and fullscreen mode. Export-ready for your reports.
+            Deploy with Docker in seconds. Use your own LLM server (Ollama, LM Studio, vLLM) or any OpenAI-compatible API.
           </p>
         </div>
       </div>

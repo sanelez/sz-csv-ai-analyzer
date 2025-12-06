@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { Key, X, Eye, EyeOff, Check, Globe } from "lucide-react";
+import { Key, X, Eye, EyeOff, Check, Globe, Server } from "lucide-react";
 import { loadApiSettings, saveApiSettings, type StoredSettings } from "~/lib/storage";
 import { AVAILABLE_MODELS, DEFAULT_MODEL, SUPPORTED_LANGUAGES, getBrowserLanguage, type ModelId, type LanguageCode } from "~/lib/ai-models";
 
@@ -22,8 +22,11 @@ export function APIKeySettings({
   const [apiKey, setApiKey] = useState(currentSettings?.apiKey ?? "");
   const [model, setModel] = useState<ModelId>(currentSettings?.model ?? DEFAULT_MODEL);
   const [language, setLanguage] = useState<LanguageCode>(currentSettings?.language ?? getBrowserLanguage());
+  const [customEndpoint, setCustomEndpoint] = useState(currentSettings?.customEndpoint ?? "");
+  const [customModel, setCustomModel] = useState(currentSettings?.customModel ?? "");
   const [showKey, setShowKey] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [useCustomEndpoint, setUseCustomEndpoint] = useState(!!currentSettings?.customEndpoint);
 
   useEffect(() => {
     setMounted(true);
@@ -35,6 +38,9 @@ export function APIKeySettings({
       setApiKey(currentSettings.apiKey);
       setModel(currentSettings.model ?? DEFAULT_MODEL);
       setLanguage(currentSettings.language ?? getBrowserLanguage());
+      setCustomEndpoint(currentSettings.customEndpoint ?? "");
+      setCustomModel(currentSettings.customModel ?? "");
+      setUseCustomEndpoint(!!currentSettings.customEndpoint);
     }
   }, [currentSettings]);
 
@@ -44,7 +50,9 @@ export function APIKeySettings({
     const settings: StoredSettings = {
       apiKey,
       model,
-      language
+      language,
+      customEndpoint: useCustomEndpoint ? customEndpoint : undefined,
+      customModel: useCustomEndpoint ? customModel : undefined,
     };
     saveApiSettings(settings);
     onSettingsChange(settings);
@@ -91,17 +99,75 @@ export function APIKeySettings({
 
           {/* Content */}
           <div className="p-6 space-y-6">
+            {/* Custom Endpoint Toggle */}
+            <div>
+              <label className="flex items-center gap-3 cursor-pointer">
+                <div className="relative">
+                  <input
+                    type="checkbox"
+                    checked={useCustomEndpoint}
+                    onChange={(e) => setUseCustomEndpoint(e.target.checked)}
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-violet-500/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-violet-600"></div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Server className="w-4 h-4 text-gray-400" />
+                  <span className="text-sm font-semibold text-gray-200">Use Custom Endpoint</span>
+                </div>
+              </label>
+              <p className="mt-2 text-xs text-gray-500">
+                Connect to OpenAI-compatible APIs (Ollama, LM Studio, vLLM, etc.)
+              </p>
+            </div>
+
+            {/* Custom Endpoint Fields */}
+            {useCustomEndpoint && (
+              <div className="space-y-4 p-4 rounded-xl bg-gray-800/50 border border-gray-700">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-200 mb-2">
+                    API Base URL
+                  </label>
+                  <input
+                    type="text"
+                    value={customEndpoint}
+                    onChange={(e) => setCustomEndpoint(e.target.value)}
+                    placeholder="http://localhost:11434/v1"
+                    className="w-full px-4 py-3 bg-gray-800 border-2 border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all"
+                  />
+                  <p className="mt-2 text-xs text-gray-500">
+                    Example: http://localhost:11434/v1 for Ollama
+                  </p>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-200 mb-2">
+                    Model Name
+                  </label>
+                  <input
+                    type="text"
+                    value={customModel}
+                    onChange={(e) => setCustomModel(e.target.value)}
+                    placeholder="llama3.2, mistral, codellama, etc."
+                    className="w-full px-4 py-3 bg-gray-800 border-2 border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all"
+                  />
+                  <p className="mt-2 text-xs text-gray-500">
+                    The model name as configured in your server
+                  </p>
+                </div>
+              </div>
+            )}
+
             {/* API Key Input */}
             <div>
               <label className="block text-sm font-semibold text-gray-200 mb-2">
-                OpenAI API Key
+                {useCustomEndpoint ? "API Key (optional)" : "OpenAI API Key"}
               </label>
               <div className="relative">
                 <input
                   type={showKey ? "text" : "password"}
                   value={apiKey}
                   onChange={(e) => setApiKey(e.target.value)}
-                  placeholder="sk-..."
+                  placeholder={useCustomEndpoint ? "Leave empty if not required" : "sk-..."}
                   className="w-full px-4 py-3 bg-gray-800 border-2 border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all pr-12"
                 />
                 <button
@@ -121,7 +187,8 @@ export function APIKeySettings({
               </p>
             </div>
 
-            {/* Model Selection */}
+            {/* Model Selection - Only show when not using custom endpoint */}
+            {!useCustomEndpoint && (
             <div>
               <label className="block text-sm font-semibold text-gray-200 mb-3">
                 Model
@@ -153,6 +220,7 @@ export function APIKeySettings({
                 ))}
               </div>
             </div>
+            )}
 
             {/* Language Selection */}
             <div>
@@ -192,7 +260,7 @@ export function APIKeySettings({
               <button
                 type="button"
                 onClick={handleSave}
-                disabled={!apiKey.trim()}
+                disabled={useCustomEndpoint ? (!customEndpoint.trim() || !customModel.trim()) : !apiKey.trim()}
                 className="flex-1 px-4 py-3 rounded-xl bg-gradient-to-r from-violet-600 to-purple-600 text-white font-semibold hover:from-violet-500 hover:to-purple-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-violet-500/25"
               >
                 Save Configuration

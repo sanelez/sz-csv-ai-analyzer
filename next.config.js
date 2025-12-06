@@ -6,8 +6,9 @@ import "./src/env.js";
 
 /** @type {import("next").NextConfig} */
 const config = {
-    // Enable static export for GitHub Pages
-    output: "export",
+    // Output mode: "export" for GitHub Pages, "standalone" for Docker self-hosting
+    // Set NEXT_OUTPUT_MODE=standalone for Docker builds
+    output: process.env.NEXT_OUTPUT_MODE === "standalone" ? "standalone" : "export",
 
     // Base path for GitHub Pages (repository name)
     // Set via NEXT_PUBLIC_BASE_PATH env var in GitHub Actions
@@ -18,8 +19,8 @@ const config = {
         unoptimized: true,
     },
 
-    // Trailing slash for GitHub Pages compatibility
-    trailingSlash: true,
+    // Trailing slash for GitHub Pages compatibility (only in export mode)
+    trailingSlash: process.env.NEXT_OUTPUT_MODE !== "standalone",
 };
 
 export default config;

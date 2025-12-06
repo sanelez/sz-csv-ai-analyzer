@@ -1,4 +1,4 @@
-export type ProviderId = "openai";
+export type ProviderId = "openai" | "custom";
 
 // Available models - OpenAI GPT-5 series
 export const AVAILABLE_MODELS = [
@@ -7,7 +7,8 @@ export const AVAILABLE_MODELS = [
   { id: "gpt-5-nano", name: "GPT-5 Nano", description: "Fast and cost-effective" },
 ] as const;
 
-export type ModelId = typeof AVAILABLE_MODELS[number]["id"];
+// Allow arbitrary model IDs (including vendor-specific names) — keep typed known IDs but accept custom strings
+export type ModelId = string;
 
 // Default model
 export const DEFAULT_MODEL: ModelId = "gpt-5-mini";

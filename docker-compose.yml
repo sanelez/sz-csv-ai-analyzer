@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  csv-ai-analyzer:
+    build: .
+    container_name: csv-ai-analyzer
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production

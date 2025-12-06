@@ -27,6 +27,8 @@ export interface AIServiceConfig {
   apiKey: string;
   model?: ModelId;
   language?: LanguageCode;
+  customEndpoint?: string;
+  customModel?: string;
 }
 
 export interface DataSummaryResult {
@@ -171,8 +173,14 @@ IMPORTANT: Column names MUST exactly match the list above.`;
 // ============ Provider Helper ============
 
 function getModel(config: AIServiceConfig) {
-  const openai = createOpenAI({ apiKey: config.apiKey });
-  return openai(config.model ?? DEFAULT_MODEL);
+  const openai = createOpenAI({
+    apiKey: config.apiKey,
+    // prefer nullish coalescing to avoid treating empty strings as a fallback
+    baseURL: config.customEndpoint ?? undefined,
+  });
+  // Use custom model name if provided, otherwise use selected model — prefer ?? for safety
+  const modelName = config.customModel ?? config.model ?? DEFAULT_MODEL;
+  return openai(modelName);
 }
 
 // ============ Chart Suggestions ============

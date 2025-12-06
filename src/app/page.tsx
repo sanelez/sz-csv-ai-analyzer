@@ -79,7 +79,9 @@ export default function HomePage() {
   };
 
   const handleRunAllAnalysis = async () => {
-    if (!csvData || !apiSettings?.apiKey) return;
+    // Allow running with custom endpoint (API key may be optional) or with OpenAI API key
+    const hasValidConfig = apiSettings?.customEndpoint ? !!apiSettings.customModel : !!apiSettings?.apiKey;
+    if (!csvData || !hasValidConfig) return;
 
     setIsAnalyzingAll(true);
     // Reset results before starting
@@ -87,9 +89,11 @@ export default function HomePage() {
     setGeneratedCharts([]);
 
     const config = {
-      apiKey: apiSettings.apiKey,
-      model: apiSettings.model,
-      language: apiSettings.language,
+      apiKey: apiSettings!.apiKey,
+      model: apiSettings!.model,
+      language: apiSettings!.language,
+      customEndpoint: apiSettings!.customEndpoint,
+      customModel: apiSettings!.customModel,
     };
 
     const csvSummary = generateCSVSummary(csvData);
@@ -148,12 +152,15 @@ export default function HomePage() {
   };
 
   const handleRegenerateChart = async (failedChart: ChartSuggestion) => {
-    if (!csvData || !apiSettings?.apiKey) return;
+    const hasValidConfig = apiSettings?.customEndpoint ? !!apiSettings.customModel : !!apiSettings?.apiKey;
+    if (!csvData || !hasValidConfig) return;
 
     const config = {
-      apiKey: apiSettings.apiKey,
-      model: apiSettings.model,
-      language: apiSettings.language,
+      apiKey: apiSettings!.apiKey,
+      model: apiSettings!.model,
+      language: apiSettings!.language,
+      customEndpoint: apiSettings!.customEndpoint,
+      customModel: apiSettings!.customModel,
     };
 
     try {
