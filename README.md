@@ -8,7 +8,7 @@
 
 > 🚀 **[Try it live →](https://maxgfr.github.io/csv-ai-analyzer)**
 
-Aperçu de l'application :
+App preview:
 
 ![CSV AI Analyzer preview](.github/assets/app.gif)
 
