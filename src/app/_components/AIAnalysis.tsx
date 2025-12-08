@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { toast } from "sonner";
 import {
   Brain,
   Loader2,
@@ -162,17 +163,28 @@ export function AIAnalysis({
     const config = getConfig();
     if (!config) {
       setSummaryError("Please configure your API key");
+      toast.error("Configuration Required", {
+        description: "Please configure your API key",
+      });
       return;
     }
 
     setIsLoadingSummary(true);
     setSummaryError(null);
+    toast.loading("Generating Summary", {
+      description: "Analyzing your data...",
+      id: "summary-toast",
+    });
 
     try {
       const csvSummary = generateCSVSummary(data);
       const result = await generateDataSummary(config, csvSummary);
       setSummaryResult(result);
       setSummaryError(null);
+      toast.success("Summary Generated", {
+        description: "Data summary is ready!",
+        id: "summary-toast",
+      });
     } catch (err) {
       const errorMessage =
         err instanceof Error
@@ -180,6 +192,10 @@ export function AIAnalysis({
           : "Unable to analyze data. Please try again.";
       setSummaryError(errorMessage);
       console.error("Data summary failed:", err);
+      toast.error("Summary Failed", {
+        description: errorMessage,
+        id: "summary-toast",
+      });
     } finally {
       setIsLoadingSummary(false);
     }
@@ -189,11 +205,18 @@ export function AIAnalysis({
     const config = getConfig();
     if (!config) {
       setAnomaliesError("Please configure your API key");
+      toast.error("Configuration Required", {
+        description: "Please configure your API key",
+      });
       return;
     }
 
     setIsLoadingAnomalies(true);
     setAnomaliesError(null);
+    toast.loading("Detecting Anomalies", {
+      description: "Scanning your data for anomalies...",
+      id: "anomalies-toast",
+    });
 
     try {
       const csvSummary = generateCSVSummary(data);
@@ -208,6 +231,10 @@ export function AIAnalysis({
       const result = await detectAnomalies(config, csvSummary, sampleCSV);
       setAnomaliesResult(result);
       setAnomaliesError(null);
+      toast.success("Anomalies Detected", {
+        description: `Found ${result.length} potential anomal${result.length === 1 ? "y" : "ies"}`,
+        id: "anomalies-toast",
+      });
     } catch (err) {
       const errorMessage =
         err instanceof Error
@@ -215,6 +242,10 @@ export function AIAnalysis({
           : "Unable to detect anomalies. Please try again.";
       setAnomaliesError(errorMessage);
       console.error("Anomaly detection failed:", err);
+      toast.error("Detection Failed", {
+        description: errorMessage,
+        id: "anomalies-toast",
+      });
     } finally {
       setIsLoadingAnomalies(false);
     }
@@ -226,6 +257,9 @@ export function AIAnalysis({
     const config = getConfig();
     if (!config) {
       setError("Please configure your API key");
+      toast.error("Configuration Required", {
+        description: "Please configure your API key",
+      });
       return;
     }
 
@@ -233,6 +267,10 @@ export function AIAnalysis({
     setLoadingCustom(true, currentPrompt);
     setStreaming("");
     setCustomPrompt("");
+    toast.loading("Processing Query", {
+      description: "AI is analyzing your request...",
+      id: "custom-query-toast",
+    });
 
     try {
       const csvSummary = generateCSVSummary(data);
@@ -250,6 +288,10 @@ export function AIAnalysis({
           addMessage({ prompt: currentPrompt, response: fullText });
           setStreaming("");
           setLoadingCustom(false);
+          toast.success("Query Complete", {
+            description: "AI has finished analyzing your request",
+            id: "custom-query-toast",
+          });
         },
         customHistory, // Pass current history
       );
@@ -267,6 +309,10 @@ export function AIAnalysis({
       });
       setStreaming("");
       setLoadingCustom(false);
+      toast.error("Query Failed", {
+        description: errorMessage,
+        id: "custom-query-toast",
+      });
     }
   };
 

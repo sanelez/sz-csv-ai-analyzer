@@ -3,6 +3,7 @@ import "~/styles/globals.css";
 import { type Metadata } from "next";
 import { Geist } from "next/font/google";
 import Link from "next/link";
+import { Toaster } from "sonner";
 
 const siteUrl = "https://maxgfr.github.io/csv-ai-analyzer";
 
@@ -121,6 +122,9 @@ export default function RootLayout({
 
         {/* Main content */}
         <div className="relative z-10">{children}</div>
+
+        {/* Toast notifications */}
+        <Toaster position="bottom-right" richColors />
 
         {/* Footer with legal link */}
         <footer className="relative z-10 flex items-center justify-center gap-4 py-6 text-center text-sm text-gray-500">

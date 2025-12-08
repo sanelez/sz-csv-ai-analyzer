@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { createPortal } from "react-dom";
+import { toast } from "sonner";
 import {
   Key,
   X,
@@ -124,29 +125,31 @@ export function APIKeySettings({
   }, [catalog, providerId]);
 
   const providerSelectOptions = useMemo(() => {
-    if (!catalog) return [];
+    if (!catalog) return { recommended: [], others: [] };
     // Recommended providers to surface first and mark in the UI
-    const recommended = ["google", "anthropic", "mistral", "openai", "xai"];
+    const recommendedIds = ["google", "anthropic", "mistral", "openai", "xai"];
 
     // Build an array with recommended providers first (in that order) then the rest
     const allProviders = Object.values(catalog);
 
-    const recommendedProviders = recommended
+    const recommendedProviders = recommendedIds
       .map((id) => allProviders.find((p) => p.id === id))
       .filter(Boolean) as ProviderInfo[];
 
     const otherProviders = allProviders
-      .filter((p) => !recommended.includes(p.id))
+      .filter((p) => !recommendedIds.includes(p.id))
       .sort((a, b) => a.name.localeCompare(b.name));
 
-    return [...recommendedProviders, ...otherProviders].map((p) => ({
-      id: p.id,
-      name: p.name,
-      // Add a small label for recommended providers
-      label: ["google", "anthropic", "mistral", "openai", "xai"].includes(p.id)
-        ? `${p.name} — Recommended & Tested`
-        : p.name,
-    }));
+    return {
+      recommended: recommendedProviders.map((p) => ({
+        id: p.id,
+        name: p.name,
+      })),
+      others: otherProviders.map((p) => ({
+        id: p.id,
+        name: p.name,
+      })),
+    };
   }, [catalog]);
 
   const modelOptions = useMemo(() => {
@@ -196,6 +199,9 @@ export function APIKeySettings({
     };
     saveApiSettings(settings);
     onSettingsChange(settings);
+    toast.success("Settings Saved", {
+      description: `Using ${providerMeta.providerName} with ${model.split("/").pop() ?? model}`,
+    });
     onClose();
   };
 
@@ -404,11 +410,24 @@ export function APIKeySettings({
                   }}
                   className="w-full rounded-xl border-2 border-gray-700 bg-gray-800 px-4 py-3 text-white transition-all focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 focus:outline-none"
                 >
-                  {providerSelectOptions.map((provider) => (
-                    <option key={provider.id} value={provider.id}>
-                      {provider.label ?? provider.name ?? provider.id}
-                    </option>
-                  ))}
+                  {providerSelectOptions.recommended.length > 0 && (
+                    <optgroup label="Recommended">
+                      {providerSelectOptions.recommended.map((provider) => (
+                        <option key={provider.id} value={provider.id}>
+                          {provider.name}
+                        </option>
+                      ))}
+                    </optgroup>
+                  )}
+                  {providerSelectOptions.others.length > 0 && (
+                    <optgroup label="Other Providers">
+                      {providerSelectOptions.others.map((provider) => (
+                        <option key={provider.id} value={provider.id}>
+                          {provider.name}
+                        </option>
+                      ))}
+                    </optgroup>
+                  )}
                 </select>
                 <p className="text-xs text-gray-500">
                   Pick the provider to populate models.

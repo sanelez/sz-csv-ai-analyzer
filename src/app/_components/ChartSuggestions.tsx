@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { toast } from "sonner";
 import {
   Sparkles,
   Loader2,
@@ -144,11 +145,18 @@ export function ChartSuggestions({
     const config = getConfig();
     if (!config) {
       setError("Please configure your API key first");
+      toast.error("Configuration Required", {
+        description: "Please configure your API key first",
+      });
       return;
     }
 
     setIsLoading(true);
     setError(null);
+    toast.loading("Generating Charts", {
+      description: "AI is creating chart suggestions...",
+      id: "chart-gen-toast",
+    });
 
     try {
       const dataSummary = generateDataSummary(data);
@@ -168,6 +176,10 @@ export function ChartSuggestions({
       setSuggestions(validCharts);
       // Auto-select all valid charts
       setSelectedCharts(new Set(validCharts.map((c) => c.id)));
+      toast.success("Charts Generated", {
+        description: `Created ${validCharts.length} chart suggestion${validCharts.length === 1 ? "" : "s"}`,
+        id: "chart-gen-toast",
+      });
     } catch (err) {
       const errorMessage =
         err instanceof Error
@@ -175,6 +187,10 @@ export function ChartSuggestions({
           : "Unable to generate charts. Please try again.";
       setError(errorMessage);
       console.error("Chart generation failed:", err);
+      toast.error("Generation Failed", {
+        description: errorMessage,
+        id: "chart-gen-toast",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -186,11 +202,18 @@ export function ChartSuggestions({
     const config = getConfig();
     if (!config) {
       setError("Please configure your API key first");
+      toast.error("Configuration Required", {
+        description: "Please configure your API key first",
+      });
       return;
     }
 
     setIsCustomLoading(true);
     setError(null);
+    toast.loading("Creating Custom Chart", {
+      description: "Generating chart from your description...",
+      id: "custom-chart-toast",
+    });
 
     try {
       const dataSummary = generateDataSummary(data);
@@ -211,13 +234,24 @@ export function ChartSuggestions({
           setSelectedCharts((prev) => new Set([...prev, chart.id]));
           setCustomPrompt("");
           setShowCustomInput(false);
+          toast.success("Custom Chart Created", {
+            description: chart.title,
+            id: "custom-chart-toast",
+          });
         } else {
           setError(`Invalid columns. Available: ${data.headers.join(", ")}`);
+          toast.error("Invalid Columns", {
+            description: "Chart uses columns not in your data",
+            id: "custom-chart-toast",
+          });
         }
       } else {
-        setError(
-          "Could not generate chart from your description. Please try rephrasing your request or check the console for more details.",
-        );
+        const errMsg = "Could not generate chart from your description. Please try rephrasing your request.";
+        setError(errMsg);
+        toast.error("Chart Creation Failed", {
+          description: errMsg,
+          id: "custom-chart-toast",
+        });
       }
     } catch (err) {
       const errorMessage =
@@ -226,6 +260,10 @@ export function ChartSuggestions({
           : "Unable to generate custom chart. Please try again.";
       setError(errorMessage);
       console.error("Custom chart generation failed:", err);
+      toast.error("Generation Error", {
+        description: errorMessage,
+        id: "custom-chart-toast",
+      });
     } finally {
       setIsCustomLoading(false);
     }
@@ -255,6 +293,9 @@ export function ChartSuggestions({
   const handleManualCreate = () => {
     if (!manualConfig.title.trim() || !manualConfig.xColumn) {
       setError("Please fill in all required fields");
+      toast.error("Missing Fields", {
+        description: "Please fill in all required fields",
+      });
       return;
     }
 
@@ -266,6 +307,9 @@ export function ChartSuggestions({
 
     if (!yColumn) {
       setError("Please select a Y column");
+      toast.error("Missing Y Column", {
+        description: "Please select a Y column",
+      });
       return;
     }
 
@@ -286,6 +330,10 @@ export function ChartSuggestions({
     // Add to suggestions and select it (auto-apply via useEffect)
     setSuggestions((prev) => [...prev, newChart]);
     setSelectedCharts((prev) => new Set([...prev, newChart.id]));
+
+    toast.success("Chart Created", {
+      description: manualConfig.title,
+    });
 
     setShowManualCreate(false);
     setManualConfig({

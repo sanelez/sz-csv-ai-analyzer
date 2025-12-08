@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { toast } from "sonner";
 import { DataTable } from "./_components/DataTable";
 import { FullscreenCard } from "./_components/FullscreenCard";
 import { ChartSuggestions } from "~/app/_components/ChartSuggestions";
@@ -72,6 +73,9 @@ export default function HomePage() {
     setChartGenerationError(null);
     setSummaryError(null);
     setAnomaliesError(null);
+    toast.success("File Loaded", {
+      description: `${fileName} loaded successfully with ${data.rows.length} rows`,
+    });
   };
 
   const handleClearFile = () => {
@@ -82,6 +86,9 @@ export default function HomePage() {
     setChartGenerationError(null);
     setSummaryError(null);
     setAnomaliesError(null);
+    toast.info("File Cleared", {
+      description: "Ready to upload a new file",
+    });
   };
 
   const handleDataLoaded = (data: CSVData, fileName: string) => {
@@ -92,6 +99,9 @@ export default function HomePage() {
     setChartGenerationError(null);
     setSummaryError(null);
     setAnomaliesError(null);
+    toast.success("Sample Data Loaded", {
+      description: `${fileName} loaded with ${data.rows.length} rows`,
+    });
   };
 
   const handleRunAllAnalysis = async () => {
@@ -105,6 +115,10 @@ export default function HomePage() {
     // Reset results before starting
     setAnalysisResults({ summary: null, anomalies: null, charts: null });
     setGeneratedCharts([]);
+    toast.loading("Starting Analysis", {
+      description: "Running complete analysis on your data...",
+      id: "analysis-toast",
+    });
 
     const config = {
       apiKey: apiSettings!.apiKey,
@@ -192,6 +206,12 @@ export default function HomePage() {
     // Wait for all to complete before removing loading state
     await Promise.all([summaryPromise, anomaliesPromise, chartsPromise]);
     setIsAnalyzingAll(false);
+
+    // Show toast notification when analysis is complete
+    toast.success("Analysis Complete", {
+      description: "Your CSV analysis has finished successfully!",
+      id: "analysis-toast",
+    });
   };
 
   const handleRegenerateChart = async (failedChart: ChartSuggestion) => {
@@ -212,6 +232,10 @@ export default function HomePage() {
     };
 
     try {
+      toast.loading("Regenerating Chart", {
+        description: "Attempting to fix the chart...",
+        id: "regenerate-chart-toast",
+      });
       const repairedChart = await repairChartSuggestion(
         config,
         failedChart,
@@ -223,12 +247,22 @@ export default function HomePage() {
         setGeneratedCharts((prev) =>
           prev.map((c) => (c.id === failedChart.id ? repairedChart : c)),
         );
+        toast.success("Chart Regenerated", {
+          description: "The chart has been successfully fixed!",
+          id: "regenerate-chart-toast",
+        });
       } else {
-        alert("Could not repair this chart automatically.");
+        toast.error("Regeneration Failed", {
+          description: "Could not repair this chart automatically.",
+          id: "regenerate-chart-toast",
+        });
       }
     } catch (error) {
       console.error("Failed to regenerate chart", error);
-      alert("Failed to regenerate chart");
+      toast.error("Regeneration Error", {
+        description: "Failed to regenerate chart",
+        id: "regenerate-chart-toast",
+      });
     }
   };
 

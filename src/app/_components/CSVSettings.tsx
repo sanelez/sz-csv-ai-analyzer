@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
+import { toast } from "sonner";
 import { Settings, X, Check } from "lucide-react";
 import { type CSVSettings, DEFAULT_CSV_SETTINGS } from "~/lib/csv-parser";
 import { loadCsvSettings, saveCsvSettings } from "~/lib/storage";
@@ -50,6 +51,9 @@ export function CSVSettingsModal({
   const handleSave = () => {
     saveCsvSettings(localSettings);
     onSettingsChange(localSettings);
+    toast.success("CSV Settings Saved", {
+      description: "Parser settings have been updated",
+    });
     onClose();
   };
 
