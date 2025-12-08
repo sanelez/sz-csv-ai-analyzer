@@ -107,7 +107,8 @@ export function APIKeySettings({
   useEffect(() => {
     if (!catalog && !isLoadingCatalog) {
       setIsLoadingCatalog(true);
-      fetch("/models.json")
+      const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
+      fetch(`${basePath}/models.json`)
         .then((res) => res.json())
         .then((data: ModelCatalog) => {
           setCatalog(data);
