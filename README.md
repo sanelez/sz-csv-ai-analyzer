@@ -28,7 +28,7 @@ A modern, elegant application to analyze your CSV files with Artificial Intellig
 - **Data preview** with automatic formatting
 - **Smooth navigation** for large datasets
 
--### 🤖 AI Chart Generation
+### 🤖 AI Chart Generation
 - **Multi-provider selection**: You can configure and keep multiple AI providers in the settings, then quickly switch between them when running analyses
 - **Custom endpoint support**: Connect to Ollama, LM Studio, vLLM, or any OpenAI-compatible API
 - **Intelligent analysis** of your data
