@@ -474,10 +474,7 @@ export function APIKeySettings({
 
                     const recommendedModel = recommendedModelId
                       ? modelOptions.find(
-                          (m: ModelInfo) =>
-                            m.id.includes(
-                              recommendedModelId.split("/").pop() ?? "",
-                            ) || m.id === recommendedModelId,
+                          (m: ModelInfo) => m.id === recommendedModelId,
                         )
                       : null;
 

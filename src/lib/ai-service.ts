@@ -284,24 +284,18 @@ function getModel(config: AIServiceConfig): LanguageModel {
 
   switch (config.providerNpm) {
     case "@ai-sdk/anthropic": {
-      const anthropicFactory = createAnthropic as unknown as (params: {
-        apiKey: string;
-      }) => (model: string) => LanguageModel;
-      const anthropic = anthropicFactory({ apiKey: config.apiKey });
+      const anthropic = createAnthropic({
+        apiKey: config.apiKey,
+        headers: { "anthropic-dangerous-direct-browser-access": "true" },
+      });
       return anthropic(modelName);
     }
     case "@ai-sdk/google": {
-      const googleFactory = createGoogleGenerativeAI as unknown as (params: {
-        apiKey: string;
-      }) => (model: string) => LanguageModel;
-      const google = googleFactory({ apiKey: config.apiKey });
+      const google = createGoogleGenerativeAI({ apiKey: config.apiKey });
       return google(modelName);
     }
     case "@ai-sdk/mistral": {
-      const mistralFactory = createMistral as unknown as (params: {
-        apiKey: string;
-      }) => (model: string) => LanguageModel;
-      const mistral = mistralFactory({ apiKey: config.apiKey });
+      const mistral = createMistral({ apiKey: config.apiKey });
       return mistral(modelName);
     }
     case "@ai-sdk/xai": {
