@@ -21,7 +21,6 @@
     "@ai-sdk/google": "^2.0.44",
     "@ai-sdk/mistral": "^2.0.25",
     "@ai-sdk/openai": "^2.0.79",
-    "@ai-sdk/xai": "^2.0.39",
     "@t3-oss/env-nextjs": "^0.13.8",
     "ai": "^5.0.108",
     "js-cookie": "^3.0.5",

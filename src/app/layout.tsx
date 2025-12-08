@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     template: "%s | CSV AI Analyzer",
   },
   description:
-    "Free online tool to analyze CSV files with AI. Generate intelligent charts, detect anomalies, and get insights. 100% private - your data stays in your browser.",
+    "Free online tool to analyze CSV files with AI. Generate intelligent charts, detect anomalies, and get insights. 100% private when using a custom endpoint",
   icons: [{ rel: "icon", url: "/favicon.ico" }],
   keywords: [
     "CSV analyzer",
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "CSV AI Analyzer | Free AI-Powered Data Analysis",
     description:
-      "Upload CSV files and instantly generate intelligent charts with AI. Detect anomalies, get insights, and visualize your data. 100% private - runs in your browser.",
+      "Upload CSV files and instantly generate intelligent charts with AI. Detect anomalies, get insights, and visualize your data. 100% private when using a custom endpoint",
     type: "website",
     locale: "en_US",
     url: siteUrl,
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "CSV AI Analyzer | Free AI-Powered Data Analysis",
     description:
-      "Upload CSV files and instantly generate intelligent charts with AI. 100% private, runs in your browser.",
+      "Upload CSV files and instantly generate intelligent charts with AI. 100% private when using a custom endpoint",
   },
   robots: {
     index: true,
@@ -73,7 +73,7 @@ const jsonLd = {
   name: "CSV AI Analyzer",
   url: "https://maxgfr.github.io/csv-ai-analyzer",
   description:
-    "Free online tool to analyze CSV files with AI. Generate intelligent charts, detect anomalies, and get insights. 100% private - your data stays in your browser.",
+    "Free online tool to analyze CSV files with AI. Generate intelligent charts, detect anomalies, and get insights. 100% private when using a custom endpoint",
   applicationCategory: "BusinessApplication",
   operatingSystem: "Any",
   offers: {
@@ -86,7 +86,7 @@ const jsonLd = {
     "Automatic chart generation from CSV",
     "Anomaly and outlier detection",
     "Natural language data queries",
-    "Privacy-first: all data stays in your browser",
+    "Privacy-first: the app does not store your data. Use a self-hosted/custom endpoint to keep processing local",
     "Support for OpenAI GPT models",
     "Multiple chart types: Bar, Line, Pie, Scatter, Area",
   ],

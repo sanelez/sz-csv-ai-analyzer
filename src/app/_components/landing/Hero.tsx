@@ -79,13 +79,14 @@ export function Hero({
             Analyze your CSV files with AI in seconds
           </h2>
           <p className="mx-auto mb-8 max-w-2xl text-xl text-gray-400">
-            Upload your data, let AI analyze it, and get intelligent chart
+            Upload your data, choose your AI provider (OpenAI, Anthropic,
+            Google, and more), and get intelligent insights and chart
             suggestions.
             <span className="font-semibold text-violet-400">
               {" "}
               100% private
             </span>{" "}
-            — your data never leaves your browser.
+            when using a self-hosted/custom endpoint.
           </p>
         </div>
 

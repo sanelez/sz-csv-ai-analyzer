@@ -13,7 +13,7 @@ App preview:
 
 ![CSV AI Analyzer preview](.github/assets/app.gif)
 
-A modern, elegant application to analyze your CSV files with Artificial Intelligence. **100% private** - everything stays local in your browser. **Self-hostable** with Docker.
+A modern, elegant application to analyze your CSV files with Artificial Intelligence using multiple AI providers (OpenAI, Anthropic, Google, Mistral, and more). **Privacy-first**: the app does not store your data. Use a self-hosted/custom endpoint to keep processing entirely local; otherwise API calls go to the selected provider. **Self-hostable** with Docker.
 
 ## ✨ Features
 
@@ -28,15 +28,15 @@ A modern, elegant application to analyze your CSV files with Artificial Intellig
 - **Data preview** with automatic formatting
 - **Smooth navigation** for large datasets
 
-### 🤖 AI Chart Generation
-- **Multi-provider selection**: You can configure and keep multiple AI providers in the settings, then quickly switch between them when running analyses
+### 🤖 AI-Powered Analysis
+- **Multiple AI providers**: OpenAI, Anthropic Claude, Google Gemini, Mistral, and more
 - **Custom endpoint support**: Connect to Ollama, LM Studio, vLLM, or any OpenAI-compatible API
-- **Intelligent analysis** of your data
-- **Chart suggestions** tailored to your dataset
+- **Intelligent analysis** of your data with AI-generated insights
+- **Smart chart suggestions** tailored to your dataset
 - **Chart types**: Bar, Line, Pie, Scatter, Area
 
 ### 🔒 Privacy
-- **100% local**: no data sent to a server (processing in browser or direct to AI API)
+- **Local or direct-to-provider**: the app does not store your data. Processing can happen in your browser when using a self-hosted/custom endpoint; otherwise API calls go directly to the chosen AI provider.
 - **API keys stored locally** in your browser
 - **No tracking** or third-party cookies
 
@@ -125,12 +125,13 @@ If automatic detection doesn't work perfectly, adjust the settings:
 - Header row choice
 - File encoding
 
-### 3. Configure your API Key
+### 3. Configure your AI Provider
 
 Click the ⚙️ icon to configure your AI provider:
 
-- **OpenAI**: Key starting with `sk-`
-- **Custom Endpoint**: Enable "Use Custom Endpoint" to connect to OpenAI-compatible APIs
+- **Choose a provider**: OpenAI, Anthropic, Google, Mistral, or others
+- **Enter your API key**: Each provider has its own API key format
+- **Custom Endpoint**: Enable "Use Custom Endpoint" to connect to local/self-hosted OpenAI-compatible APIs (Ollama, LM Studio, vLLM, etc.)
 
 #### Using Custom Endpoints (Ollama, LM Studio, vLLM, etc.)
 

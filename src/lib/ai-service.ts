@@ -3,7 +3,6 @@ import { createOpenAI } from "@ai-sdk/openai";
 import { createAnthropic } from "@ai-sdk/anthropic";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { createMistral } from "@ai-sdk/mistral";
-import { createXai } from "@ai-sdk/xai";
 import { z } from "zod";
 import { DEFAULT_MODEL, type ModelId, type LanguageCode } from "./ai-models";
 
@@ -297,12 +296,6 @@ function getModel(config: AIServiceConfig): LanguageModel {
     case "@ai-sdk/mistral": {
       const mistral = createMistral({ apiKey: config.apiKey });
       return mistral(modelName);
-    }
-    case "@ai-sdk/xai": {
-      const xai = createXai({ apiKey: config.apiKey }) as unknown as (
-        model: string,
-      ) => LanguageModel;
-      return xai(modelName);
     }
     default: {
       const openai = createOpenAI({

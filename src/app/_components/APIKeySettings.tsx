@@ -128,7 +128,7 @@ export function APIKeySettings({
   const providerSelectOptions = useMemo(() => {
     if (!catalog) return { recommended: [], others: [] };
     // Recommended providers to surface first and mark in the UI
-    const recommendedIds = ["google", "anthropic", "mistral", "openai", "xai"];
+    const recommendedIds = ["google", "anthropic", "mistral", "openai"];
 
     // Build an array with recommended providers first (in that order) then the rest
     const allProviders = Object.values(catalog);
@@ -457,6 +457,19 @@ export function APIKeySettings({
                 <p className="text-xs text-gray-500">
                   Pick the provider to populate models.
                 </p>
+                {providerSelectOptions.others.some(
+                  (p) => p.id === providerId,
+                ) && (
+                  <div className="mt-3 flex items-start gap-2 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3">
+                    <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-amber-400" />
+                    <div className="text-sm text-amber-300">
+                      <strong className="font-semibold">Important:</strong> This
+                      provider must be OpenAI-compatible and support{" "}
+                      <strong>client-side requests</strong> (CORS enabled).
+                      Server-only APIs will not work in the browser.
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 

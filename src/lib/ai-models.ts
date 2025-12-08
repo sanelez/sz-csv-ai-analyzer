@@ -13,7 +13,6 @@ export const DEFAULT_MODEL_BY_PROVIDER: Record<string, string> = {
   anthropic: "claude-haiku-4-5",
   mistral: "mistral-small-latest",
   openai: "gpt-5-mini",
-  xai: "grok-4-1-fast",
 };
 
 // Supported languages for LLM output

@@ -31,7 +31,8 @@ export function FeaturesGrid() {
           </h4>
           <p className="text-sm text-gray-400">
             Get intelligent summaries, detect anomalies, and receive tailored
-            insights about your data using OpenAI GPT models.
+            insights about your data using multiple AI providers: OpenAI,
+            Anthropic Claude, Google Gemini, Mistral, and more.
           </p>
         </div>
 
@@ -55,11 +56,12 @@ export function FeaturesGrid() {
             <Shield className="h-6 w-6 text-white" />
           </div>
           <h4 className="mb-2 text-lg font-semibold text-white">
-            100% Private
+            Privacy-first
           </h4>
           <p className="text-sm text-gray-400">
-            Your data never touches our servers. Processing happens in your
-            browser, API calls go directly to OpenAI. No tracking.
+            The app does not store your data. API calls go directly to the
+            selected AI provider, configure a self-hosted/custom endpoint to
+            keep processing entirely local to your environment.
           </p>
         </div>
 

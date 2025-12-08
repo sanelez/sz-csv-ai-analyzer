@@ -90,7 +90,7 @@ export default async function Image() {
               fontSize: 18,
             }}
           >
-            🔒 100% Private
+            🔒 Private (self-host option)
           </div>
           <div
             style={{
