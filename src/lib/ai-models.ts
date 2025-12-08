@@ -1,17 +1,20 @@
-export type ProviderId = "openai" | "custom";
-
-// Available models - OpenAI GPT-5 series
-export const AVAILABLE_MODELS = [
-  { id: "gpt-5.1", name: "GPT-5.1", description: "Most capable model for complex analysis" },
-  { id: "gpt-5-mini", name: "GPT-5 Mini", description: "Balanced performance and speed" },
-  { id: "gpt-5-nano", name: "GPT-5 Nano", description: "Fast and cost-effective" },
-] as const;
+export type ProviderId = string;
 
 // Allow arbitrary model IDs (including vendor-specific names) — keep typed known IDs but accept custom strings
 export type ModelId = string;
 
-// Default model
-export const DEFAULT_MODEL: ModelId = "gpt-5-mini";
+// Default provider when nothing is selected yet (no default model - user must select one)
+export const DEFAULT_PROVIDER_ID: ProviderId = "openai";
+export const DEFAULT_MODEL: ModelId = ""; // Empty - user must select a model
+
+// Per-provider default models (prefer the canonical model id from the live catalog)
+export const DEFAULT_MODEL_BY_PROVIDER: Record<string, string> = {
+  google: "gemini-2.5-flash",
+  anthropic: "claude-haiku-4-5",
+  mistral: "mistral-small-latest",
+  openai: "gpt-5-mini",
+  xai: "grok-4-1-fast",
+};
 
 // Supported languages for LLM output
 export const SUPPORTED_LANGUAGES = [

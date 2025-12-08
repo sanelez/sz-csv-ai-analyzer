@@ -2,7 +2,7 @@
 
 [![Live Demo](https://img.shields.io/badge/demo-live-brightgreen.svg)](https://maxgfr.github.io/csv-ai-analyzer)
 [![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/maxgfr/csv-ai-analyzer)
-[![Next.js](https://img.shields.io/badge/Next.js-15-black.svg)](https://nextjs.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-black.svg)](https://nextjs.org/)
 [![TailwindCSS](https://img.shields.io/badge/TailwindCSS-4-38bdf8.svg)](https://tailwindcss.com/)
 [![Docker](https://img.shields.io/badge/Docker-ready-2496ED.svg)](https://www.docker.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -28,8 +28,8 @@ A modern, elegant application to analyze your CSV files with Artificial Intellig
 - **Data preview** with automatic formatting
 - **Smooth navigation** for large datasets
 
-### 🤖 AI Chart Generation
-- **Multi-provider support**: OpenAI (GPT-5 ready)
+-### 🤖 AI Chart Generation
+- **Multi-provider selection**: You can configure and keep multiple AI providers in the settings, then quickly switch between them when running analyses
 - **Custom endpoint support**: Connect to Ollama, LM Studio, vLLM, or any OpenAI-compatible API
 - **Intelligent analysis** of your data
 - **Chart suggestions** tailored to your dataset
@@ -62,6 +62,23 @@ pnpm dev
 ```
 
 The application will be accessible at [http://localhost:3000](http://localhost:3000)
+
+### Auto-updating the models catalog
+
+This project ships a static `public/models.json` that contains the models catalog fetched from `https://models.dev/api.json`.
+
+- You can regenerate the file locally with:
+
+```bash
+pnpm run fetch-models
+```
+
+- A GitHub Action is configured to run this script once per day and automatically commit `public/models.json` if it changes.
+
+  - Workflow: `.github/workflows/update-models.yml`
+  - Runs daily (UTC 06:00) and is also triggerable manually with `workflow_dispatch`.
+
+If you'd like the file to be refreshed more/less often you can update the cron schedule in the workflow file.
 
 ### Option 2: Docker (Self-Hosting)
 
@@ -139,8 +156,8 @@ Click "Run Complete Analysis" and the AI will analyze your data, detect anomalie
 
 | Technology | Usage |
 |-------------|-------|
-| **Next.js 15** | React Framework with App Router |
-| **TailwindCSS v4** | Styling and design system |
+| **Next.js** | React Framework with App Router |
+| **TailwindCSS** | Styling and design system |
 | **PapaParse** | Client-side CSV parsing |
 | **Recharts** | React charting library |
 | **Lucide React** | Modern icons |

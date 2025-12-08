@@ -18,6 +18,7 @@ interface ChartSuggestionsProps {
   apiSettings: StoredSettings | null;
   onChartsGenerated: (charts: ChartSuggestion[]) => void;
   externalSuggestions?: ChartSuggestion[] | null;
+  externalError?: string | null;
   disabled?: boolean;
 }
 
@@ -59,6 +60,7 @@ export function ChartSuggestions({
   apiSettings,
   onChartsGenerated,
   externalSuggestions,
+  externalError,
   disabled = false,
 }: ChartSuggestionsProps) {
   const [isLoading, setIsLoading] = useState(false);
@@ -91,6 +93,13 @@ export function ChartSuggestions({
     }
   }, [externalSuggestions, data.headers]);
 
+  // Sync with external error
+  useEffect(() => {
+    if (externalError) {
+      setError(externalError);
+    }
+  }, [externalError]);
+
   // Auto-apply charts whenever selection or suggestions change
   useEffect(() => {
     if (suggestions.length > 0) {
@@ -106,6 +115,9 @@ export function ChartSuggestions({
     return {
       apiKey: apiSettings!.apiKey,
       model: apiSettings!.model,
+      providerId: apiSettings!.providerId,
+      providerNpm: apiSettings!.providerNpm,
+      providerApi: apiSettings!.providerApi,
       language: apiSettings!.language,
       customEndpoint: apiSettings!.customEndpoint,
       customModel: apiSettings!.customModel,
@@ -137,7 +149,9 @@ export function ChartSuggestions({
       // Auto-select all valid charts
       setSelectedCharts(new Set(validCharts.map((c) => c.id)));
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error generating charts");
+      const errorMessage = err instanceof Error ? err.message : "Unable to generate charts. Please try again.";
+      setError(errorMessage);
+      console.error("Chart generation failed:", err);
     } finally {
       setIsLoading(false);
     }
@@ -173,10 +187,12 @@ export function ChartSuggestions({
           setError(`Invalid columns. Available: ${data.headers.join(", ")}`);
         }
       } else {
-        setError("Could not generate chart from your description");
+        setError("Could not generate chart from your description. Please try rephrasing your request or check the console for more details.");
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error generating custom chart");
+      const errorMessage = err instanceof Error ? err.message : "Unable to generate custom chart. Please try again.";
+      setError(errorMessage);
+      console.error("Custom chart generation failed:", err);
     } finally {
       setIsCustomLoading(false);
     }
@@ -253,7 +269,7 @@ export function ChartSuggestions({
     <div className="glass-card p-6 animate-fade-in">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-4">
-          <div className="p-3 rounded-xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 border border-amber-500/30">
+          <div className="p-3 rounded-xl bg-linear-to-br from-amber-500/20 to-orange-500/20 border border-amber-500/30">
             <Sparkles className="w-6 h-6 text-amber-400" />
           </div>
           <div>
@@ -287,8 +303,16 @@ export function ChartSuggestions({
       </div>
 
       {error && (
-        <div className="mb-4 p-4 rounded-xl bg-red-500/10 border border-red-500/30">
-          <p className="text-sm text-red-400">{error}</p>
+        <div className="mb-4 p-4 rounded-xl bg-red-500/10 border border-red-500/30 animate-fade-in">
+          <div className="flex items-start gap-3">
+            <div className="shrink-0 w-5 h-5 rounded-full bg-red-500/20 flex items-center justify-center mt-0.5">
+              <span className="text-red-400 text-xs font-bold">!</span>
+            </div>
+            <div className="flex-1">
+              <p className="text-sm font-medium text-red-400 mb-1">Error generating charts</p>
+              <p className="text-sm text-red-300/80">{error}</p>
+            </div>
+          </div>
         </div>
       )}
 

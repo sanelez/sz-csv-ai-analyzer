@@ -1,5 +1,9 @@
-import { generateText, generateObject } from "ai";
+import { generateText, generateObject, type LanguageModel } from "ai";
 import { createOpenAI } from "@ai-sdk/openai";
+import { createAnthropic } from "@ai-sdk/anthropic";
+import { createGoogleGenerativeAI } from "@ai-sdk/google";
+import { createMistral } from "@ai-sdk/mistral";
+import { createXai } from "@ai-sdk/xai";
 import { z } from "zod";
 import { DEFAULT_MODEL, type ModelId, type LanguageCode } from "./ai-models";
 
@@ -26,6 +30,9 @@ export interface ChartSuggestion {
 export interface AIServiceConfig {
   apiKey: string;
   model?: ModelId;
+  providerId?: string;
+  providerNpm?: string;
+  providerApi?: string;
   language?: LanguageCode;
   customEndpoint?: string;
   customModel?: string;
@@ -87,6 +94,55 @@ const AnomalySchema = z.object({
 const AnomaliesResponseSchema = z.object({
   anomalies: z.array(AnomalySchema),
 });
+
+// ============ Error Handling ============
+
+/**
+ * Extracts a user-friendly error message from API errors
+ */
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    const message = error.message.toLowerCase();
+    
+    // Rate limit errors
+    if (message.includes("rate limit") || message.includes("429")) {
+      return "Rate limit exceeded. Please wait a moment and try again, or check your API provider's usage limits.";
+    }
+    
+    // Authentication errors
+    if (message.includes("unauthorized") || message.includes("401") || 
+        message.includes("invalid api key") || message.includes("invalid_api_key")) {
+      return "Invalid API key. Please check your API key configuration.";
+    }
+    
+    // Quota/billing errors
+    if (message.includes("quota") || message.includes("insufficient_quota") ||
+        message.includes("billing")) {
+      return "API quota exceeded or billing issue. Please check your account status.";
+    }
+    
+    // Network/timeout errors
+    if (message.includes("network") || message.includes("timeout") || 
+        message.includes("econnrefused") || message.includes("fetch failed")) {
+      return "Network error. Please check your internet connection and try again.";
+    }
+    
+    // Model not found
+    if (message.includes("model") && (message.includes("not found") || message.includes("does not exist"))) {
+      return "Model not available. Please select a different model or check your provider settings.";
+    }
+    
+    // Generic API errors
+    if (message.includes("api error") || message.includes("server error") || message.includes("500")) {
+      return `API error: ${error.message}`;
+    }
+    
+    // Return original message if no specific pattern matched
+    return error.message;
+  }
+  
+  return "An unexpected error occurred. Please try again.";
+}
 
 // ============ Language Support ============
 
@@ -172,15 +228,44 @@ IMPORTANT: Column names MUST exactly match the list above.`;
 
 // ============ Provider Helper ============
 
-function getModel(config: AIServiceConfig) {
-  const openai = createOpenAI({
-    apiKey: config.apiKey,
-    // prefer nullish coalescing to avoid treating empty strings as a fallback
-    baseURL: config.customEndpoint ?? undefined,
-  });
-  // Use custom model name if provided, otherwise use selected model — prefer ?? for safety
+function getModel(config: AIServiceConfig): LanguageModel {
   const modelName = config.customModel ?? config.model ?? DEFAULT_MODEL;
-  return openai(modelName);
+
+  if (config.customEndpoint) {
+    // For custom endpoints (Ollama/LM Studio/vLLM etc.) use OpenAI SDK with custom baseURL
+    const openai = createOpenAI({ 
+      apiKey: config.apiKey || "", 
+      baseURL: config.customEndpoint 
+    }) as unknown as (model: string) => LanguageModel;
+    const chosen = config.customModel ?? modelName;
+    return openai(chosen);
+  }
+
+  switch (config.providerNpm) {
+    case "@ai-sdk/anthropic": {
+      const anthropicFactory = createAnthropic as unknown as (params: { apiKey: string }) => (model: string) => LanguageModel;
+      const anthropic = anthropicFactory({ apiKey: config.apiKey });
+      return anthropic(modelName);
+    }
+    case "@ai-sdk/google": {
+      const googleFactory = createGoogleGenerativeAI as unknown as (params: { apiKey: string }) => (model: string) => LanguageModel;
+      const google = googleFactory({ apiKey: config.apiKey });
+      return google(modelName);
+    }
+    case "@ai-sdk/mistral": {
+      const mistralFactory = createMistral as unknown as (params: { apiKey: string }) => (model: string) => LanguageModel;
+      const mistral = mistralFactory({ apiKey: config.apiKey });
+      return mistral(modelName);
+    }
+    case "@ai-sdk/xai": {
+      const xai = createXai({ apiKey: config.apiKey }) as unknown as (model: string) => LanguageModel;
+      return xai(modelName);
+    }
+    default: {
+      const openai = createOpenAI({ apiKey: config.apiKey, baseURL: config.providerApi }) as unknown as (model: string) => LanguageModel;
+      return openai(modelName);
+    }
+  }
 }
 
 // ============ Chart Suggestions ============
@@ -193,29 +278,33 @@ export const generateChartSuggestions = async (
   const model = getModel(config);
   const language = config.language ?? "en";
 
-  const { object } = await generateObject({
-    model,
-    schema: ChartSuggestionsResponseSchema,
-    system: getChartSystemPrompt(language, columns),
-    prompt: `Analyze this CSV data and suggest the best charts:\n\n${dataSummary}`,
-    temperature: 0.5,
-  });
+  try {
+    const { object } = await generateObject({
+      model,
+      schema: ChartSuggestionsResponseSchema,
+      system: getChartSystemPrompt(language, columns),
+      prompt: `Analyze this CSV data and suggest the best charts:\n\n${dataSummary}`,
+      temperature: 0.5,
+    });
 
-  return object.charts.map((s, i) => ({
-    id: `chart-${i}-${Date.now()}`,
-    type: s.type,
-    title: s.title,
-    description: s.description,
-    xAxis: s.xColumn,
-    yAxis: s.yColumn,
-    groupBy: s.groupColumn,
-    aggregation: s.aggregation,
-    dataConfig: {
-      xColumn: s.xColumn,
-      yColumn: s.yColumn,
-      groupColumn: s.groupColumn,
-    },
-  }));
+    return object.charts.map((s, i) => ({
+      id: `chart-${i}-${Date.now()}`,
+      type: s.type,
+      title: s.title,
+      description: s.description,
+      xAxis: s.xColumn,
+      yAxis: s.yColumn,
+      groupBy: s.groupColumn,
+      aggregation: s.aggregation,
+      dataConfig: {
+        xColumn: s.xColumn,
+        yColumn: s.yColumn,
+        groupColumn: s.groupColumn,
+      },
+    }));
+  } catch (error) {
+    throw new Error(getErrorMessage(error));
+  }
 };
 
 // ============ Custom Chart ============
@@ -253,7 +342,9 @@ export const generateCustomChart = async (
         groupColumn: object.chart.groupColumn,
       },
     };
-  } catch {
+  } catch (error) {
+    // For custom charts, we still return null but log the error for debugging
+    console.error("Custom chart generation failed:", getErrorMessage(error));
     return null;
   }
 };
@@ -321,12 +412,8 @@ export const generateDataSummary = async (
       keyInsights: object.keyInsights,
       dataQuality: object.dataQuality,
     };
-  } catch {
-    return {
-      summary: "Failed to generate summary",
-      keyInsights: [],
-      dataQuality: "Not evaluated",
-    };
+  } catch (error) {
+    throw new Error(getErrorMessage(error));
   }
 };
 
@@ -350,8 +437,8 @@ export const detectAnomalies = async (
     });
 
     return object.anomalies;
-  } catch {
-    return [];
+  } catch (error) {
+    throw new Error(getErrorMessage(error));
   }
 };
 
@@ -385,34 +472,37 @@ export const streamCustomAnalysis = async (
   onComplete: (fullText: string) => void,
   conversationHistory: Array<{ prompt: string; response: string }> = []
 ): Promise<void> => {
-  const { streamText } = await import("ai");
-  const openai = createOpenAI({ apiKey: config.apiKey });
-  const model = openai(config.model ?? DEFAULT_MODEL);
-  const language = config.language ?? "en";
+  try {
+    const { streamText } = await import("ai");
+    const model = getModel(config);
+    const language = config.language ?? "en";
 
-  // Format history for context
-  const historyText = conversationHistory
-    .map((item) => `User: ${item.prompt}\nAI: ${item.response}`)
-    .join("\n\n");
+    // Format history for context
+    const historyText = conversationHistory
+      .map((item) => `User: ${item.prompt}\nAI: ${item.response}`)
+      .join("\n\n");
 
-  const contextPrompt = historyText
-    ? `Previous conversation history:\n${historyText}\n\n`
-    : "";
+    const contextPrompt = historyText
+      ? `Previous conversation history:\n${historyText}\n\n`
+      : "";
 
-  const result = streamText({
-    model,
-    system: getCustomAnalysisPrompt(language),
-    prompt: `Here is the data:\n\n${dataSummary}\n\n${contextPrompt}User question: ${customPrompt}`,
+    const result = streamText({
+      model,
+      system: getCustomAnalysisPrompt(language),
+      prompt: `Here is the data:\n\n${dataSummary}\n\n${contextPrompt}User question: ${customPrompt}`,
     temperature: 0.5,
-  });
+    });
 
-  let fullText = "";
+    let fullText = "";
 
-  for await (const textPart of result.textStream) {
-    fullText += textPart;
-    onChunk(textPart);
+    for await (const textPart of result.textStream) {
+      fullText += textPart;
+      onChunk(textPart);
+    }
+
+    onComplete(fullText);
+  } catch (error) {
+    throw new Error(getErrorMessage(error));
   }
-
-  onComplete(fullText);
 };
 

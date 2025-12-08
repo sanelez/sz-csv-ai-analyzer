@@ -31,6 +31,8 @@ interface AIAnalysisProps {
   apiSettings: StoredSettings | null;
   externalSummary?: DataSummaryResult | null;
   externalAnomalies?: AnomalyResult[] | null;
+  externalSummaryError?: string | null;
+  externalAnomaliesError?: string | null;
   disabled?: boolean;
 }
 
@@ -51,6 +53,8 @@ export function AIAnalysis({
   apiSettings,
   externalSummary,
   externalAnomalies,
+  externalSummaryError,
+  externalAnomaliesError,
   disabled = false,
 }: AIAnalysisProps) {
   // Independent loading states for each analysis type
@@ -58,6 +62,8 @@ export function AIAnalysis({
   const [isLoadingAnomalies, setIsLoadingAnomalies] = useState(false);
 
   const [error, setError] = useState<string | null>(null);
+  const [summaryError, setSummaryError] = useState<string | null>(null);
+  const [anomaliesError, setAnomaliesError] = useState<string | null>(null);
 
   // Summary state
   const [summaryResult, setSummaryResult] = useState<DataSummaryResult | null>(null);
@@ -107,6 +113,19 @@ export function AIAnalysis({
     }
   }, [externalAnomalies]);
 
+  // Sync with external errors
+  useEffect(() => {
+    if (externalSummaryError) {
+      setSummaryError(externalSummaryError);
+    }
+  }, [externalSummaryError]);
+
+  useEffect(() => {
+    if (externalAnomaliesError) {
+      setAnomaliesError(externalAnomaliesError);
+    }
+  }, [externalAnomaliesError]);
+
   const toggleSection = (section: string) => {
     setExpandedSections((prev) => ({ ...prev, [section]: !prev[section] }));
   };
@@ -118,6 +137,9 @@ export function AIAnalysis({
     return {
       apiKey: apiSettings!.apiKey,
       model: apiSettings!.model,
+      providerId: apiSettings!.providerId,
+      providerNpm: apiSettings!.providerNpm,
+      providerApi: apiSettings!.providerApi,
       language: apiSettings!.language,
       customEndpoint: apiSettings!.customEndpoint,
       customModel: apiSettings!.customModel,
@@ -127,19 +149,22 @@ export function AIAnalysis({
   const handleGenerateSummary = async () => {
     const config = getConfig();
     if (!config) {
-      setError("Please configure your API key");
+      setSummaryError("Please configure your API key");
       return;
     }
 
     setIsLoadingSummary(true);
-    setError(null);
+    setSummaryError(null);
 
     try {
       const csvSummary = generateCSVSummary(data);
       const result = await generateDataSummary(config, csvSummary);
       setSummaryResult(result);
+      setSummaryError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error during analysis");
+      const errorMessage = err instanceof Error ? err.message : "Unable to analyze data. Please try again.";
+      setSummaryError(errorMessage);
+      console.error("Data summary failed:", err);
     } finally {
       setIsLoadingSummary(false);
     }
@@ -148,12 +173,12 @@ export function AIAnalysis({
   const handleDetectAnomalies = async () => {
     const config = getConfig();
     if (!config) {
-      setError("Please configure your API key");
+      setAnomaliesError("Please configure your API key");
       return;
     }
 
     setIsLoadingAnomalies(true);
-    setError(null);
+    setAnomaliesError(null);
 
     try {
       const csvSummary = generateCSVSummary(data);
@@ -167,8 +192,11 @@ export function AIAnalysis({
 
       const result = await detectAnomalies(config, csvSummary, sampleCSV);
       setAnomaliesResult(result);
+      setAnomaliesError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error during detection");
+      const errorMessage = err instanceof Error ? err.message : "Unable to detect anomalies. Please try again.";
+      setAnomaliesError(errorMessage);
+      console.error("Anomaly detection failed:", err);
     } finally {
       setIsLoadingAnomalies(false);
     }
@@ -185,7 +213,6 @@ export function AIAnalysis({
 
     const currentPrompt = customPrompt;
     setLoadingCustom(true, currentPrompt);
-    setError(null);
     setStreaming("");
     setCustomPrompt("");
 
@@ -203,11 +230,20 @@ export function AIAnalysis({
         // onComplete - called when streaming is done
         (fullText) => {
           addMessage({ prompt: currentPrompt, response: fullText });
+          setStreaming("");
+          setLoadingCustom(false);
         },
         customHistory // Pass current history
       );
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error during analysis");
+      const errorMessage = err instanceof Error ? err.message : "Unable to analyze. Please try again.";
+      console.error("Custom analysis failed:", err);
+      const errorResponse = `[ERROR] ${errorMessage}`;
+      // Add error directly to history and stop loading
+      addMessage({ 
+        prompt: currentPrompt, 
+        response: errorResponse
+      });
       setStreaming("");
       setLoadingCustom(false);
     }
@@ -223,7 +259,7 @@ export function AIAnalysis({
     <div className="glass-card p-6 animate-fade-in">
       {/* Header */}
       <div className="flex items-center gap-4 mb-6">
-        <div className="p-3 rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border border-emerald-500/30">
+        <div className="p-3 rounded-xl bg-linear-to-br from-emerald-500/20 to-teal-500/20 border border-emerald-500/30">
           <Brain className="w-6 h-6 text-emerald-400" />
         </div>
         <div>
@@ -276,6 +312,19 @@ export function AIAnalysis({
         {/* Summary Tab */}
         {activeTab === "summary" && (
           <div className="space-y-4">
+            {summaryError && (
+              <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/30 animate-fade-in">
+                <div className="flex items-start gap-3">
+                  <div className="shrink-0 w-5 h-5 rounded-full bg-red-500/20 flex items-center justify-center mt-0.5">
+                    <span className="text-red-400 text-xs font-bold">!</span>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-red-400 mb-1">Error generating summary</p>
+                    <p className="text-sm text-red-300/80">{summaryError}</p>
+                  </div>
+                </div>
+              </div>
+            )}
             {!summaryResult ? (
               <div className="text-center py-8">
                 <p className="text-gray-400 mb-4">
@@ -312,6 +361,7 @@ export function AIAnalysis({
                 </div>
 
                 {/* Key Insights */}
+                {summaryResult.keyInsights && summaryResult.keyInsights.length > 0 && (
                 <div className="p-4 rounded-xl bg-white/5 border border-white/10">
                   <button
                     type="button"
@@ -342,8 +392,10 @@ export function AIAnalysis({
                     </ul>
                   )}
                 </div>
+                )}
 
                 {/* Data Quality */}
+                {summaryResult.dataQuality && (
                 <div className="p-4 rounded-xl bg-white/5 border border-white/10">
                   <button
                     type="button"
@@ -364,6 +416,7 @@ export function AIAnalysis({
                     <p className="text-gray-300">{summaryResult.dataQuality}</p>
                   )}
                 </div>
+                )}
 
                 {/* Regenerate Button */}
                 <button
@@ -392,6 +445,19 @@ export function AIAnalysis({
         {/* Anomalies Tab */}
         {activeTab === "anomalies" && (
           <div className="space-y-4">
+            {anomaliesError && (
+              <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/30 animate-fade-in">
+                <div className="flex items-start gap-3">
+                  <div className="shrink-0 w-5 h-5 rounded-full bg-red-500/20 flex items-center justify-center mt-0.5">
+                    <span className="text-red-400 text-xs font-bold">!</span>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-red-400 mb-1">Error detecting anomalies</p>
+                    <p className="text-sm text-red-300/80">{anomaliesError}</p>
+                  </div>
+                </div>
+              </div>
+            )}
             {!anomaliesResult ? (
               <div className="text-center py-8">
                 <p className="text-gray-400 mb-4">
@@ -489,7 +555,7 @@ export function AIAnalysis({
                             Value: <code className="bg-white/10 px-1 rounded">{anomaly.value}</code>
                           </p>
                         </div>
-                        <AlertTriangle className="w-5 h-5 flex-shrink-0" />
+                        <AlertTriangle className="w-5 h-5 shrink-0" />
                       </div>
                     </div>
                   ))}
@@ -508,28 +574,41 @@ export function AIAnalysis({
                 ref={chatContainerRef}
                 className="space-y-4 max-h-[400px] overflow-y-auto pr-2 mb-4 scroll-smooth"
               >
-                {customHistory.map((item, i) => (
-                  <div key={`history-${i}`} className="space-y-2">
-                    <div className="flex items-start gap-3">
-                      <div className="p-2 rounded-lg bg-violet-500/20">
-                        <MessageSquare className="w-4 h-4 text-violet-400" />
+                {customHistory.map((item, i) => {
+                  const isError = item.response.startsWith("[ERROR]");
+                  return (
+                    <div key={`history-${i}`} className="space-y-2">
+                      <div className="flex items-start gap-3">
+                        <div className="p-2 rounded-lg bg-violet-500/20">
+                          <MessageSquare className="w-4 h-4 text-violet-400" />
+                        </div>
+                        <div className="flex-1 p-3 rounded-xl bg-violet-500/10 border border-violet-500/20">
+                          <p className="text-sm text-gray-300">{item.prompt}</p>
+                        </div>
                       </div>
-                      <div className="flex-1 p-3 rounded-xl bg-violet-500/10 border border-violet-500/20">
-                        <p className="text-sm text-gray-300">{item.prompt}</p>
+                      <div className="flex items-start gap-3">
+                        <div className={`p-2 rounded-lg ${isError ? "bg-red-500/20" : "bg-emerald-500/20"}`}>
+                          {isError ? (
+                            <AlertTriangle className="w-4 h-4 text-red-400" />
+                          ) : (
+                            <Brain className="w-4 h-4 text-emerald-400" />
+                          )}
+                        </div>
+                        <div className={`flex-1 p-3 rounded-xl ${
+                          isError 
+                            ? "bg-red-500/10 border border-red-500/30" 
+                            : "bg-white/5 border border-white/10"
+                        }`}>
+                          <p className={`text-sm whitespace-pre-wrap ${
+                            isError ? "text-red-300" : "text-gray-300"
+                          }`}>
+                            {item.response}
+                          </p>
+                        </div>
                       </div>
                     </div>
-                    <div className="flex items-start gap-3">
-                      <div className="p-2 rounded-lg bg-emerald-500/20">
-                        <Brain className="w-4 h-4 text-emerald-400" />
-                      </div>
-                      <div className="flex-1 p-3 rounded-xl bg-white/5 border border-white/10">
-                        <p className="text-sm text-gray-300 whitespace-pre-wrap">
-                          {item.response}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
 
                 {/* Streaming response - shown while generating */}
                 {isLoadingCustom && (
@@ -547,13 +626,27 @@ export function AIAnalysis({
                     )}
                     {/* Show the streaming response */}
                     <div className="flex items-start gap-3">
-                      <div className="p-2 rounded-lg bg-emerald-500/20">
-                        <Brain className="w-4 h-4 text-emerald-400 animate-pulse" />
-                      </div>
-                      <div className="flex-1 p-3 rounded-xl bg-white/5 border border-emerald-500/30">
-                        <p className="text-sm text-gray-300 whitespace-pre-wrap">
+                      {streamingResponse.startsWith("[ERROR]") ? (
+                        <div className="p-2 rounded-lg bg-red-500/20">
+                          <AlertTriangle className="w-4 h-4 text-red-400" />
+                        </div>
+                      ) : (
+                        <div className="p-2 rounded-lg bg-emerald-500/20">
+                          <Brain className="w-4 h-4 text-emerald-400 animate-pulse" />
+                        </div>
+                      )}
+                      <div className={`flex-1 p-3 rounded-xl ${
+                        streamingResponse.startsWith("[ERROR]")
+                          ? "bg-red-500/10 border border-red-500/30"
+                          : "bg-white/5 border border-emerald-500/30"
+                      }`}>
+                        <p className={`text-sm whitespace-pre-wrap ${
+                          streamingResponse.startsWith("[ERROR]") ? "text-red-300" : "text-gray-300"
+                        }`}>
                           {streamingResponse || "Analyzing..."}
-                          <span className="inline-block w-2 h-4 bg-emerald-400 animate-pulse ml-1" />
+                          {!streamingResponse.startsWith("[ERROR]") && streamingResponse && (
+                            <span className="inline-block w-2 h-4 bg-emerald-400 animate-pulse ml-1" />
+                          )}
                         </p>
                       </div>
                     </div>

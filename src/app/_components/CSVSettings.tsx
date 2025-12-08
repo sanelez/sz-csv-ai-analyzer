@@ -60,14 +60,14 @@ export function CSVSettingsModal({
     <>
       {/* SOLID Backdrop */}
       <div 
-        className="fixed inset-0 z-[100] bg-gray-950/90 backdrop-blur-sm"
+        className="fixed inset-0 z-100 bg-gray-950/90 backdrop-blur-sm"
         onClick={onClose}
         aria-hidden="true"
       />
       
       {/* Modal */}
       <div
-        className="fixed inset-0 z-[101] flex items-center justify-center p-4 pointer-events-none"
+        className="fixed inset-0 z-101 flex items-center justify-center p-4 pointer-events-none"
         role="dialog"
         aria-modal="true"
       >
@@ -208,7 +208,7 @@ export function CSVSettingsModal({
               <button
                 type="button"
                 onClick={handleSave}
-                className="flex-1 px-4 py-3 rounded-xl bg-gradient-to-r from-cyan-600 to-teal-600 text-white font-semibold hover:from-cyan-500 hover:to-teal-500 transition-all shadow-lg shadow-cyan-500/25 flex items-center justify-center gap-2"
+                className="flex-1 px-4 py-3 rounded-xl bg-linear-to-r from-cyan-600 to-teal-600 text-white font-semibold hover:from-cyan-500 hover:to-teal-500 transition-all shadow-lg shadow-cyan-500/25 flex items-center justify-center gap-2"
               >
                 <Check className="w-4 h-4" />
                 Apply

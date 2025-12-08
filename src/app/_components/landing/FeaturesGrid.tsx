@@ -9,7 +9,7 @@ export function FeaturesGrid() {
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Feature 1 */}
         <div className="p-6 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all group">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+          <div className="w-12 h-12 rounded-xl bg-linear-to-br from-blue-500 to-cyan-500 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
             <Upload className="w-6 h-6 text-white" />
           </div>
           <h4 className="text-lg font-semibold text-white mb-2">Smart CSV Parsing</h4>
@@ -20,7 +20,7 @@ export function FeaturesGrid() {
 
         {/* Feature 2 */}
         <div className="p-6 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all group">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-500 to-purple-500 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+          <div className="w-12 h-12 rounded-xl bg-linear-to-br from-violet-500 to-purple-500 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
             <Sparkles className="w-6 h-6 text-white" />
           </div>
           <h4 className="text-lg font-semibold text-white mb-2">AI-Powered Analysis</h4>
@@ -31,7 +31,7 @@ export function FeaturesGrid() {
 
         {/* Feature 3 */}
         <div className="p-6 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all group">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-fuchsia-500 to-pink-500 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+          <div className="w-12 h-12 rounded-xl bg-linear-to-br from-fuchsia-500 to-pink-500 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
             <BarChart3 className="w-6 h-6 text-white" />
           </div>
           <h4 className="text-lg font-semibold text-white mb-2">Smart Chart Suggestions</h4>
@@ -42,7 +42,7 @@ export function FeaturesGrid() {
 
         {/* Feature 4 */}
         <div className="p-6 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all group">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+          <div className="w-12 h-12 rounded-xl bg-linear-to-br from-green-500 to-emerald-500 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
             <Shield className="w-6 h-6 text-white" />
           </div>
           <h4 className="text-lg font-semibold text-white mb-2">100% Private</h4>
@@ -53,7 +53,7 @@ export function FeaturesGrid() {
 
         {/* Feature 5 */}
         <div className="p-6 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all group">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+          <div className="w-12 h-12 rounded-xl bg-linear-to-br from-orange-500 to-amber-500 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
             <Zap className="w-6 h-6 text-white" />
           </div>
           <h4 className="text-lg font-semibold text-white mb-2">One-Click Analysis</h4>
@@ -64,7 +64,7 @@ export function FeaturesGrid() {
 
         {/* Feature 6 */}
         <div className="p-6 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all group">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+          <div className="w-12 h-12 rounded-xl bg-linear-to-br from-cyan-500 to-blue-500 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
             <Server className="w-6 h-6 text-white" />
           </div>
           <h4 className="text-lg font-semibold text-white mb-2">Self-Hostable</h4>

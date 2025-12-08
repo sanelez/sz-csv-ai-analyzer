@@ -19,6 +19,8 @@ const config = {
         unoptimized: true,
     },
 
+    reactCompiler: true,
+
     // Trailing slash for GitHub Pages compatibility (only in export mode)
     trailingSlash: process.env.NEXT_OUTPUT_MODE !== "standalone",
 };

@@ -48,6 +48,9 @@ export default function HomePage() {
     anomalies: null,
     charts: null,
   });
+  const [chartGenerationError, setChartGenerationError] = useState<string | null>(null);
+  const [summaryError, setSummaryError] = useState<string | null>(null);
+  const [anomaliesError, setAnomaliesError] = useState<string | null>(null);
 
   useEffect(() => {
     const settings = loadApiSettings();
@@ -62,6 +65,9 @@ export default function HomePage() {
     setCurrentFileName(fileName);
     setGeneratedCharts([]);
     setAnalysisResults({ summary: null, anomalies: null, charts: null });
+    setChartGenerationError(null);
+    setSummaryError(null);
+    setAnomaliesError(null);
   };
 
   const handleClearFile = () => {
@@ -69,6 +75,9 @@ export default function HomePage() {
     setCurrentFileName(undefined);
     setGeneratedCharts([]);
     setAnalysisResults({ summary: null, anomalies: null, charts: null });
+    setChartGenerationError(null);
+    setSummaryError(null);
+    setAnomaliesError(null);
   };
 
   const handleDataLoaded = (data: CSVData, fileName: string) => {
@@ -76,6 +85,9 @@ export default function HomePage() {
     setCurrentFileName(fileName);
     setGeneratedCharts([]);
     setAnalysisResults({ summary: null, anomalies: null, charts: null });
+    setChartGenerationError(null);
+    setSummaryError(null);
+    setAnomaliesError(null);
   };
 
   const handleRunAllAnalysis = async () => {
@@ -91,6 +103,9 @@ export default function HomePage() {
     const config = {
       apiKey: apiSettings!.apiKey,
       model: apiSettings!.model,
+      providerId: apiSettings!.providerId,
+      providerNpm: apiSettings!.providerNpm,
+      providerApi: apiSettings!.providerApi,
       language: apiSettings!.language,
       customEndpoint: apiSettings!.customEndpoint,
       customModel: apiSettings!.customModel,
@@ -109,26 +124,33 @@ export default function HomePage() {
     // Run all in parallel but update UI as each completes
     const summaryPromise = generateDataSummary(config, csvSummary)
       .then((summary) => {
+        setSummaryError(null);
         setAnalysisResults((prev) => ({ ...prev, summary }));
         return summary;
       })
       .catch((error) => {
-        console.error("Summary failed:", error);
+        const errorMessage = error instanceof Error ? error.message : "Unable to generate summary. Please try again.";
+        console.error("Summary failed:", errorMessage);
+        setSummaryError(errorMessage);
         return null;
       });
 
     const anomaliesPromise = detectAnomalies(config, csvSummary, sampleCSV)
       .then((anomalies) => {
+        setAnomaliesError(null);
         setAnalysisResults((prev) => ({ ...prev, anomalies }));
         return anomalies;
       })
       .catch((error) => {
-        console.error("Anomalies failed:", error);
+        const errorMessage = error instanceof Error ? error.message : "Unable to detect anomalies. Please try again.";
+        console.error("Anomalies failed:", errorMessage);
+        setAnomaliesError(errorMessage);
         return null;
       });
 
     const chartsPromise = generateChartSuggestions(config, csvSummary, csvData.headers)
       .then((charts) => {
+        setChartGenerationError(null);
         setAnalysisResults((prev) => ({ ...prev, charts }));
         // Auto-generate all suggested charts
         if (charts && charts.length > 0) {
@@ -142,7 +164,9 @@ export default function HomePage() {
         return charts;
       })
       .catch((error) => {
-        console.error("Charts failed:", error);
+        const errorMessage = error instanceof Error ? error.message : "Unable to generate charts. Please try again.";
+        console.error("Charts failed:", errorMessage);
+        setChartGenerationError(errorMessage);
         return null;
       });
 
@@ -158,6 +182,9 @@ export default function HomePage() {
     const config = {
       apiKey: apiSettings!.apiKey,
       model: apiSettings!.model,
+      providerId: apiSettings!.providerId,
+      providerNpm: apiSettings!.providerNpm,
+      providerApi: apiSettings!.providerApi,
       language: apiSettings!.language,
       customEndpoint: apiSettings!.customEndpoint,
       customModel: apiSettings!.customModel,
@@ -186,13 +213,13 @@ export default function HomePage() {
 
   return (
     <ClientOnly fallback={
-      <main className="min-h-screen bg-gradient-to-b from-slate-950 to-black text-white p-4 md:p-8">
+      <main className="min-h-screen bg-linear-to-b from-slate-950 to-black text-white p-4 md:p-8">
         <div className="max-w-7xl mx-auto flex items-center justify-center min-h-[50vh]">
           <div className="animate-pulse text-gray-400">Loading...</div>
         </div>
       </main>
     }>
-      <main className="min-h-screen bg-gradient-to-b from-slate-950 to-black text-white">
+      <main className="min-h-screen bg-linear-to-b from-slate-950 to-black text-white">
         {/* Landing Section - Only show when no data */}
         {!csvData && (
           <LandingPage
@@ -214,11 +241,11 @@ export default function HomePage() {
               {/* Header */}
               <div className="flex flex-col md:flex-row items-center justify-between gap-4 animate-fade-in">
                 <div className="flex items-center gap-4">
-                  <div className="p-3 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 shadow-lg shadow-violet-500/20">
+                  <div className="p-3 rounded-2xl bg-linear-to-br from-violet-600 to-indigo-600 shadow-lg shadow-violet-500/20">
                     <Sparkles className="w-8 h-8 text-white" />
                   </div>
                   <div>
-                    <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">
+                    <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-linear-to-r from-white to-gray-400">
                       CSV AI Analyzer
                     </h1>
                     <p className="text-gray-400">
@@ -253,7 +280,7 @@ export default function HomePage() {
                       group relative px-8 py-4 rounded-2xl font-bold text-lg shadow-2xl transition-all duration-300
                       ${!apiSettings?.apiKey
                       ? "bg-gray-800 text-gray-500 cursor-not-allowed"
-                      : "bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-600 hover:scale-105 hover:shadow-violet-500/40 text-white"
+                      : "bg-linear-to-r from-violet-600 via-fuchsia-600 to-pink-600 hover:scale-105 hover:shadow-violet-500/40 text-white"
                     }
                     `}
                 >
@@ -271,8 +298,8 @@ export default function HomePage() {
                   )}
 
                   {/* Glow effect */}
-                  {!isAnalyzingAll && apiSettings?.apiKey && (
-                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-600 blur-xl opacity-40 group-hover:opacity-60 transition-opacity -z-10" />
+                    {!isAnalyzingAll && apiSettings?.apiKey && (
+                    <div className="absolute inset-0 rounded-2xl bg-linear-to-r from-violet-600 via-fuchsia-600 to-pink-600 blur-xl opacity-40 group-hover:opacity-60 transition-opacity -z-10" />
                   )}
                 </button>
               </div>
@@ -297,6 +324,8 @@ export default function HomePage() {
                     apiSettings={apiSettings}
                     externalSummary={analysisResults.summary}
                     externalAnomalies={analysisResults.anomalies}
+                    externalSummaryError={summaryError}
+                    externalAnomaliesError={anomaliesError}
                     disabled={isAnalyzingAll}
                   />
                 </FullscreenCard>
@@ -308,6 +337,7 @@ export default function HomePage() {
                     apiSettings={apiSettings}
                     onChartsGenerated={setGeneratedCharts}
                     externalSuggestions={analysisResults.charts}
+                    externalError={chartGenerationError}
                     disabled={isAnalyzingAll}
                   />
                 </FullscreenCard>
