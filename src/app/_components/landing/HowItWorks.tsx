@@ -20,7 +20,8 @@ export function HowItWorks() {
           </div>
           <h4 className="mb-2 font-semibold text-white">Add API Key</h4>
           <p className="text-sm text-gray-400">
-            Configure your OpenAI API key (stored locally)
+            Configure an API key or a custom endpoint (OpenAI, Anthropic,
+            Google, or self-hosted)
           </p>
         </div>
         <div className="text-center">

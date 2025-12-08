@@ -80,7 +80,8 @@ export function LandingPage({
           {/* Footer info */}
           <div className="mx-auto mt-16 max-w-2xl pb-16 text-center">
             <p className="text-sm text-gray-500">
-              Built with Next.js, TailwindCSS, Recharts, and OpenAI.
+              Built with Next.js, TailwindCSS, Recharts, and support for
+              multiple AI providers.
             </p>
           </div>
         </div>
