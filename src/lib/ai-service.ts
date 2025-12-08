@@ -538,18 +538,44 @@ export const streamCustomAnalysis = async (
       ? `Previous conversation history:\n${historyText}\n\n`
       : "";
 
+    // Track any error that occurs during streaming
+    let streamError: Error | null = null;
+
     const result = streamText({
       model,
       system: getCustomAnalysisPrompt(language),
       prompt: `Here is the data:\n\n${dataSummary}\n\n${contextPrompt}User question: ${customPrompt}`,
       temperature: 0.5,
+      onError: ({ error }) => {
+        // Capture streaming errors via the onError callback
+        streamError = error instanceof Error ? error : new Error(String(error));
+        console.error("Stream error captured:", streamError.message);
+      },
     });
 
     let fullText = "";
 
-    for await (const textPart of result.textStream) {
-      fullText += textPart;
-      onChunk(textPart);
+    try {
+      for await (const textPart of result.textStream) {
+        fullText += textPart;
+        onChunk(textPart);
+      }
+    } catch (iterationError) {
+      // Handle errors that occur during stream iteration
+      throw iterationError;
+    }
+
+    // Check if an error was captured during streaming
+    if (streamError) {
+      throw streamError;
+    }
+
+    // Also check the finish reason for errors
+    const finishReason = await result.finishReason;
+    if (finishReason === "error") {
+      throw new Error(
+        "The AI model encountered an error while generating the response.",
+      );
     }
 
     onComplete(fullText);

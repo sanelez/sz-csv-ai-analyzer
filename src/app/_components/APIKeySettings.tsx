@@ -260,13 +260,23 @@ export function APIKeySettings({
 
             {/* Current Model Display */}
             <div className="mt-4 rounded-xl border border-white/10 bg-white/5 px-4 py-3">
-              {currentSettings?.model ? (
+              {(currentSettings?.customEndpoint &&
+                currentSettings?.customModel) ||
+              currentSettings?.model ? (
                 <div>
                   <p className="mb-1 text-xs text-gray-500">Current model</p>
                   <div className="flex items-center gap-2">
                     <Check className="h-4 w-4 shrink-0 text-emerald-400" />
                     <p className="truncate text-sm font-semibold text-white">
                       {(() => {
+                        // If using custom endpoint, show custom model name
+                        if (
+                          currentSettings.customEndpoint &&
+                          currentSettings.customModel
+                        ) {
+                          return currentSettings.customModel;
+                        }
+                        // Otherwise, try to find the model name from the catalog
                         const currentModel = catalog
                           ? Object.values(catalog)
                               .flatMap((provider: ProviderInfo) =>
@@ -281,11 +291,15 @@ export function APIKeySettings({
                       })()}
                     </p>
                   </div>
-                  {currentSettings.providerName && (
+                  {currentSettings.customEndpoint ? (
+                    <p className="mt-1 text-xs text-gray-500">
+                      Endpoint: {currentSettings.customEndpoint}
+                    </p>
+                  ) : currentSettings.providerName ? (
                     <p className="mt-1 text-xs text-gray-500">
                       Provider: {currentSettings.providerName}
                     </p>
-                  )}
+                  ) : null}
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
