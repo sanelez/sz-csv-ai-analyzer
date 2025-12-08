@@ -124,18 +124,10 @@ export function AIAnalysis({
     }
   }, [externalAnomalies]);
 
-  // Sync with external errors
-  useEffect(() => {
-    if (externalSummaryError) {
-      setSummaryError(externalSummaryError);
-    }
-  }, [externalSummaryError]);
-
-  useEffect(() => {
-    if (externalAnomaliesError) {
-      setAnomaliesError(externalAnomaliesError);
-    }
-  }, [externalAnomaliesError]);
+  // Compute effective errors: use external error (from page.tsx "Run All") if available,
+  // otherwise fall back to local error (from individual button clicks)
+  const effectiveSummaryError = externalSummaryError || summaryError;
+  const effectiveAnomaliesError = externalAnomaliesError || anomaliesError;
 
   const toggleSection = (section: string) => {
     setExpandedSections((prev) => ({ ...prev, [section]: !prev[section] }));
@@ -296,11 +288,13 @@ export function AIAnalysis({
         customHistory, // Pass current history
       );
     } catch (err) {
-      const errorMessage =
-        err instanceof Error
-          ? err.message
-          : "Unable to analyze. Please try again.";
-      console.error("Custom analysis failed:", err);
+      let errorMessage = "Unable to analyze. Please try again.";
+      if (err instanceof Error && err.message && err.message.trim() !== "") {
+        errorMessage = err.message;
+      } else if (typeof err === "string" && err.trim() !== "") {
+        errorMessage = err;
+      }
+
       const errorResponse = `[ERROR] ${errorMessage}`;
       // Add error directly to history and stop loading
       addMessage({
@@ -352,11 +346,24 @@ export function AIAnalysis({
           >
             <tab.icon className="h-4 w-4" />
             <span className="text-sm font-medium">{tab.label}</span>
+            {/* Show an error badge on the tab if the corresponding analysis has an error */}
+            {tab.id === "summary" && effectiveSummaryError && (
+              <span
+                className="ml-1 inline-flex h-2 w-2 rounded-full bg-red-500"
+                aria-label="Error"
+              />
+            )}
+            {tab.id === "anomalies" && effectiveAnomaliesError && (
+              <span
+                className="ml-1 inline-flex h-2 w-2 rounded-full bg-red-500"
+                aria-label="Error"
+              />
+            )}
           </button>
         ))}
       </div>
 
-      {/* Error Message */}
+      {/* Global error for config issues */}
       {error && (
         <div className="mb-4 rounded-xl border border-red-500/30 bg-red-500/10 p-4">
           <p className="text-sm text-red-400">{error}</p>
@@ -377,17 +384,17 @@ export function AIAnalysis({
         {/* Summary Tab */}
         {activeTab === "summary" && (
           <div className="space-y-4">
-            {summaryError && (
+            {effectiveSummaryError && (
               <div className="animate-fade-in rounded-xl border border-red-500/30 bg-red-500/10 p-4">
                 <div className="flex items-start gap-3">
-                  <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-red-500/20">
-                    <span className="text-xs font-bold text-red-400">!</span>
-                  </div>
+                  <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-red-400" />
                   <div className="flex-1">
                     <p className="mb-1 text-sm font-medium text-red-400">
                       Error generating summary
                     </p>
-                    <p className="text-sm text-red-300/80">{summaryError}</p>
+                    <p className="text-sm text-red-300/80">
+                      {effectiveSummaryError}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -519,17 +526,17 @@ export function AIAnalysis({
         {/* Anomalies Tab */}
         {activeTab === "anomalies" && (
           <div className="space-y-4">
-            {anomaliesError && (
+            {effectiveAnomaliesError && (
               <div className="animate-fade-in rounded-xl border border-red-500/30 bg-red-500/10 p-4">
                 <div className="flex items-start gap-3">
-                  <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-red-500/20">
-                    <span className="text-xs font-bold text-red-400">!</span>
-                  </div>
+                  <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-red-400" />
                   <div className="flex-1">
                     <p className="mb-1 text-sm font-medium text-red-400">
                       Error detecting anomalies
                     </p>
-                    <p className="text-sm text-red-300/80">{anomaliesError}</p>
+                    <p className="text-sm text-red-300/80">
+                      {effectiveAnomaliesError}
+                    </p>
                   </div>
                 </div>
               </div>

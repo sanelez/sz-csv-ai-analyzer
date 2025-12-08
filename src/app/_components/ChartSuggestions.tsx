@@ -108,12 +108,9 @@ export function ChartSuggestions({
     }
   }, [externalSuggestions, data.headers]);
 
-  // Sync with external error
-  useEffect(() => {
-    if (externalError) {
-      setError(externalError);
-    }
-  }, [externalError]);
+  // Compute effective error: use external error (from page.tsx "Run All") if available,
+  // otherwise fall back to local error (from individual button clicks)
+  const effectiveError = externalError || error;
 
   // Auto-apply charts whenever selection or suggestions change
   useEffect(() => {
@@ -246,7 +243,8 @@ export function ChartSuggestions({
           });
         }
       } else {
-        const errMsg = "Could not generate chart from your description. Please try rephrasing your request.";
+        const errMsg =
+          "Could not generate chart from your description. Please try rephrasing your request.";
         setError(errMsg);
         toast.error("Chart Creation Failed", {
           description: errMsg,
@@ -353,10 +351,23 @@ export function ChartSuggestions({
             <Sparkles className="h-6 w-6 text-amber-400" />
           </div>
           <div>
-            <h3 className="font-semibold text-white">AI Chart Suggestions</h3>
-            <p className="text-sm text-gray-400">
-              Let AI suggest the best charts for your data
-            </p>
+            <div className="flex items-center gap-3">
+              <div>
+                <h3 className="font-semibold text-white">
+                  AI Chart Suggestions
+                </h3>
+                <p className="text-sm text-gray-400">
+                  Let AI suggest the best charts for your data
+                </p>
+              </div>
+              {/* Show an inline error indicator when chart generation had an error */}
+              {effectiveError && (
+                <div className="ml-2 inline-flex items-center gap-2 rounded-full bg-red-500/10 px-3 py-1 text-sm">
+                  <span className="inline-flex h-2 w-2 rounded-full bg-red-500" />
+                  <span className="text-xs text-red-300">Error</span>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
@@ -382,17 +393,15 @@ export function ChartSuggestions({
         )}
       </div>
 
-      {error && (
-        <div className="animate-fade-in mb-4 rounded-xl border border-red-500/30 bg-red-500/10 p-4">
+      {effectiveError && (
+        <div className="mb-4 rounded-xl border border-red-500/30 bg-red-500/10 p-4">
           <div className="flex items-start gap-3">
-            <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-red-500/20">
-              <span className="text-xs font-bold text-red-400">!</span>
-            </div>
+            <Sparkles className="mt-0.5 h-5 w-5 shrink-0 text-red-400" />
             <div className="flex-1">
               <p className="mb-1 text-sm font-medium text-red-400">
                 Error generating charts
               </p>
-              <p className="text-sm text-red-300/80">{error}</p>
+              <p className="text-sm text-red-300/80">{effectiveError}</p>
             </div>
           </div>
         </div>

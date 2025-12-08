@@ -112,9 +112,12 @@ export default function HomePage() {
     if (!csvData || !hasValidConfig) return;
 
     setIsAnalyzingAll(true);
-    // Reset results before starting
+    // Reset results and errors before starting
     setAnalysisResults({ summary: null, anomalies: null, charts: null });
     setGeneratedCharts([]);
+    setSummaryError(null);
+    setAnomaliesError(null);
+    setChartGenerationError(null);
     toast.loading("Starting Analysis", {
       description: "Running complete analysis on your data...",
       id: "analysis-toast",
@@ -148,12 +151,22 @@ export default function HomePage() {
         setAnalysisResults((prev) => ({ ...prev, summary }));
         return summary;
       })
-      .catch((error) => {
-        const errorMessage =
-          error instanceof Error
-            ? error.message
-            : "Unable to generate summary. Please try again.";
-        console.error("Summary failed:", errorMessage);
+      .catch((error: unknown) => {
+        let errorMessage = "Unable to generate summary. Please try again.";
+        if (
+          error instanceof Error &&
+          error.message &&
+          error.message.trim() !== ""
+        ) {
+          errorMessage = error.message;
+        } else if (typeof error === "string" && error.trim() !== "") {
+          errorMessage = error;
+        }
+
+        toast.error("Summary Failed", {
+          description: errorMessage,
+          id: "summary-error",
+        });
         setSummaryError(errorMessage);
         return null;
       });
@@ -164,12 +177,22 @@ export default function HomePage() {
         setAnalysisResults((prev) => ({ ...prev, anomalies }));
         return anomalies;
       })
-      .catch((error) => {
-        const errorMessage =
-          error instanceof Error
-            ? error.message
-            : "Unable to detect anomalies. Please try again.";
-        console.error("Anomalies failed:", errorMessage);
+      .catch((error: unknown) => {
+        let errorMessage = "Unable to detect anomalies. Please try again.";
+        if (
+          error instanceof Error &&
+          error.message &&
+          error.message.trim() !== ""
+        ) {
+          errorMessage = error.message;
+        } else if (typeof error === "string" && error.trim() !== "") {
+          errorMessage = error;
+        }
+
+        toast.error("Anomalies Failed", {
+          description: errorMessage,
+          id: "anomalies-error",
+        });
         setAnomaliesError(errorMessage);
         return null;
       });
@@ -193,12 +216,22 @@ export default function HomePage() {
         }
         return charts;
       })
-      .catch((error) => {
-        const errorMessage =
-          error instanceof Error
-            ? error.message
-            : "Unable to generate charts. Please try again.";
-        console.error("Charts failed:", errorMessage);
+      .catch((error: unknown) => {
+        let errorMessage = "Unable to generate charts. Please try again.";
+        if (
+          error instanceof Error &&
+          error.message &&
+          error.message.trim() !== ""
+        ) {
+          errorMessage = error.message;
+        } else if (typeof error === "string" && error.trim() !== "") {
+          errorMessage = error;
+        }
+
+        toast.error("Chart Generation Failed", {
+          description: errorMessage,
+          id: "charts-error",
+        });
         setChartGenerationError(errorMessage);
         return null;
       });

@@ -6,7 +6,9 @@ import prettierPlugin from "eslint-plugin-prettier";
 // Intentionally avoid compat.extends on next/core-web-vitals — in some setups
 // that shareable config creates circular structures. Keep a small, stable
 // flat config that enables TypeScript plugin rules and uses the parser.
-const compat = new FlatCompat({ baseDirectory: new URL("./", import.meta.url).pathname });
+const compat = new FlatCompat({
+  baseDirectory: new URL("./", import.meta.url).pathname,
+});
 
 export default [
   // ignore built artifacts
@@ -29,15 +31,21 @@ export default [
         "warn",
         { prefer: "type-imports", fixStyle: "inline-type-imports" },
       ],
-      "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        { argsIgnorePattern: "^_" },
+      ],
       "@typescript-eslint/require-await": "off",
-      "@typescript-eslint/no-misused-promises": ["error", { checksVoidReturn: { attributes: false } }],
+      "@typescript-eslint/no-misused-promises": [
+        "error",
+        { checksVoidReturn: { attributes: false } },
+      ],
       // Enforce Prettier formatting through ESLint
       "prettier/prettier": [
         "error",
         {
-          endOfLine: "auto"
-        }
+          endOfLine: "auto",
+        },
       ],
     },
   },
