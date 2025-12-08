@@ -29,13 +29,13 @@ export const SUPPORTED_LANGUAGES = [
   { code: "zh", name: "中文" },
 ] as const;
 
-export type LanguageCode = typeof SUPPORTED_LANGUAGES[number]["code"];
+export type LanguageCode = (typeof SUPPORTED_LANGUAGES)[number]["code"];
 
 // Get browser language or default to English
 export function getBrowserLanguage(): LanguageCode {
   if (typeof navigator === "undefined") return "en";
 
   const browserLang = navigator.language.split("-")[0];
-  const supported = SUPPORTED_LANGUAGES.find(l => l.code === browserLang);
+  const supported = SUPPORTED_LANGUAGES.find((l) => l.code === browserLang);
   return supported ? supported.code : "en";
 }

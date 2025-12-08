@@ -69,32 +69,34 @@ const geist = Geist({
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  "name": "CSV AI Analyzer",
-  "url": "https://maxgfr.github.io/csv-ai-analyzer",
-  "description": "Free online tool to analyze CSV files with AI. Generate intelligent charts, detect anomalies, and get insights. 100% private - your data stays in your browser.",
-  "applicationCategory": "BusinessApplication",
-  "operatingSystem": "Any",
-  "offers": {
+  name: "CSV AI Analyzer",
+  url: "https://maxgfr.github.io/csv-ai-analyzer",
+  description:
+    "Free online tool to analyze CSV files with AI. Generate intelligent charts, detect anomalies, and get insights. 100% private - your data stays in your browser.",
+  applicationCategory: "BusinessApplication",
+  operatingSystem: "Any",
+  offers: {
     "@type": "Offer",
-    "price": "0",
-    "priceCurrency": "USD"
+    price: "0",
+    priceCurrency: "USD",
   },
-  "featureList": [
+  featureList: [
     "AI-powered data analysis",
     "Automatic chart generation from CSV",
     "Anomaly and outlier detection",
     "Natural language data queries",
     "Privacy-first: all data stays in your browser",
     "Support for OpenAI GPT models",
-    "Multiple chart types: Bar, Line, Pie, Scatter, Area"
+    "Multiple chart types: Bar, Line, Pie, Scatter, Area",
   ],
-  "browserRequirements": "Requires JavaScript. Works on Chrome, Firefox, Safari, Edge.",
-  "author": {
+  browserRequirements:
+    "Requires JavaScript. Works on Chrome, Firefox, Safari, Edge.",
+  author: {
     "@type": "Person",
-    "name": "Maxime Music",
-    "url": "https://github.com/maxgfr"
+    name: "Maxime Music",
+    url: "https://github.com/maxgfr",
   },
-  "softwareVersion": "1.0.0"
+  softwareVersion: "1.0.0",
 };
 
 export default function RootLayout({
@@ -110,19 +112,22 @@ export default function RootLayout({
       </head>
       <body className="antialiased" suppressHydrationWarning>
         {/* Background effects */}
-        <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="pointer-events-none fixed inset-0 overflow-hidden">
           <div className="floating-orb floating-orb-1" />
           <div className="floating-orb floating-orb-2" />
           <div className="floating-orb floating-orb-3" />
-          <div className="absolute inset-0 bg-grid-pattern" />
+          <div className="bg-grid-pattern absolute inset-0" />
         </div>
 
         {/* Main content */}
         <div className="relative z-10">{children}</div>
 
         {/* Footer with legal link */}
-        <footer className="relative z-10 text-center py-6 text-sm text-gray-500 flex items-center justify-center gap-4">
-          <Link href="/legal" className="hover:text-violet-400 transition-colors">
+        <footer className="relative z-10 flex items-center justify-center gap-4 py-6 text-center text-sm text-gray-500">
+          <Link
+            href="/legal"
+            className="transition-colors hover:text-violet-400"
+          >
             Privacy & Legal
           </Link>
           <span className="text-gray-600">•</span>
@@ -130,7 +135,7 @@ export default function RootLayout({
             href="https://github.com/maxgfr/csv-ai-analyzer"
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-violet-400 transition-colors"
+            className="transition-colors hover:text-violet-400"
           >
             GitHub
           </a>

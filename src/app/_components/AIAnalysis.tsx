@@ -14,7 +14,10 @@ import {
   CheckCircle2,
   RefreshCw,
 } from "lucide-react";
-import { type CSVData, generateDataSummary as generateCSVSummary } from "~/lib/csv-parser";
+import {
+  type CSVData,
+  generateDataSummary as generateCSVSummary,
+} from "~/lib/csv-parser";
 import {
   generateDataSummary,
   detectAnomalies,
@@ -66,10 +69,14 @@ export function AIAnalysis({
   const [anomaliesError, setAnomaliesError] = useState<string | null>(null);
 
   // Summary state
-  const [summaryResult, setSummaryResult] = useState<DataSummaryResult | null>(null);
+  const [summaryResult, setSummaryResult] = useState<DataSummaryResult | null>(
+    null,
+  );
 
   // Anomalies state
-  const [anomaliesResult, setAnomaliesResult] = useState<AnomalyResult[] | null>(null);
+  const [anomaliesResult, setAnomaliesResult] = useState<
+    AnomalyResult[] | null
+  >(null);
 
   // Custom analysis state and active tab - using global store to persist across fullscreen toggle
   const {
@@ -88,7 +95,9 @@ export function AIAnalysis({
   } = useChatStore();
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
-  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
+  const [expandedSections, setExpandedSections] = useState<
+    Record<string, boolean>
+  >({
     insights: true,
     quality: true,
   });
@@ -96,7 +105,8 @@ export function AIAnalysis({
   // Auto-scroll to bottom of chat
   useEffect(() => {
     if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
     }
   }, [customHistory, streamingResponse, expandedSections.custom]);
 
@@ -132,7 +142,9 @@ export function AIAnalysis({
 
   const getConfig = (): AIServiceConfig | null => {
     // Allow custom endpoint without API key
-    const hasValidConfig = apiSettings?.customEndpoint ? !!apiSettings.customModel : !!apiSettings?.apiKey;
+    const hasValidConfig = apiSettings?.customEndpoint
+      ? !!apiSettings.customModel
+      : !!apiSettings?.apiKey;
     if (!hasValidConfig) return null;
     return {
       apiKey: apiSettings!.apiKey,
@@ -162,7 +174,10 @@ export function AIAnalysis({
       setSummaryResult(result);
       setSummaryError(null);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Unable to analyze data. Please try again.";
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "Unable to analyze data. Please try again.";
       setSummaryError(errorMessage);
       console.error("Data summary failed:", err);
     } finally {
@@ -194,7 +209,10 @@ export function AIAnalysis({
       setAnomaliesResult(result);
       setAnomaliesError(null);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Unable to detect anomalies. Please try again.";
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "Unable to detect anomalies. Please try again.";
       setAnomaliesError(errorMessage);
       console.error("Anomaly detection failed:", err);
     } finally {
@@ -233,16 +251,19 @@ export function AIAnalysis({
           setStreaming("");
           setLoadingCustom(false);
         },
-        customHistory // Pass current history
+        customHistory, // Pass current history
       );
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Unable to analyze. Please try again.";
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "Unable to analyze. Please try again.";
       console.error("Custom analysis failed:", err);
       const errorResponse = `[ERROR] ${errorMessage}`;
       // Add error directly to history and stop loading
-      addMessage({ 
-        prompt: currentPrompt, 
-        response: errorResponse
+      addMessage({
+        prompt: currentPrompt,
+        response: errorResponse,
       });
       setStreaming("");
       setLoadingCustom(false);
@@ -256,11 +277,11 @@ export function AIAnalysis({
   ];
 
   return (
-    <div className="glass-card p-6 animate-fade-in">
+    <div className="glass-card animate-fade-in p-6">
       {/* Header */}
-      <div className="flex items-center gap-4 mb-6">
-        <div className="p-3 rounded-xl bg-linear-to-br from-emerald-500/20 to-teal-500/20 border border-emerald-500/30">
-          <Brain className="w-6 h-6 text-emerald-400" />
+      <div className="mb-6 flex items-center gap-4">
+        <div className="rounded-xl border border-emerald-500/30 bg-linear-to-br from-emerald-500/20 to-teal-500/20 p-3">
+          <Brain className="h-6 w-6 text-emerald-400" />
         </div>
         <div>
           <h3 className="font-semibold text-white">AI Analysis</h3>
@@ -271,21 +292,19 @@ export function AIAnalysis({
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-2 mb-6 border-b border-white/10 pb-4">
+      <div className="mb-6 flex gap-2 border-b border-white/10 pb-4">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             type="button"
             onClick={() => setActiveTab(tab.id)}
-            className={`
-              flex items-center gap-2 px-4 py-2 rounded-lg transition-all
-              ${activeTab === tab.id
-                ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
-                : "text-gray-400 hover:text-white hover:bg-white/5"
-              }
-            `}
+            className={`flex items-center gap-2 rounded-lg px-4 py-2 transition-all ${
+              activeTab === tab.id
+                ? "border border-emerald-500/30 bg-emerald-500/20 text-emerald-400"
+                : "text-gray-400 hover:bg-white/5 hover:text-white"
+            } `}
           >
-            <tab.icon className="w-4 h-4" />
+            <tab.icon className="h-4 w-4" />
             <span className="text-sm font-medium">{tab.label}</span>
           </button>
         ))}
@@ -293,14 +312,14 @@ export function AIAnalysis({
 
       {/* Error Message */}
       {error && (
-        <div className="mb-4 p-4 rounded-xl bg-red-500/10 border border-red-500/30">
+        <div className="mb-4 rounded-xl border border-red-500/30 bg-red-500/10 p-4">
           <p className="text-sm text-red-400">{error}</p>
         </div>
       )}
 
       {/* No API Key Warning */}
       {!apiSettings?.apiKey && (
-        <div className="mb-4 p-4 rounded-xl bg-amber-500/10 border border-amber-500/30">
+        <div className="mb-4 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4">
           <p className="text-sm text-amber-400">
             Configure your API key to use AI analysis
           </p>
@@ -313,37 +332,41 @@ export function AIAnalysis({
         {activeTab === "summary" && (
           <div className="space-y-4">
             {summaryError && (
-              <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/30 animate-fade-in">
+              <div className="animate-fade-in rounded-xl border border-red-500/30 bg-red-500/10 p-4">
                 <div className="flex items-start gap-3">
-                  <div className="shrink-0 w-5 h-5 rounded-full bg-red-500/20 flex items-center justify-center mt-0.5">
-                    <span className="text-red-400 text-xs font-bold">!</span>
+                  <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-red-500/20">
+                    <span className="text-xs font-bold text-red-400">!</span>
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-red-400 mb-1">Error generating summary</p>
+                    <p className="mb-1 text-sm font-medium text-red-400">
+                      Error generating summary
+                    </p>
                     <p className="text-sm text-red-300/80">{summaryError}</p>
                   </div>
                 </div>
               </div>
             )}
             {!summaryResult ? (
-              <div className="text-center py-8">
-                <p className="text-gray-400 mb-4">
+              <div className="py-8 text-center">
+                <p className="mb-4 text-gray-400">
                   AI will analyze your data and generate a complete summary
                 </p>
                 <button
                   type="button"
                   onClick={handleGenerateSummary}
-                  disabled={disabled || isLoadingSummary || !apiSettings?.apiKey}
+                  disabled={
+                    disabled || isLoadingSummary || !apiSettings?.apiKey
+                  }
                   className="btn-primary inline-flex items-center gap-2 disabled:opacity-50"
                 >
                   {isLoadingSummary ? (
                     <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <Loader2 className="h-4 w-4 animate-spin" />
                       Analyzing...
                     </>
                   ) : (
                     <>
-                      <Brain className="w-4 h-4" />
+                      <Brain className="h-4 w-4" />
                       Generate Summary
                     </>
                   )}
@@ -352,70 +375,75 @@ export function AIAnalysis({
             ) : (
               <div className="space-y-4">
                 {/* Summary */}
-                <div className="p-4 rounded-xl bg-white/5 border border-white/10">
-                  <h4 className="font-medium text-white mb-2 flex items-center gap-2">
-                    <FileText className="w-4 h-4 text-emerald-400" />
+                <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+                  <h4 className="mb-2 flex items-center gap-2 font-medium text-white">
+                    <FileText className="h-4 w-4 text-emerald-400" />
                     Dataset Description
                   </h4>
-                  <p className="text-gray-300 leading-relaxed">{summaryResult.summary}</p>
+                  <p className="leading-relaxed text-gray-300">
+                    {summaryResult.summary}
+                  </p>
                 </div>
 
                 {/* Key Insights */}
-                {summaryResult.keyInsights && summaryResult.keyInsights.length > 0 && (
-                <div className="p-4 rounded-xl bg-white/5 border border-white/10">
-                  <button
-                    type="button"
-                    onClick={() => toggleSection("insights")}
-                    className="w-full flex items-center justify-between mb-2"
-                  >
-                    <h4 className="font-medium text-white flex items-center gap-2">
-                      <Lightbulb className="w-4 h-4 text-yellow-400" />
-                      Key Insights ({summaryResult.keyInsights.length})
-                    </h4>
-                    {expandedSections.insights ? (
-                      <ChevronUp className="w-4 h-4 text-gray-400" />
-                    ) : (
-                      <ChevronDown className="w-4 h-4 text-gray-400" />
-                    )}
-                  </button>
-                  {expandedSections.insights && (
-                    <ul className="space-y-2">
-                      {summaryResult.keyInsights.map((insight, i) => (
-                        <li
-                          key={`insight-${i}`}
-                          className="flex items-start gap-2 text-gray-300"
-                        >
-                          <span className="text-emerald-400 mt-1">•</span>
-                          {insight}
-                        </li>
-                      ))}
-                    </ul>
+                {summaryResult.keyInsights &&
+                  summaryResult.keyInsights.length > 0 && (
+                    <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+                      <button
+                        type="button"
+                        onClick={() => toggleSection("insights")}
+                        className="mb-2 flex w-full items-center justify-between"
+                      >
+                        <h4 className="flex items-center gap-2 font-medium text-white">
+                          <Lightbulb className="h-4 w-4 text-yellow-400" />
+                          Key Insights ({summaryResult.keyInsights.length})
+                        </h4>
+                        {expandedSections.insights ? (
+                          <ChevronUp className="h-4 w-4 text-gray-400" />
+                        ) : (
+                          <ChevronDown className="h-4 w-4 text-gray-400" />
+                        )}
+                      </button>
+                      {expandedSections.insights && (
+                        <ul className="space-y-2">
+                          {summaryResult.keyInsights.map((insight, i) => (
+                            <li
+                              key={`insight-${i}`}
+                              className="flex items-start gap-2 text-gray-300"
+                            >
+                              <span className="mt-1 text-emerald-400">•</span>
+                              {insight}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
                   )}
-                </div>
-                )}
 
                 {/* Data Quality */}
                 {summaryResult.dataQuality && (
-                <div className="p-4 rounded-xl bg-white/5 border border-white/10">
-                  <button
-                    type="button"
-                    onClick={() => toggleSection("quality")}
-                    className="w-full flex items-center justify-between mb-2"
-                  >
-                    <h4 className="font-medium text-white flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-blue-400" />
-                      Data Quality
-                    </h4>
-                    {expandedSections.quality ? (
-                      <ChevronUp className="w-4 h-4 text-gray-400" />
-                    ) : (
-                      <ChevronDown className="w-4 h-4 text-gray-400" />
+                  <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+                    <button
+                      type="button"
+                      onClick={() => toggleSection("quality")}
+                      className="mb-2 flex w-full items-center justify-between"
+                    >
+                      <h4 className="flex items-center gap-2 font-medium text-white">
+                        <CheckCircle2 className="h-4 w-4 text-blue-400" />
+                        Data Quality
+                      </h4>
+                      {expandedSections.quality ? (
+                        <ChevronUp className="h-4 w-4 text-gray-400" />
+                      ) : (
+                        <ChevronDown className="h-4 w-4 text-gray-400" />
+                      )}
+                    </button>
+                    {expandedSections.quality && (
+                      <p className="text-gray-300">
+                        {summaryResult.dataQuality}
+                      </p>
                     )}
-                  </button>
-                  {expandedSections.quality && (
-                    <p className="text-gray-300">{summaryResult.dataQuality}</p>
-                  )}
-                </div>
+                  </div>
                 )}
 
                 {/* Regenerate Button */}
@@ -423,16 +451,16 @@ export function AIAnalysis({
                   type="button"
                   onClick={handleGenerateSummary}
                   disabled={disabled || isLoadingSummary}
-                  className="btn-secondary text-sm inline-flex items-center gap-2"
+                  className="btn-secondary inline-flex items-center gap-2 text-sm"
                 >
                   {isLoadingSummary ? (
                     <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <Loader2 className="h-4 w-4 animate-spin" />
                       Analyzing...
                     </>
                   ) : (
                     <>
-                      <RefreshCw className="w-4 h-4" />
+                      <RefreshCw className="h-4 w-4" />
                       Regenerate Analysis
                     </>
                   )}
@@ -446,48 +474,52 @@ export function AIAnalysis({
         {activeTab === "anomalies" && (
           <div className="space-y-4">
             {anomaliesError && (
-              <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/30 animate-fade-in">
+              <div className="animate-fade-in rounded-xl border border-red-500/30 bg-red-500/10 p-4">
                 <div className="flex items-start gap-3">
-                  <div className="shrink-0 w-5 h-5 rounded-full bg-red-500/20 flex items-center justify-center mt-0.5">
-                    <span className="text-red-400 text-xs font-bold">!</span>
+                  <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-red-500/20">
+                    <span className="text-xs font-bold text-red-400">!</span>
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-red-400 mb-1">Error detecting anomalies</p>
+                    <p className="mb-1 text-sm font-medium text-red-400">
+                      Error detecting anomalies
+                    </p>
                     <p className="text-sm text-red-300/80">{anomaliesError}</p>
                   </div>
                 </div>
               </div>
             )}
             {!anomaliesResult ? (
-              <div className="text-center py-8">
-                <p className="text-gray-400 mb-4">
+              <div className="py-8 text-center">
+                <p className="mb-4 text-gray-400">
                   AI will scan your data to detect anomalies
                 </p>
                 <button
                   type="button"
                   onClick={handleDetectAnomalies}
-                  disabled={disabled || isLoadingAnomalies || !apiSettings?.apiKey}
+                  disabled={
+                    disabled || isLoadingAnomalies || !apiSettings?.apiKey
+                  }
                   className="btn-primary inline-flex items-center gap-2 disabled:opacity-50"
                 >
                   {isLoadingAnomalies ? (
                     <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <Loader2 className="h-4 w-4 animate-spin" />
                       Detecting...
                     </>
                   ) : (
                     <>
-                      <AlertTriangle className="w-4 h-4" />
+                      <AlertTriangle className="h-4 w-4" />
                       Detect Anomalies
                     </>
                   )}
                 </button>
               </div>
             ) : anomaliesResult.length === 0 ? (
-              <div className="text-center py-8">
-                <div className="p-4 rounded-full bg-green-500/20 inline-block mb-4">
-                  <CheckCircle2 className="w-8 h-8 text-green-400" />
+              <div className="py-8 text-center">
+                <div className="mb-4 inline-block rounded-full bg-green-500/20 p-4">
+                  <CheckCircle2 className="h-8 w-8 text-green-400" />
                 </div>
-                <p className="text-gray-300 mb-2">No anomalies detected</p>
+                <p className="mb-2 text-gray-300">No anomalies detected</p>
                 <p className="text-sm text-gray-500">
                   Your data appears to be valid and consistent
                 </p>
@@ -495,12 +527,12 @@ export function AIAnalysis({
                   type="button"
                   onClick={handleDetectAnomalies}
                   disabled={disabled || isLoadingAnomalies}
-                  className="btn-secondary text-sm mt-4 inline-flex items-center gap-2"
+                  className="btn-secondary mt-4 inline-flex items-center gap-2 text-sm"
                 >
                   {isLoadingAnomalies ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <Loader2 className="h-4 w-4 animate-spin" />
                   ) : (
-                    <RefreshCw className="w-4 h-4" />
+                    <RefreshCw className="h-4 w-4" />
                   )}
                   Run Again
                 </button>
@@ -509,7 +541,7 @@ export function AIAnalysis({
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <p className="text-gray-400">
-                    <span className="text-white font-medium">
+                    <span className="font-medium text-white">
                       {anomaliesResult.length}
                     </span>{" "}
                     anomal{anomaliesResult.length > 1 ? "ies" : "y"} detected
@@ -518,44 +550,47 @@ export function AIAnalysis({
                     type="button"
                     onClick={handleDetectAnomalies}
                     disabled={disabled || isLoadingAnomalies}
-                    className="btn-secondary text-sm inline-flex items-center gap-2"
+                    className="btn-secondary inline-flex items-center gap-2 text-sm"
                   >
                     {isLoadingAnomalies ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <Loader2 className="h-4 w-4 animate-spin" />
                     ) : (
-                      <RefreshCw className="w-4 h-4" />
+                      <RefreshCw className="h-4 w-4" />
                     )}
                     Run Again
                   </button>
                 </div>
 
-                <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2">
+                <div className="max-h-[400px] space-y-3 overflow-y-auto pr-2">
                   {anomaliesResult.map((anomaly, i) => (
                     <div
                       key={`anomaly-${i}`}
-                      className={`p-4 rounded-xl border ${SEVERITY_COLORS[anomaly.severity]}`}
+                      className={`rounded-xl border p-4 ${SEVERITY_COLORS[anomaly.severity]}`}
                     >
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="text-xs px-2 py-0.5 rounded-full bg-white/10">
+                          <div className="mb-1 flex items-center gap-2">
+                            <span className="rounded-full bg-white/10 px-2 py-0.5 text-xs">
                               Row {anomaly.row}
                             </span>
-                            <span className="text-xs px-2 py-0.5 rounded-full bg-white/10">
+                            <span className="rounded-full bg-white/10 px-2 py-0.5 text-xs">
                               {anomaly.column}
                             </span>
                             <span
-                              className={`text-xs px-2 py-0.5 rounded-full ${SEVERITY_COLORS[anomaly.severity]}`}
+                              className={`rounded-full px-2 py-0.5 text-xs ${SEVERITY_COLORS[anomaly.severity]}`}
                             >
                               {SEVERITY_LABELS[anomaly.severity]}
                             </span>
                           </div>
                           <p className="text-sm">{anomaly.issue}</p>
-                          <p className="text-xs text-gray-500 mt-1">
-                            Value: <code className="bg-white/10 px-1 rounded">{anomaly.value}</code>
+                          <p className="mt-1 text-xs text-gray-500">
+                            Value:{" "}
+                            <code className="rounded bg-white/10 px-1">
+                              {anomaly.value}
+                            </code>
                           </p>
                         </div>
-                        <AlertTriangle className="w-5 h-5 shrink-0" />
+                        <AlertTriangle className="h-5 w-5 shrink-0" />
                       </div>
                     </div>
                   ))}
@@ -572,36 +607,42 @@ export function AIAnalysis({
             {(customHistory.length > 0 || isLoadingCustom) && (
               <div
                 ref={chatContainerRef}
-                className="space-y-4 max-h-[400px] overflow-y-auto pr-2 mb-4 scroll-smooth"
+                className="mb-4 max-h-[400px] space-y-4 overflow-y-auto scroll-smooth pr-2"
               >
                 {customHistory.map((item, i) => {
                   const isError = item.response.startsWith("[ERROR]");
                   return (
                     <div key={`history-${i}`} className="space-y-2">
                       <div className="flex items-start gap-3">
-                        <div className="p-2 rounded-lg bg-violet-500/20">
-                          <MessageSquare className="w-4 h-4 text-violet-400" />
+                        <div className="rounded-lg bg-violet-500/20 p-2">
+                          <MessageSquare className="h-4 w-4 text-violet-400" />
                         </div>
-                        <div className="flex-1 p-3 rounded-xl bg-violet-500/10 border border-violet-500/20">
+                        <div className="flex-1 rounded-xl border border-violet-500/20 bg-violet-500/10 p-3">
                           <p className="text-sm text-gray-300">{item.prompt}</p>
                         </div>
                       </div>
                       <div className="flex items-start gap-3">
-                        <div className={`p-2 rounded-lg ${isError ? "bg-red-500/20" : "bg-emerald-500/20"}`}>
+                        <div
+                          className={`rounded-lg p-2 ${isError ? "bg-red-500/20" : "bg-emerald-500/20"}`}
+                        >
                           {isError ? (
-                            <AlertTriangle className="w-4 h-4 text-red-400" />
+                            <AlertTriangle className="h-4 w-4 text-red-400" />
                           ) : (
-                            <Brain className="w-4 h-4 text-emerald-400" />
+                            <Brain className="h-4 w-4 text-emerald-400" />
                           )}
                         </div>
-                        <div className={`flex-1 p-3 rounded-xl ${
-                          isError 
-                            ? "bg-red-500/10 border border-red-500/30" 
-                            : "bg-white/5 border border-white/10"
-                        }`}>
-                          <p className={`text-sm whitespace-pre-wrap ${
-                            isError ? "text-red-300" : "text-gray-300"
-                          }`}>
+                        <div
+                          className={`flex-1 rounded-xl p-3 ${
+                            isError
+                              ? "border border-red-500/30 bg-red-500/10"
+                              : "border border-white/10 bg-white/5"
+                          }`}
+                        >
+                          <p
+                            className={`text-sm whitespace-pre-wrap ${
+                              isError ? "text-red-300" : "text-gray-300"
+                            }`}
+                          >
                             {item.response}
                           </p>
                         </div>
@@ -616,37 +657,46 @@ export function AIAnalysis({
                     {/* Show the pending prompt */}
                     {pendingPrompt && (
                       <div className="flex items-start gap-3">
-                        <div className="p-2 rounded-lg bg-violet-500/20">
-                          <MessageSquare className="w-4 h-4 text-violet-400" />
+                        <div className="rounded-lg bg-violet-500/20 p-2">
+                          <MessageSquare className="h-4 w-4 text-violet-400" />
                         </div>
-                        <div className="flex-1 p-3 rounded-xl bg-violet-500/10 border border-violet-500/20">
-                          <p className="text-sm text-gray-300">{pendingPrompt}</p>
+                        <div className="flex-1 rounded-xl border border-violet-500/20 bg-violet-500/10 p-3">
+                          <p className="text-sm text-gray-300">
+                            {pendingPrompt}
+                          </p>
                         </div>
                       </div>
                     )}
                     {/* Show the streaming response */}
                     <div className="flex items-start gap-3">
                       {streamingResponse.startsWith("[ERROR]") ? (
-                        <div className="p-2 rounded-lg bg-red-500/20">
-                          <AlertTriangle className="w-4 h-4 text-red-400" />
+                        <div className="rounded-lg bg-red-500/20 p-2">
+                          <AlertTriangle className="h-4 w-4 text-red-400" />
                         </div>
                       ) : (
-                        <div className="p-2 rounded-lg bg-emerald-500/20">
-                          <Brain className="w-4 h-4 text-emerald-400 animate-pulse" />
+                        <div className="rounded-lg bg-emerald-500/20 p-2">
+                          <Brain className="h-4 w-4 animate-pulse text-emerald-400" />
                         </div>
                       )}
-                      <div className={`flex-1 p-3 rounded-xl ${
-                        streamingResponse.startsWith("[ERROR]")
-                          ? "bg-red-500/10 border border-red-500/30"
-                          : "bg-white/5 border border-emerald-500/30"
-                      }`}>
-                        <p className={`text-sm whitespace-pre-wrap ${
-                          streamingResponse.startsWith("[ERROR]") ? "text-red-300" : "text-gray-300"
-                        }`}>
+                      <div
+                        className={`flex-1 rounded-xl p-3 ${
+                          streamingResponse.startsWith("[ERROR]")
+                            ? "border border-red-500/30 bg-red-500/10"
+                            : "border border-emerald-500/30 bg-white/5"
+                        }`}
+                      >
+                        <p
+                          className={`text-sm whitespace-pre-wrap ${
+                            streamingResponse.startsWith("[ERROR]")
+                              ? "text-red-300"
+                              : "text-gray-300"
+                          }`}
+                        >
                           {streamingResponse || "Analyzing..."}
-                          {!streamingResponse.startsWith("[ERROR]") && streamingResponse && (
-                            <span className="inline-block w-2 h-4 bg-emerald-400 animate-pulse ml-1" />
-                          )}
+                          {!streamingResponse.startsWith("[ERROR]") &&
+                            streamingResponse && (
+                              <span className="ml-1 inline-block h-4 w-2 animate-pulse bg-emerald-400" />
+                            )}
                         </p>
                       </div>
                     </div>
@@ -674,19 +724,24 @@ export function AIAnalysis({
               <button
                 type="button"
                 onClick={handleCustomAnalysis}
-                disabled={disabled || isLoadingCustom || !customPrompt.trim() || !apiSettings?.apiKey}
+                disabled={
+                  disabled ||
+                  isLoadingCustom ||
+                  !customPrompt.trim() ||
+                  !apiSettings?.apiKey
+                }
                 className="btn-primary px-4 disabled:opacity-50"
               >
                 {isLoadingCustom ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
-                  <Send className="w-4 h-4" />
+                  <Send className="h-4 w-4" />
                 )}
               </button>
             </div>
 
             {customHistory.length === 0 && !isLoadingCustom && (
-              <p className="text-center text-sm text-gray-500 py-4">
+              <p className="py-4 text-center text-sm text-gray-500">
                 Ask any question about your data. For example:
                 <br />
                 <span className="text-gray-400">

@@ -53,34 +53,36 @@ export function LandingPage({
   };
 
   return (
-    <section className="relative overflow-hidden animate-fade-in">
+    <section className="animate-fade-in relative overflow-hidden">
       {/* Background gradient effects (moved from Hero) */}
-      <div className="absolute inset-0 bg-gradient-to-br from-violet-900/20 via-transparent to-fuchsia-900/20 -z-10 pointer-events-none" />
-      <div className="absolute top-20 left-1/4 w-96 h-96 bg-violet-600/30 rounded-full blur-3xl -z-10 pointer-events-none" />
-      <div className="absolute bottom-20 right-1/4 w-96 h-96 bg-fuchsia-600/20 rounded-full blur-3xl -z-10 pointer-events-none" />
+      <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-br from-violet-900/20 via-transparent to-fuchsia-900/20" />
+      <div className="pointer-events-none absolute top-20 left-1/4 -z-10 h-96 w-96 rounded-full bg-violet-600/30 blur-3xl" />
+      <div className="pointer-events-none absolute right-1/4 bottom-20 -z-10 h-96 w-96 rounded-full bg-fuchsia-600/20 blur-3xl" />
       <div className="relative z-10">
         <Hero
-        csvSettings={csvSettings}
-        apiSettings={apiSettings}
-        currentFileName={currentFileName}
-        showSampleDropdown={showSampleDropdown}
-        onSettingsChange={onSettingsChange}
-        onApiSettingsChange={onApiSettingsChange}
-        onFileLoaded={onFileLoaded}
-        onClearFile={onClearFile}
-        onLoadSample={handleLoadSample}
-        onToggleSampleDropdown={() => setShowSampleDropdown(!showSampleDropdown)}
-      />
-        <div className="max-w-7xl mx-auto px-4 md:px-8">
-        <VideoDemo />
-        <FeaturesGrid />
-        <HowItWorks />
-        {/* Footer info */}
-        <div className="max-w-2xl mx-auto mt-16 pb-16 text-center">
-          <p className="text-gray-500 text-sm">
-            Built with Next.js, TailwindCSS, Recharts, and OpenAI. 
-          </p>
-        </div>
+          csvSettings={csvSettings}
+          apiSettings={apiSettings}
+          currentFileName={currentFileName}
+          showSampleDropdown={showSampleDropdown}
+          onSettingsChange={onSettingsChange}
+          onApiSettingsChange={onApiSettingsChange}
+          onFileLoaded={onFileLoaded}
+          onClearFile={onClearFile}
+          onLoadSample={handleLoadSample}
+          onToggleSampleDropdown={() =>
+            setShowSampleDropdown(!showSampleDropdown)
+          }
+        />
+        <div className="mx-auto max-w-7xl px-4 md:px-8">
+          <VideoDemo />
+          <FeaturesGrid />
+          <HowItWorks />
+          {/* Footer info */}
+          <div className="mx-auto mt-16 max-w-2xl pb-16 text-center">
+            <p className="text-sm text-gray-500">
+              Built with Next.js, TailwindCSS, Recharts, and OpenAI.
+            </p>
+          </div>
         </div>
       </div>
     </section>

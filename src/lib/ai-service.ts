@@ -62,11 +62,22 @@ const ChartSuggestionSchema = z.object({
   type: z.enum(["bar", "line", "pie", "scatter", "area"]),
   title: z.string(),
   description: z.string(),
-  xColumn: z.string().describe("The EXACT column name to use for X axis (categories/labels)"),
-  yColumn: z.string().describe("The EXACT column name to use for Y axis (values)"),
-  groupColumn: z.string().optional().describe("Optional column to group/segment the data"),
-  aggregation: z.enum(["sum", "avg", "count", "min", "max", "none"]).describe("How to aggregate Y values when there are duplicates in X"),
-  reasoning: z.string().describe("Brief explanation of why this chart is useful for this data"),
+  xColumn: z
+    .string()
+    .describe("The EXACT column name to use for X axis (categories/labels)"),
+  yColumn: z
+    .string()
+    .describe("The EXACT column name to use for Y axis (values)"),
+  groupColumn: z
+    .string()
+    .optional()
+    .describe("Optional column to group/segment the data"),
+  aggregation: z
+    .enum(["sum", "avg", "count", "min", "max", "none"])
+    .describe("How to aggregate Y values when there are duplicates in X"),
+  reasoning: z
+    .string()
+    .describe("Brief explanation of why this chart is useful for this data"),
 });
 
 const ChartSuggestionsResponseSchema = z.object({
@@ -103,44 +114,62 @@ const AnomaliesResponseSchema = z.object({
 function getErrorMessage(error: unknown): string {
   if (error instanceof Error) {
     const message = error.message.toLowerCase();
-    
+
     // Rate limit errors
     if (message.includes("rate limit") || message.includes("429")) {
       return "Rate limit exceeded. Please wait a moment and try again, or check your API provider's usage limits.";
     }
-    
+
     // Authentication errors
-    if (message.includes("unauthorized") || message.includes("401") || 
-        message.includes("invalid api key") || message.includes("invalid_api_key")) {
+    if (
+      message.includes("unauthorized") ||
+      message.includes("401") ||
+      message.includes("invalid api key") ||
+      message.includes("invalid_api_key")
+    ) {
       return "Invalid API key. Please check your API key configuration.";
     }
-    
+
     // Quota/billing errors
-    if (message.includes("quota") || message.includes("insufficient_quota") ||
-        message.includes("billing")) {
+    if (
+      message.includes("quota") ||
+      message.includes("insufficient_quota") ||
+      message.includes("billing")
+    ) {
       return "API quota exceeded or billing issue. Please check your account status.";
     }
-    
+
     // Network/timeout errors
-    if (message.includes("network") || message.includes("timeout") || 
-        message.includes("econnrefused") || message.includes("fetch failed")) {
+    if (
+      message.includes("network") ||
+      message.includes("timeout") ||
+      message.includes("econnrefused") ||
+      message.includes("fetch failed")
+    ) {
       return "Network error. Please check your internet connection and try again.";
     }
-    
+
     // Model not found
-    if (message.includes("model") && (message.includes("not found") || message.includes("does not exist"))) {
+    if (
+      message.includes("model") &&
+      (message.includes("not found") || message.includes("does not exist"))
+    ) {
       return "Model not available. Please select a different model or check your provider settings.";
     }
-    
+
     // Generic API errors
-    if (message.includes("api error") || message.includes("server error") || message.includes("500")) {
+    if (
+      message.includes("api error") ||
+      message.includes("server error") ||
+      message.includes("500")
+    ) {
       return `API error: ${error.message}`;
     }
-    
+
     // Return original message if no specific pattern matched
     return error.message;
   }
-  
+
   return "An unexpected error occurred. Please try again.";
 }
 
@@ -160,12 +189,15 @@ const LANGUAGE_INSTRUCTION: Record<LanguageCode, string> = {
 
 // ============ Prompts ============
 
-const getChartSystemPrompt = (language: LanguageCode, columns: string[]) => `You are a data visualization expert. ${LANGUAGE_INSTRUCTION[language]}
+const getChartSystemPrompt = (
+  language: LanguageCode,
+  columns: string[],
+) => `You are a data visualization expert. ${LANGUAGE_INSTRUCTION[language]}
 
 You will analyze CSV data and suggest the best charts to visualize it.
 
 AVAILABLE COLUMNS (use these EXACT names):
-${columns.map(c => `- "${c}"`).join("\n")}
+${columns.map((c) => `- "${c}"`).join("\n")}
 
 CRITICAL RULES:
 1. xColumn and yColumn MUST be exact column names from the list above
@@ -186,14 +218,18 @@ CHART TYPE GUIDELINES:
 - scatter: Show correlations (xColumn=numeric, yColumn=numeric, aggregation=none)
 - area: Show cumulative trends (xColumn=date/time, yColumn=numeric)`;
 
-const getDataSummaryPrompt = (language: LanguageCode) => `You are a data analyst. ${LANGUAGE_INSTRUCTION[language]}
+const getDataSummaryPrompt = (
+  language: LanguageCode,
+) => `You are a data analyst. ${LANGUAGE_INSTRUCTION[language]}
 
 Analyze the provided CSV data summary and provide:
 1. A comprehensive summary of what this dataset represents (2-3 sentences)
 2. 3-5 key insights or patterns you notice
 3. An assessment of data quality (completeness, consistency)`;
 
-const getAnomalyPrompt = (language: LanguageCode) => `You are a data quality expert. ${LANGUAGE_INSTRUCTION[language]}
+const getAnomalyPrompt = (
+  language: LanguageCode,
+) => `You are a data quality expert. ${LANGUAGE_INSTRUCTION[language]}
 
 Analyze the provided CSV data and identify anomalies, outliers, or suspicious data points.
 
@@ -213,16 +249,21 @@ Look for:
 
 Analyze ALL rows provided. Return empty array if no anomalies found.`;
 
-const getCustomAnalysisPrompt = (language: LanguageCode) => `You are a data analysis expert. ${LANGUAGE_INSTRUCTION[language]}
+const getCustomAnalysisPrompt = (
+  language: LanguageCode,
+) => `You are a data analysis expert. ${LANGUAGE_INSTRUCTION[language]}
 
 The user will ask questions about a CSV dataset. Respond clearly and precisely.`;
 
-const getCustomChartPrompt = (language: LanguageCode, columns: string[]) => `You are a data visualization expert. ${LANGUAGE_INSTRUCTION[language]}
+const getCustomChartPrompt = (
+  language: LanguageCode,
+  columns: string[],
+) => `You are a data visualization expert. ${LANGUAGE_INSTRUCTION[language]}
 
 Create a chart configuration based on the user's request.
 
 AVAILABLE COLUMNS (use these EXACT names):
-${columns.map(c => `- "${c}"`).join("\n")}
+${columns.map((c) => `- "${c}"`).join("\n")}
 
 IMPORTANT: Column names MUST exactly match the list above.`;
 
@@ -233,9 +274,9 @@ function getModel(config: AIServiceConfig): LanguageModel {
 
   if (config.customEndpoint) {
     // For custom endpoints (Ollama/LM Studio/vLLM etc.) use OpenAI SDK with custom baseURL
-    const openai = createOpenAI({ 
-      apiKey: config.apiKey || "", 
-      baseURL: config.customEndpoint 
+    const openai = createOpenAI({
+      apiKey: config.apiKey || "",
+      baseURL: config.customEndpoint,
     }) as unknown as (model: string) => LanguageModel;
     const chosen = config.customModel ?? modelName;
     return openai(chosen);
@@ -243,26 +284,37 @@ function getModel(config: AIServiceConfig): LanguageModel {
 
   switch (config.providerNpm) {
     case "@ai-sdk/anthropic": {
-      const anthropicFactory = createAnthropic as unknown as (params: { apiKey: string }) => (model: string) => LanguageModel;
+      const anthropicFactory = createAnthropic as unknown as (params: {
+        apiKey: string;
+      }) => (model: string) => LanguageModel;
       const anthropic = anthropicFactory({ apiKey: config.apiKey });
       return anthropic(modelName);
     }
     case "@ai-sdk/google": {
-      const googleFactory = createGoogleGenerativeAI as unknown as (params: { apiKey: string }) => (model: string) => LanguageModel;
+      const googleFactory = createGoogleGenerativeAI as unknown as (params: {
+        apiKey: string;
+      }) => (model: string) => LanguageModel;
       const google = googleFactory({ apiKey: config.apiKey });
       return google(modelName);
     }
     case "@ai-sdk/mistral": {
-      const mistralFactory = createMistral as unknown as (params: { apiKey: string }) => (model: string) => LanguageModel;
+      const mistralFactory = createMistral as unknown as (params: {
+        apiKey: string;
+      }) => (model: string) => LanguageModel;
       const mistral = mistralFactory({ apiKey: config.apiKey });
       return mistral(modelName);
     }
     case "@ai-sdk/xai": {
-      const xai = createXai({ apiKey: config.apiKey }) as unknown as (model: string) => LanguageModel;
+      const xai = createXai({ apiKey: config.apiKey }) as unknown as (
+        model: string,
+      ) => LanguageModel;
       return xai(modelName);
     }
     default: {
-      const openai = createOpenAI({ apiKey: config.apiKey, baseURL: config.providerApi }) as unknown as (model: string) => LanguageModel;
+      const openai = createOpenAI({
+        apiKey: config.apiKey,
+        baseURL: config.providerApi,
+      }) as unknown as (model: string) => LanguageModel;
       return openai(modelName);
     }
   }
@@ -273,7 +325,7 @@ function getModel(config: AIServiceConfig): LanguageModel {
 export const generateChartSuggestions = async (
   config: AIServiceConfig,
   dataSummary: string,
-  columns: string[]
+  columns: string[],
 ): Promise<ChartSuggestion[]> => {
   const model = getModel(config);
   const language = config.language ?? "en";
@@ -313,7 +365,7 @@ export const generateCustomChart = async (
   config: AIServiceConfig,
   dataSummary: string,
   userPrompt: string,
-  columns: string[]
+  columns: string[],
 ): Promise<ChartSuggestion | null> => {
   const model = getModel(config);
   const language = config.language ?? "en";
@@ -355,7 +407,7 @@ export const repairChartSuggestion = async (
   config: AIServiceConfig,
   failedChart: ChartSuggestion,
   columns: string[],
-  errorContext: string
+  errorContext: string,
 ): Promise<ChartSuggestion | null> => {
   const model = getModel(config);
   const language = config.language ?? "en";
@@ -393,7 +445,7 @@ export const repairChartSuggestion = async (
 
 export const generateDataSummary = async (
   config: AIServiceConfig,
-  dataSummary: string
+  dataSummary: string,
 ): Promise<DataSummaryResult> => {
   const model = getModel(config);
   const language = config.language ?? "en";
@@ -422,7 +474,7 @@ export const generateDataSummary = async (
 export const detectAnomalies = async (
   config: AIServiceConfig,
   dataSummary: string,
-  sampleRows: string
+  sampleRows: string,
 ): Promise<AnomalyResult[]> => {
   const model = getModel(config);
   const language = config.language ?? "en";
@@ -447,7 +499,7 @@ export const detectAnomalies = async (
 export const runCustomAnalysis = async (
   config: AIServiceConfig,
   customPrompt: string,
-  dataSummary: string
+  dataSummary: string,
 ): Promise<CustomAnalysisResult> => {
   const model = getModel(config);
   const language = config.language ?? "en";
@@ -470,7 +522,7 @@ export const streamCustomAnalysis = async (
   dataSummary: string,
   onChunk: (chunk: string) => void,
   onComplete: (fullText: string) => void,
-  conversationHistory: Array<{ prompt: string; response: string }> = []
+  conversationHistory: Array<{ prompt: string; response: string }> = [],
 ): Promise<void> => {
   try {
     const { streamText } = await import("ai");
@@ -490,7 +542,7 @@ export const streamCustomAnalysis = async (
       model,
       system: getCustomAnalysisPrompt(language),
       prompt: `Here is the data:\n\n${dataSummary}\n\n${contextPrompt}User question: ${customPrompt}`,
-    temperature: 0.5,
+      temperature: 0.5,
     });
 
     let fullText = "";
@@ -505,4 +557,3 @@ export const streamCustomAnalysis = async (
     throw new Error(getErrorMessage(error));
   }
 };
-

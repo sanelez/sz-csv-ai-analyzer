@@ -3,10 +3,7 @@
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { Settings, X, Check } from "lucide-react";
-import {
-  type CSVSettings,
-  DEFAULT_CSV_SETTINGS,
-} from "~/lib/csv-parser";
+import { type CSVSettings, DEFAULT_CSV_SETTINGS } from "~/lib/csv-parser";
 import { loadCsvSettings, saveCsvSettings } from "~/lib/storage";
 
 interface CSVSettingsModalProps {
@@ -59,48 +56,48 @@ export function CSVSettingsModal({
   const modalContent = (
     <>
       {/* SOLID Backdrop */}
-      <div 
+      <div
         className="fixed inset-0 z-100 bg-gray-950/90 backdrop-blur-sm"
         onClick={onClose}
         aria-hidden="true"
       />
-      
+
       {/* Modal */}
       <div
-        className="fixed inset-0 z-101 flex items-center justify-center p-4 pointer-events-none"
+        className="pointer-events-none fixed inset-0 z-101 flex items-center justify-center p-4"
         role="dialog"
         aria-modal="true"
       >
         <div
-          className="pointer-events-auto w-full max-w-md rounded-2xl bg-gray-900 border-2 border-cyan-500/60 shadow-[0_0_60px_rgba(6,182,212,0.3)] animate-scale-in"
+          className="animate-scale-in pointer-events-auto w-full max-w-md rounded-2xl border-2 border-cyan-500/60 bg-gray-900 shadow-[0_0_60px_rgba(6,182,212,0.3)]"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
           <div className="border-b border-white/10 px-6 py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-xl bg-cyan-500/20 border border-cyan-500/40">
-                  <Settings className="w-5 h-5 text-cyan-400" />
+                <div className="rounded-xl border border-cyan-500/40 bg-cyan-500/20 p-2.5">
+                  <Settings className="h-5 w-5 text-cyan-400" />
                 </div>
                 <h2 className="text-xl font-bold text-white">CSV Settings</h2>
               </div>
               <button
                 type="button"
                 onClick={onClose}
-                className="p-2 rounded-lg hover:bg-white/10 transition-colors"
+                className="rounded-lg p-2 transition-colors hover:bg-white/10"
               >
-                <X className="w-5 h-5 text-gray-400" />
+                <X className="h-5 w-5 text-gray-400" />
               </button>
             </div>
           </div>
 
           {/* Content */}
-          <div className="p-6 space-y-5">
+          <div className="space-y-5 p-6">
             {/* Delimiter */}
             <div>
               <label
                 htmlFor="delimiter-select"
-                className="block text-sm font-semibold text-gray-200 mb-2"
+                className="mb-2 block text-sm font-semibold text-gray-200"
               >
                 Delimiter
               </label>
@@ -110,7 +107,7 @@ export function CSVSettingsModal({
                 onChange={(e) =>
                   setLocalSettings((s) => ({ ...s, delimiter: e.target.value }))
                 }
-                className="w-full px-4 py-3 bg-gray-800 border-2 border-gray-700 rounded-xl text-white focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
+                className="w-full rounded-xl border-2 border-gray-700 bg-gray-800 px-4 py-3 text-white transition-all focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none"
               >
                 {DELIMITERS.map((d) => (
                   <option key={d.value} value={d.value}>
@@ -124,7 +121,7 @@ export function CSVSettingsModal({
             <div>
               <label
                 htmlFor="encoding-select"
-                className="block text-sm font-semibold text-gray-200 mb-2"
+                className="mb-2 block text-sm font-semibold text-gray-200"
               >
                 Encoding
               </label>
@@ -134,7 +131,7 @@ export function CSVSettingsModal({
                 onChange={(e) =>
                   setLocalSettings((s) => ({ ...s, encoding: e.target.value }))
                 }
-                className="w-full px-4 py-3 bg-gray-800 border-2 border-gray-700 rounded-xl text-white focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
+                className="w-full rounded-xl border-2 border-gray-700 bg-gray-800 px-4 py-3 text-white transition-all focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none"
               >
                 {ENCODINGS.map((e) => (
                   <option key={e.value} value={e.value}>
@@ -145,51 +142,50 @@ export function CSVSettingsModal({
             </div>
 
             {/* Has Header */}
-            <div className="flex items-center justify-between p-4 bg-gray-800 rounded-xl border border-gray-700">
+            <div className="flex items-center justify-between rounded-xl border border-gray-700 bg-gray-800 p-4">
               <div>
-                <p className="text-sm font-semibold text-gray-200">First row is header</p>
-                <p className="text-xs text-gray-500">Use first row as column names</p>
+                <p className="text-sm font-semibold text-gray-200">
+                  First row is header
+                </p>
+                <p className="text-xs text-gray-500">
+                  Use first row as column names
+                </p>
               </div>
               <button
                 type="button"
                 onClick={() =>
                   setLocalSettings((s) => ({ ...s, hasHeader: !s.hasHeader }))
                 }
-                className={`
-                  w-14 h-7 rounded-full transition-all duration-200 relative
-                  ${localSettings.hasHeader ? "bg-cyan-500" : "bg-gray-600"}
-                `}
+                className={`relative h-7 w-14 rounded-full transition-all duration-200 ${localSettings.hasHeader ? "bg-cyan-500" : "bg-gray-600"} `}
               >
                 <div
-                  className={`
-                    absolute top-1 w-5 h-5 rounded-full bg-white transition-all shadow-md
-                    ${localSettings.hasHeader ? "left-8" : "left-1"}
-                  `}
+                  className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow-md transition-all ${localSettings.hasHeader ? "left-8" : "left-1"} `}
                 />
               </button>
             </div>
 
             {/* Skip Empty Lines */}
-            <div className="flex items-center justify-between p-4 bg-gray-800 rounded-xl border border-gray-700">
+            <div className="flex items-center justify-between rounded-xl border border-gray-700 bg-gray-800 p-4">
               <div>
-                <p className="text-sm font-semibold text-gray-200">Skip empty lines</p>
-                <p className="text-xs text-gray-500">Ignore blank rows in the file</p>
+                <p className="text-sm font-semibold text-gray-200">
+                  Skip empty lines
+                </p>
+                <p className="text-xs text-gray-500">
+                  Ignore blank rows in the file
+                </p>
               </div>
               <button
                 type="button"
                 onClick={() =>
-                  setLocalSettings((s) => ({ ...s, skipEmptyLines: !s.skipEmptyLines }))
+                  setLocalSettings((s) => ({
+                    ...s,
+                    skipEmptyLines: !s.skipEmptyLines,
+                  }))
                 }
-                className={`
-                  w-14 h-7 rounded-full transition-all duration-200 relative
-                  ${localSettings.skipEmptyLines ? "bg-cyan-500" : "bg-gray-600"}
-                `}
+                className={`relative h-7 w-14 rounded-full transition-all duration-200 ${localSettings.skipEmptyLines ? "bg-cyan-500" : "bg-gray-600"} `}
               >
                 <div
-                  className={`
-                    absolute top-1 w-5 h-5 rounded-full bg-white transition-all shadow-md
-                    ${localSettings.skipEmptyLines ? "left-8" : "left-1"}
-                  `}
+                  className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow-md transition-all ${localSettings.skipEmptyLines ? "left-8" : "left-1"} `}
                 />
               </button>
             </div>
@@ -201,16 +197,16 @@ export function CSVSettingsModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 px-4 py-3 rounded-xl bg-gray-800 border border-gray-700 text-gray-300 font-medium hover:bg-gray-750 transition-colors"
+                className="hover:bg-gray-750 flex-1 rounded-xl border border-gray-700 bg-gray-800 px-4 py-3 font-medium text-gray-300 transition-colors"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={handleSave}
-                className="flex-1 px-4 py-3 rounded-xl bg-linear-to-r from-cyan-600 to-teal-600 text-white font-semibold hover:from-cyan-500 hover:to-teal-500 transition-all shadow-lg shadow-cyan-500/25 flex items-center justify-center gap-2"
+                className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-linear-to-r from-cyan-600 to-teal-600 px-4 py-3 font-semibold text-white shadow-lg shadow-cyan-500/25 transition-all hover:from-cyan-500 hover:to-teal-500"
               >
-                <Check className="w-4 h-4" />
+                <Check className="h-4 w-4" />
                 Apply
               </button>
             </div>
@@ -246,9 +242,9 @@ export function CSVSettingsButton({
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-cyan-600 border-2 border-cyan-500 text-white font-medium hover:bg-cyan-500 transition-all shadow-lg shadow-cyan-500/25"
+        className="flex items-center gap-2 rounded-xl border-2 border-cyan-500 bg-cyan-600 px-4 py-2.5 font-medium text-white shadow-lg shadow-cyan-500/25 transition-all hover:bg-cyan-500"
       >
-        <Settings className="w-4 h-4" />
+        <Settings className="h-4 w-4" />
         <span className="text-sm">CSV Settings</span>
       </button>
       <CSVSettingsModal

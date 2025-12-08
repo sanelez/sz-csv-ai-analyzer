@@ -65,7 +65,10 @@ export function getChatStore(): ChatStore {
   return store;
 }
 
-function updateStore(updates: Partial<Omit<ChatStore, "version">>, sync = false) {
+function updateStore(
+  updates: Partial<Omit<ChatStore, "version">>,
+  sync = false,
+) {
   store = {
     ...store,
     ...updates,
@@ -100,7 +103,10 @@ export function setCurrentPrompt(prompt: string) {
 }
 
 export function setLoadingState(isLoading: boolean, pendingPrompt = "") {
-  updateStore({ isLoading, pendingPrompt: isLoading ? pendingPrompt : "" }, true);
+  updateStore(
+    { isLoading, pendingPrompt: isLoading ? pendingPrompt : "" },
+    true,
+  );
 }
 
 export function clearChatStore() {
@@ -127,11 +133,11 @@ export function subscribeToChatStore(callback: () => void): () => void {
 export function useChatStore() {
   // Keep a ref to the latest store for stable callbacks
   const storeRef = useRef(store);
-  
+
   const storeState = useSyncExternalStore(
     subscribeToChatStore,
     getChatStore,
-    () => initialState // Server snapshot - use initial state
+    () => initialState, // Server snapshot - use initial state
   );
 
   // Keep ref updated

@@ -35,7 +35,7 @@ export function FileUpload({
       };
       reader.readAsText(file);
     },
-    [onFileLoaded]
+    [onFileLoaded],
   );
 
   const handleDrop = useCallback(
@@ -48,7 +48,7 @@ export function FileUpload({
         handleFile(file);
       }
     },
-    [handleFile]
+    [handleFile],
   );
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -68,16 +68,16 @@ export function FileUpload({
         handleFile(file);
       }
     },
-    [handleFile]
+    [handleFile],
   );
 
   if (currentFileName) {
     return (
-      <div className="glass-card p-6 animate-fade-in">
+      <div className="glass-card animate-fade-in p-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="p-3 rounded-xl bg-gradient-to-br from-green-500/20 to-emerald-500/20 border border-green-500/30">
-              <File className="w-6 h-6 text-green-400" />
+            <div className="rounded-xl border border-green-500/30 bg-gradient-to-br from-green-500/20 to-emerald-500/20 p-3">
+              <File className="h-6 w-6 text-green-400" />
             </div>
             <div>
               <p className="font-medium text-white">{currentFileName}</p>
@@ -87,10 +87,10 @@ export function FileUpload({
           <button
             type="button"
             onClick={onClear}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-red-600 border-2 border-red-500 text-white font-medium hover:bg-red-500 transition-all duration-200 shadow-lg shadow-red-500/25"
+            className="flex items-center gap-2 rounded-xl border-2 border-red-500 bg-red-600 px-4 py-2.5 font-medium text-white shadow-lg shadow-red-500/25 transition-all duration-200 hover:bg-red-500"
             title="Remove file"
           >
-            <X className="w-4 h-4" />
+            <X className="h-4 w-4" />
             <span className="text-sm">Clear</span>
           </button>
         </div>
@@ -101,15 +101,9 @@ export function FileUpload({
   return (
     <div className="space-y-4">
       <label
-        className={`
-          glass-card glass-card-hover cursor-pointer block p-8 text-center
-          transition-all duration-300
-          ${
-            isDragging
-              ? "ring-2 ring-violet-500 bg-violet-500/10"
-              : ""
-          }
-        `}
+        className={`glass-card glass-card-hover block cursor-pointer p-8 text-center transition-all duration-300 ${
+          isDragging ? "bg-violet-500/10 ring-2 ring-violet-500" : ""
+        } `}
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
@@ -122,33 +116,28 @@ export function FileUpload({
         />
         <div className="flex flex-col items-center gap-4">
           <div
-            className={`
-              p-4 rounded-2xl transition-all duration-300
-              ${
-                isDragging
-                  ? "bg-violet-500/20 scale-110"
-                  : "bg-gradient-to-br from-violet-500/10 to-purple-500/10 border border-violet-500/20"
-              }
-            `}
+            className={`rounded-2xl p-4 transition-all duration-300 ${
+              isDragging
+                ? "scale-110 bg-violet-500/20"
+                : "border border-violet-500/20 bg-gradient-to-br from-violet-500/10 to-purple-500/10"
+            } `}
           >
             <Upload
-              className={`w-8 h-8 ${isDragging ? "text-violet-400" : "text-violet-500"}`}
+              className={`h-8 w-8 ${isDragging ? "text-violet-400" : "text-violet-500"}`}
             />
           </div>
           <div>
-            <p className="text-lg font-medium text-white mb-1">
+            <p className="mb-1 text-lg font-medium text-white">
               {isDragging ? "Drop your file here" : "Drag & drop your CSV file"}
             </p>
-            <p className="text-sm text-gray-400">
-              or click to browse files
-            </p>
+            <p className="text-sm text-gray-400">or click to browse files</p>
           </div>
         </div>
       </label>
 
       {error && (
-        <div className="flex items-center gap-2 p-4 rounded-xl bg-red-500/10 border border-red-500/30 animate-fade-in">
-          <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0" />
+        <div className="animate-fade-in flex items-center gap-2 rounded-xl border border-red-500/30 bg-red-500/10 p-4">
+          <AlertCircle className="h-5 w-5 flex-shrink-0 text-red-400" />
           <p className="text-sm text-red-400">{error}</p>
         </div>
       )}

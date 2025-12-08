@@ -2,9 +2,31 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { createPortal } from "react-dom";
-import { Key, X, Eye, EyeOff, Check, Globe, Server, AlertTriangle } from "lucide-react";
-import { loadApiSettings, saveApiSettings, type StoredSettings } from "~/lib/storage";
-import { DEFAULT_MODEL, DEFAULT_PROVIDER_ID, DEFAULT_MODEL_BY_PROVIDER, SUPPORTED_LANGUAGES, getBrowserLanguage, type ModelId, type LanguageCode, type ProviderId } from "~/lib/ai-models";
+import {
+  Key,
+  X,
+  Eye,
+  EyeOff,
+  Check,
+  Globe,
+  Server,
+  AlertTriangle,
+} from "lucide-react";
+import {
+  loadApiSettings,
+  saveApiSettings,
+  type StoredSettings,
+} from "~/lib/storage";
+import {
+  DEFAULT_MODEL,
+  DEFAULT_PROVIDER_ID,
+  DEFAULT_MODEL_BY_PROVIDER,
+  SUPPORTED_LANGUAGES,
+  getBrowserLanguage,
+  type ModelId,
+  type LanguageCode,
+  type ProviderId,
+} from "~/lib/ai-models";
 
 interface ModelInfo {
   id: string;
@@ -39,14 +61,26 @@ export function APIKeySettings({
   currentSettings,
 }: APIKeySettingsProps) {
   const [apiKey, setApiKey] = useState(currentSettings?.apiKey ?? "");
-  const [model, setModel] = useState<ModelId>(currentSettings?.model ?? DEFAULT_MODEL);
-  const [providerId, setProviderId] = useState<ProviderId>(currentSettings?.providerId ?? DEFAULT_PROVIDER_ID);
-  const [language, setLanguage] = useState<LanguageCode>(currentSettings?.language ?? getBrowserLanguage());
-  const [customEndpoint, setCustomEndpoint] = useState(currentSettings?.customEndpoint ?? "");
-  const [customModel, setCustomModel] = useState(currentSettings?.customModel ?? "");
+  const [model, setModel] = useState<ModelId>(
+    currentSettings?.model ?? DEFAULT_MODEL,
+  );
+  const [providerId, setProviderId] = useState<ProviderId>(
+    currentSettings?.providerId ?? DEFAULT_PROVIDER_ID,
+  );
+  const [language, setLanguage] = useState<LanguageCode>(
+    currentSettings?.language ?? getBrowserLanguage(),
+  );
+  const [customEndpoint, setCustomEndpoint] = useState(
+    currentSettings?.customEndpoint ?? "",
+  );
+  const [customModel, setCustomModel] = useState(
+    currentSettings?.customModel ?? "",
+  );
   const [showKey, setShowKey] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [useCustomEndpoint, setUseCustomEndpoint] = useState(!!currentSettings?.customEndpoint);
+  const [useCustomEndpoint, setUseCustomEndpoint] = useState(
+    !!currentSettings?.customEndpoint,
+  );
   const [searchTerm, setSearchTerm] = useState("");
   const [catalog, setCatalog] = useState<ModelCatalog | null>(null);
   const [isLoadingCatalog, setIsLoadingCatalog] = useState(false);
@@ -91,9 +125,27 @@ export function APIKeySettings({
 
   const providerSelectOptions = useMemo(() => {
     if (!catalog) return [];
-    return Object.values(catalog).map((p) => ({
+    // Recommended providers to surface first and mark in the UI
+    const recommended = ["google", "anthropic", "mistral", "openai", "xai"];
+
+    // Build an array with recommended providers first (in that order) then the rest
+    const allProviders = Object.values(catalog);
+
+    const recommendedProviders = recommended
+      .map((id) => allProviders.find((p) => p.id === id))
+      .filter(Boolean) as ProviderInfo[];
+
+    const otherProviders = allProviders
+      .filter((p) => !recommended.includes(p.id))
+      .sort((a, b) => a.name.localeCompare(b.name));
+
+    return [...recommendedProviders, ...otherProviders].map((p) => ({
       id: p.id,
       name: p.name,
+      // Add a small label for recommended providers
+      label: ["google", "anthropic", "mistral", "openai", "xai"].includes(p.id)
+        ? `${p.name} — Recommended & Tested`
+        : p.name,
     }));
   }, [catalog]);
 
@@ -103,14 +155,14 @@ export function APIKeySettings({
       ...m,
       providerName: selectedProvider.name,
     }));
-    
+
     if (!searchTerm.trim()) return models;
-    
+
     const search = searchTerm.toLowerCase();
     return models.filter(
       (m) =>
         m.name.toLowerCase().includes(search) ||
-        m.id.toLowerCase().includes(search)
+        m.id.toLowerCase().includes(search),
     );
   }, [selectedProvider, searchTerm]);
 
@@ -158,104 +210,120 @@ export function APIKeySettings({
 
       {/* Modal */}
       <div
-        className="fixed inset-0 z-101 flex items-center justify-center p-4 pointer-events-none"
+        className="pointer-events-none fixed inset-0 z-101 flex items-center justify-center p-4"
         role="dialog"
         aria-modal="true"
       >
         <div
-          className="pointer-events-auto w-full max-w-md max-h-[90vh] overflow-y-auto rounded-2xl bg-gray-900 border-2 border-violet-500/60 shadow-[0_0_60px_rgba(139,92,246,0.3)] animate-scale-in"
+          className="animate-scale-in pointer-events-auto max-h-[90vh] w-full max-w-md overflow-y-auto rounded-2xl border-2 border-violet-500/60 bg-gray-900 shadow-[0_0_60px_rgba(139,92,246,0.3)]"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
           <div className="border-b border-white/10 px-6 py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-xl bg-violet-500/20 border border-violet-500/40">
-                  <Key className="w-5 h-5 text-violet-400" />
+                <div className="rounded-xl border border-violet-500/40 bg-violet-500/20 p-2.5">
+                  <Key className="h-5 w-5 text-violet-400" />
                 </div>
-                <h2 className="text-xl font-bold text-white">API Configuration</h2>
+                <h2 className="text-xl font-bold text-white">
+                  API Configuration
+                </h2>
               </div>
               <div className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={handleSave}
-                  disabled={useCustomEndpoint ? (!customEndpoint.trim() || !customModel.trim()) : (!apiKey.trim() || !model)}
-                  className="px-3 py-1.5 rounded-lg bg-violet-600 text-white text-sm font-semibold hover:bg-violet-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                  disabled={
+                    useCustomEndpoint
+                      ? !customEndpoint.trim() || !customModel.trim()
+                      : !apiKey.trim() || !model
+                  }
+                  className="rounded-lg bg-violet-600 px-3 py-1.5 text-sm font-semibold text-white transition-all hover:bg-violet-500 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   Save
                 </button>
                 <button
                   type="button"
                   onClick={onClose}
-                  className="p-2 rounded-lg hover:bg-white/10 transition-colors"
+                  className="rounded-lg p-2 transition-colors hover:bg-white/10"
                 >
-                  <X className="w-5 h-5 text-gray-400" />
+                  <X className="h-5 w-5 text-gray-400" />
                 </button>
               </div>
             </div>
-            
+
             {/* Current Model Display */}
-            <div className="mt-4 px-4 py-3 rounded-xl bg-white/5 border border-white/10">
+            <div className="mt-4 rounded-xl border border-white/10 bg-white/5 px-4 py-3">
               {currentSettings?.model ? (
                 <div>
-                  <p className="text-xs text-gray-500 mb-1">Current model</p>
+                  <p className="mb-1 text-xs text-gray-500">Current model</p>
                   <div className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-emerald-400 shrink-0" />
-                    <p className="text-sm font-semibold text-white truncate">
+                    <Check className="h-4 w-4 shrink-0 text-emerald-400" />
+                    <p className="truncate text-sm font-semibold text-white">
                       {(() => {
-                        const currentModel = catalog 
+                        const currentModel = catalog
                           ? Object.values(catalog)
-                              .flatMap((provider: ProviderInfo) => Object.values(provider.models))
-                              .find((m: ModelInfo) => m.id === currentSettings.model)
+                              .flatMap((provider: ProviderInfo) =>
+                                Object.values(provider.models),
+                              )
+                              .find(
+                                (m: ModelInfo) =>
+                                  m.id === currentSettings.model,
+                              )
                           : null;
                         return currentModel?.name ?? currentSettings.model;
                       })()}
                     </p>
                   </div>
                   {currentSettings.providerName && (
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="mt-1 text-xs text-gray-500">
                       Provider: {currentSettings.providerName}
                     </p>
                   )}
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
-                  <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
-                  <p className="text-sm text-amber-400">No model selected - please configure below</p>
+                  <AlertTriangle className="h-4 w-4 shrink-0 text-amber-400" />
+                  <p className="text-sm text-amber-400">
+                    No model selected - please configure below
+                  </p>
                 </div>
               )}
             </div>
           </div>
 
           {/* Content */}
-          <div className="p-6 space-y-6">
+          <div className="space-y-6 p-6">
             {/* Custom Endpoint Toggle */}
             <div>
-              <label className="flex items-center gap-3 cursor-pointer">
+              <label className="flex cursor-pointer items-center gap-3">
                 <div className="relative">
                   <input
                     type="checkbox"
                     checked={useCustomEndpoint}
                     onChange={(e) => setUseCustomEndpoint(e.target.checked)}
-                    className="sr-only peer"
+                    className="peer sr-only"
                   />
-                  <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-violet-500/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-violet-600"></div>
+                  <div className="peer h-6 w-11 rounded-full bg-gray-700 peer-checked:bg-violet-600 peer-focus:ring-2 peer-focus:ring-violet-500/20 peer-focus:outline-none after:absolute after:top-0.5 after:left-0.5 after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white"></div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Server className="w-4 h-4 text-gray-400" />
-                  <span className="text-sm font-semibold text-gray-200">Use Custom Endpoint</span>
+                  <Server className="h-4 w-4 text-gray-400" />
+                  <span className="text-sm font-semibold text-gray-200">
+                    Use Custom Endpoint
+                  </span>
                 </div>
               </label>
               <p className="mt-2 text-xs text-gray-500">
-                Connect to OpenAI-compatible APIs (Ollama, LM Studio, vLLM, etc.)
+                Connect to OpenAI-compatible APIs (Ollama, LM Studio, vLLM,
+                etc.)
               </p>
             </div>
 
             {/* Custom Endpoint Fields */}
             {useCustomEndpoint && (
-              <div className="space-y-4 p-4 rounded-xl bg-gray-800/50 border border-gray-700">
+              <div className="space-y-4 rounded-xl border border-gray-700 bg-gray-800/50 p-4">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-200 mb-2">
+                  <label className="mb-2 block text-sm font-semibold text-gray-200">
                     API Base URL
                   </label>
                   <input
@@ -263,14 +331,14 @@ export function APIKeySettings({
                     value={customEndpoint}
                     onChange={(e) => setCustomEndpoint(e.target.value)}
                     placeholder="http://localhost:11434/v1"
-                    className="w-full px-4 py-3 bg-gray-800 border-2 border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all"
+                    className="w-full rounded-xl border-2 border-gray-700 bg-gray-800 px-4 py-3 text-white placeholder-gray-500 transition-all focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 focus:outline-none"
                   />
                   <p className="mt-2 text-xs text-gray-500">
                     Example: http://localhost:11434/v1 for Ollama
                   </p>
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-200 mb-2">
+                  <label className="mb-2 block text-sm font-semibold text-gray-200">
                     Model Name
                   </label>
                   <input
@@ -278,7 +346,7 @@ export function APIKeySettings({
                     value={customModel}
                     onChange={(e) => setCustomModel(e.target.value)}
                     placeholder="llama3.2, mistral, codellama, etc."
-                    className="w-full px-4 py-3 bg-gray-800 border-2 border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all"
+                    className="w-full rounded-xl border-2 border-gray-700 bg-gray-800 px-4 py-3 text-white placeholder-gray-500 transition-all focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 focus:outline-none"
                   />
                   <p className="mt-2 text-xs text-gray-500">
                     The model name as configured in your server
@@ -289,7 +357,7 @@ export function APIKeySettings({
 
             {/* API Key Input */}
             <div>
-              <label className="block text-sm font-semibold text-gray-200 mb-2">
+              <label className="mb-2 block text-sm font-semibold text-gray-200">
                 {useCustomEndpoint ? "API Key (optional)" : "Provider API Key"}
               </label>
               <div className="relative">
@@ -297,18 +365,20 @@ export function APIKeySettings({
                   type={showKey ? "text" : "password"}
                   value={apiKey}
                   onChange={(e) => setApiKey(e.target.value)}
-                  placeholder={useCustomEndpoint ? "Leave empty if not required" : "sk-..."}
-                  className="w-full px-4 py-3 bg-gray-800 border-2 border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all pr-12"
+                  placeholder={
+                    useCustomEndpoint ? "Leave empty if not required" : "sk-..."
+                  }
+                  className="w-full rounded-xl border-2 border-gray-700 bg-gray-800 px-4 py-3 pr-12 text-white placeholder-gray-500 transition-all focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 focus:outline-none"
                 />
                 <button
                   type="button"
                   onClick={() => setShowKey(!showKey)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 rounded-lg hover:bg-white/10 transition-colors"
+                  className="absolute top-1/2 right-3 -translate-y-1/2 rounded-lg p-1.5 transition-colors hover:bg-white/10"
                 >
                   {showKey ? (
-                    <EyeOff className="w-4 h-4 text-gray-400" />
+                    <EyeOff className="h-4 w-4 text-gray-400" />
                   ) : (
-                    <Eye className="w-4 h-4 text-gray-400" />
+                    <Eye className="h-4 w-4 text-gray-400" />
                   )}
                 </button>
               </div>
@@ -322,73 +392,92 @@ export function APIKeySettings({
             {/* Provider Selection */}
             {!useCustomEndpoint && (
               <div className="space-y-2">
-                <label className="block text-sm font-semibold text-gray-200 mb-1">Provider</label>
+                <label className="mb-1 block text-sm font-semibold text-gray-200">
+                  Provider
+                </label>
                 <select
                   value={providerId}
-                  onChange={(e) => setProviderId(e.target.value)}
-                  className="w-full px-4 py-3 bg-gray-800 border-2 border-gray-700 rounded-xl text-white focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all"
+                  onChange={(e) => {
+                    // Reset the apiKey field when switching providers
+                    setProviderId(e.target.value);
+                    setApiKey("");
+                  }}
+                  className="w-full rounded-xl border-2 border-gray-700 bg-gray-800 px-4 py-3 text-white transition-all focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 focus:outline-none"
                 >
                   {providerSelectOptions.map((provider) => (
                     <option key={provider.id} value={provider.id}>
-                      {provider.name ?? provider.id}
+                      {provider.label ?? provider.name ?? provider.id}
                     </option>
                   ))}
                 </select>
-                <p className="text-xs text-gray-500">Pick the provider to populate models.</p>
+                <p className="text-xs text-gray-500">
+                  Pick the provider to populate models.
+                </p>
               </div>
             )}
 
             {/* Model Selection - Only show when not using custom endpoint */}
             {!useCustomEndpoint && (
               <div>
-                <label className="block text-sm font-semibold text-gray-200 mb-3">
+                <label className="mb-3 block text-sm font-semibold text-gray-200">
                   Model
                 </label>
-                
-                {/* Recommended Model Badge - Above search */}
-                {selectedProvider && (() => {
-                  const recommendedModelId = DEFAULT_MODEL_BY_PROVIDER[selectedProvider.id];
-                  
-                  const recommendedModel = recommendedModelId 
-                    ? modelOptions.find((m: ModelInfo) => m.id.includes(recommendedModelId.split("/").pop() ?? "") || m.id === recommendedModelId)
-                    : null;
 
-                  return recommendedModel ? (
-                    <div className="mb-3">
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                        <span className="text-xs font-semibold text-emerald-400 uppercase tracking-wide">
-                          Recommended
-                        </span>
-                      </div>
-                      <button
-                        key={recommendedModel.id}
-                        type="button"
-                        onClick={() => setModel(recommendedModel.id)}
-                        className={`
-                          w-full p-4 rounded-xl border-2 transition-all duration-200 text-left
-                          ${model === recommendedModel.id
-                            ? "border-emerald-500 bg-emerald-500/20"
-                            : "border-emerald-500/50 bg-emerald-500/10 hover:border-emerald-500 hover:bg-emerald-500/15"
-                          }
-                        `}
-                      >
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <span className="font-semibold text-white">{recommendedModel.name}</span>
-                            <p className="text-sm text-gray-400 mt-0.5">{recommendedModel.description}</p>
-                            {recommendedModel.providerName && (
-                              <p className="text-xs text-gray-500 mt-1">{recommendedModel.providerName}</p>
+                {/* Recommended Model Badge - Above search */}
+                {selectedProvider &&
+                  (() => {
+                    const recommendedModelId =
+                      DEFAULT_MODEL_BY_PROVIDER[selectedProvider.id];
+
+                    const recommendedModel = recommendedModelId
+                      ? modelOptions.find(
+                          (m: ModelInfo) =>
+                            m.id.includes(
+                              recommendedModelId.split("/").pop() ?? "",
+                            ) || m.id === recommendedModelId,
+                        )
+                      : null;
+
+                    return recommendedModel ? (
+                      <div className="mb-3">
+                        <div className="mb-2 flex items-center gap-2">
+                          <div className="h-2 w-2 animate-pulse rounded-full bg-emerald-400" />
+                          <span className="text-xs font-semibold tracking-wide text-emerald-400 uppercase">
+                            Recommended
+                          </span>
+                        </div>
+                        <button
+                          key={recommendedModel.id}
+                          type="button"
+                          onClick={() => setModel(recommendedModel.id)}
+                          className={`w-full rounded-xl border-2 p-4 text-left transition-all duration-200 ${
+                            model === recommendedModel.id
+                              ? "border-emerald-500 bg-emerald-500/20"
+                              : "border-emerald-500/50 bg-emerald-500/10 hover:border-emerald-500 hover:bg-emerald-500/15"
+                          } `}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <span className="font-semibold text-white">
+                                {recommendedModel.name}
+                              </span>
+                              <p className="mt-0.5 text-sm text-gray-400">
+                                {recommendedModel.description}
+                              </p>
+                              {recommendedModel.providerName && (
+                                <p className="mt-1 text-xs text-gray-500">
+                                  {recommendedModel.providerName}
+                                </p>
+                              )}
+                            </div>
+                            {model === recommendedModel.id && (
+                              <Check className="h-5 w-5 shrink-0 text-emerald-400" />
                             )}
                           </div>
-                          {model === recommendedModel.id && (
-                            <Check className="w-5 h-5 text-emerald-400 shrink-0" />
-                          )}
-                        </div>
-                      </button>
-                    </div>
-                  ) : null;
-                })()}
+                        </button>
+                      </div>
+                    ) : null;
+                  })()}
 
                 {/* Search field to filter the models list */}
                 <div className="mb-3">
@@ -397,48 +486,65 @@ export function APIKeySettings({
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     placeholder="Search models (name or id)"
-                    className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
+                    className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white placeholder-gray-500 focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 focus:outline-none"
                   />
                 </div>
 
-                <div className="space-y-2 max-h-64 overflow-y-auto">
+                <div className="max-h-64 space-y-2 overflow-y-auto">
                   {modelOptions.map((m: ModelInfo) => (
                     <button
                       key={m.id}
                       type="button"
                       onClick={() => setModel(m.id)}
-                      className={`
-                        w-full p-4 rounded-xl border-2 transition-all duration-200 text-left
-                        ${model === m.id
+                      className={`w-full rounded-xl border-2 p-4 text-left transition-all duration-200 ${
+                        model === m.id
                           ? "border-violet-500 bg-violet-500/20"
                           : "border-gray-700 bg-gray-800 hover:border-gray-600"
-                        }
-                      `}
+                      } `}
                     >
                       <div className="flex items-center justify-between">
                         <div>
-                          <span className="font-semibold text-white">{m.name}</span>
-                          <p className="text-sm text-gray-400 mt-0.5">{m.description}</p>
+                          <span className="font-semibold text-white">
+                            {m.name}
+                          </span>
+                          <p className="mt-0.5 text-sm text-gray-400">
+                            {m.description}
+                          </p>
                           {m.providerName && (
-                            <p className="text-xs text-gray-500 mt-1">{m.providerName}</p>
+                            <p className="mt-1 text-xs text-gray-500">
+                              {m.providerName}
+                            </p>
                           )}
                         </div>
                         {model === m.id && (
-                          <Check className="w-5 h-5 text-violet-400" />
+                          <Check className="h-5 w-5 text-violet-400" />
                         )}
                       </div>
                       <div className="mt-2 flex gap-2 text-[11px] text-gray-400">
-                        {m.tool_call && <span className="px-2 py-0.5 rounded bg-white/10">Tools</span>}
-                        {m.reasoning && <span className="px-2 py-0.5 rounded bg-white/10">Reasoning</span>}
+                        {m.tool_call && (
+                          <span className="rounded bg-white/10 px-2 py-0.5">
+                            Tools
+                          </span>
+                        )}
+                        {m.reasoning && (
+                          <span className="rounded bg-white/10 px-2 py-0.5">
+                            Reasoning
+                          </span>
+                        )}
                       </div>
                     </button>
                   ))}
                   {modelOptions.length === 0 && (
-                    <p className="text-sm text-gray-500">No models available for this provider. Please wait for the catalog to load.</p>
+                    <p className="text-sm text-gray-500">
+                      No models available for this provider. Please wait for the
+                      catalog to load.
+                    </p>
                   )}
                   {modelOptions.length > 0 && !model && (
-                    <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/30 mb-2">
-                      <p className="text-sm text-amber-400">Please select a model to continue</p>
+                    <div className="mb-2 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3">
+                      <p className="text-sm text-amber-400">
+                        Please select a model to continue
+                      </p>
                     </div>
                   )}
                 </div>
@@ -447,16 +553,16 @@ export function APIKeySettings({
 
             {/* Language Selection */}
             <div>
-              <label className="block text-sm font-semibold text-gray-200 mb-2">
+              <label className="mb-2 block text-sm font-semibold text-gray-200">
                 <div className="flex items-center gap-2">
-                  <Globe className="w-4 h-4" />
+                  <Globe className="h-4 w-4" />
                   Response Language
                 </div>
               </label>
               <select
                 value={language}
                 onChange={(e) => setLanguage(e.target.value as LanguageCode)}
-                className="w-full px-4 py-3 bg-gray-800 border-2 border-gray-700 rounded-xl text-white focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition-all"
+                className="w-full rounded-xl border-2 border-gray-700 bg-gray-800 px-4 py-3 text-white transition-all focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 focus:outline-none"
               >
                 {SUPPORTED_LANGUAGES.map((lang) => (
                   <option key={lang.code} value={lang.code}>
@@ -476,15 +582,19 @@ export function APIKeySettings({
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 px-4 py-3 rounded-xl bg-gray-800 border border-gray-700 text-gray-300 font-medium hover:bg-gray-750 transition-colors"
+                className="hover:bg-gray-750 flex-1 rounded-xl border border-gray-700 bg-gray-800 px-4 py-3 font-medium text-gray-300 transition-colors"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={handleSave}
-                disabled={useCustomEndpoint ? (!customEndpoint.trim() || !customModel.trim()) : (!apiKey.trim() || !model)}
-                className="flex-1 px-4 py-3 rounded-xl bg-linear-to-r from-violet-600 to-purple-600 text-white font-semibold hover:from-violet-500 hover:to-purple-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-violet-500/25"
+                disabled={
+                  useCustomEndpoint
+                    ? !customEndpoint.trim() || !customModel.trim()
+                    : !apiKey.trim() || !model
+                }
+                className="flex-1 rounded-xl bg-linear-to-r from-violet-600 to-purple-600 px-4 py-3 font-semibold text-white shadow-lg shadow-violet-500/25 transition-all hover:from-violet-500 hover:to-purple-500 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Save Configuration
               </button>
@@ -516,23 +626,21 @@ export function APIKeyButton({
     }
   }, [onSettingsChange]);
 
-  const hasKey = currentSettings?.apiKey && currentSettings.apiKey.trim() !== "";
+  const hasKey =
+    currentSettings?.apiKey && currentSettings.apiKey.trim() !== "";
 
   return (
     <>
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className={`
-          flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium
-          transition-all duration-200 shadow-lg
-          ${hasKey
-            ? "bg-emerald-600 border-2 border-emerald-500 text-white hover:bg-emerald-500 shadow-emerald-500/25"
-            : "bg-violet-600 border-2 border-violet-500 text-white hover:bg-violet-500 shadow-violet-500/25"
-          }
-        `}
+        className={`flex items-center gap-2 rounded-xl px-4 py-2.5 font-medium shadow-lg transition-all duration-200 ${
+          hasKey
+            ? "border-2 border-emerald-500 bg-emerald-600 text-white shadow-emerald-500/25 hover:bg-emerald-500"
+            : "border-2 border-violet-500 bg-violet-600 text-white shadow-violet-500/25 hover:bg-violet-500"
+        } `}
       >
-        <Key className="w-4 h-4" />
+        <Key className="h-4 w-4" />
         <span className="text-sm">
           {hasKey ? "API Configured ✓" : "Configure API"}
         </span>

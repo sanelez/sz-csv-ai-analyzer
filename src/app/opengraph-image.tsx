@@ -12,121 +12,119 @@ export const contentType = "image/png";
 
 export default async function Image() {
   return new ImageResponse(
-    (
+    <div
+      style={{
+        height: "100%",
+        width: "100%",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "#0f172a",
+        backgroundImage:
+          "radial-gradient(circle at 25% 25%, #7c3aed33 0%, transparent 50%), radial-gradient(circle at 75% 75%, #06b6d433 0%, transparent 50%)",
+      }}
+    >
       <div
         style={{
-          height: "100%",
-          width: "100%",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: "#0f172a",
-          backgroundImage:
-            "radial-gradient(circle at 25% 25%, #7c3aed33 0%, transparent 50%), radial-gradient(circle at 75% 75%, #06b6d433 0%, transparent 50%)",
+          textAlign: "center",
         }}
       >
+        {/* Icon */}
         <div
           style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
+            fontSize: 80,
+            marginBottom: 20,
+          }}
+        >
+          📊
+        </div>
+
+        {/* Title */}
+        <div
+          style={{
+            fontSize: 60,
+            fontWeight: 700,
+            background: "linear-gradient(to right, #ffffff, #a5b4fc)",
+            backgroundClip: "text",
+            color: "transparent",
+            marginBottom: 20,
+          }}
+        >
+          CSV AI Analyzer
+        </div>
+
+        {/* Subtitle */}
+        <div
+          style={{
+            fontSize: 28,
+            color: "#94a3b8",
+            maxWidth: 800,
             textAlign: "center",
           }}
         >
-          {/* Icon */}
-          <div
-            style={{
-              fontSize: 80,
-              marginBottom: 20,
-            }}
-          >
-            📊
-          </div>
+          Analyze your CSV files with AI • Generate charts • Detect anomalies
+        </div>
 
-          {/* Title */}
-          <div
-            style={{
-              fontSize: 60,
-              fontWeight: 700,
-              background: "linear-gradient(to right, #ffffff, #a5b4fc)",
-              backgroundClip: "text",
-              color: "transparent",
-              marginBottom: 20,
-            }}
-          >
-            CSV AI Analyzer
-          </div>
-
-          {/* Subtitle */}
-          <div
-            style={{
-              fontSize: 28,
-              color: "#94a3b8",
-              maxWidth: 800,
-              textAlign: "center",
-            }}
-          >
-            Analyze your CSV files with AI • Generate charts • Detect anomalies
-          </div>
-
-          {/* Features */}
+        {/* Features */}
+        <div
+          style={{
+            display: "flex",
+            gap: 24,
+            marginTop: 40,
+          }}
+        >
           <div
             style={{
               display: "flex",
-              gap: 24,
-              marginTop: 40,
+              alignItems: "center",
+              gap: 8,
+              backgroundColor: "#1e293b",
+              padding: "12px 20px",
+              borderRadius: 12,
+              color: "#a5b4fc",
+              fontSize: 18,
             }}
           >
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
-                backgroundColor: "#1e293b",
-                padding: "12px 20px",
-                borderRadius: 12,
-                color: "#a5b4fc",
-                fontSize: 18,
-              }}
-            >
-              🔒 100% Private
-            </div>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
-                backgroundColor: "#1e293b",
-                padding: "12px 20px",
-                borderRadius: 12,
-                color: "#a5b4fc",
-                fontSize: 18,
-              }}
-            >
-              🤖 AI-Powered
-            </div>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
-                backgroundColor: "#1e293b",
-                padding: "12px 20px",
-                borderRadius: 12,
-                color: "#a5b4fc",
-                fontSize: 18,
-              }}
-            >
-              📈 Smart Charts
-            </div>
+            🔒 100% Private
+          </div>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+              backgroundColor: "#1e293b",
+              padding: "12px 20px",
+              borderRadius: 12,
+              color: "#a5b4fc",
+              fontSize: 18,
+            }}
+          >
+            🤖 AI-Powered
+          </div>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+              backgroundColor: "#1e293b",
+              padding: "12px 20px",
+              borderRadius: 12,
+              color: "#a5b4fc",
+              fontSize: 18,
+            }}
+          >
+            📈 Smart Charts
           </div>
         </div>
       </div>
-    ),
+    </div>,
     {
       ...size,
-    }
+    },
   );
 }

@@ -35,15 +35,15 @@ export function Hero({
 }: HeroProps) {
   return (
     <div>
-      <div className="relative max-w-7xl mx-auto px-4 md:px-8 pt-12 pb-16">
+      <div className="relative mx-auto max-w-7xl px-4 pt-12 pb-16 md:px-8">
         {/* Header */}
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-12">
+        <div className="mb-12 flex flex-col items-center justify-between gap-4 md:flex-row">
           <div className="flex items-center gap-4">
-            <div className="p-3 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 shadow-lg shadow-violet-500/20">
-              <Sparkles className="w-8 h-8 text-white" />
+            <div className="rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 p-3 shadow-lg shadow-violet-500/20">
+              <Sparkles className="h-8 w-8 text-white" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">
+              <h1 className="bg-gradient-to-r from-white to-gray-400 bg-clip-text text-3xl font-bold text-transparent">
                 CSV AI Analyzer
               </h1>
               <p className="text-gray-400">
@@ -56,11 +56,11 @@ export function Hero({
               href="https://github.com/maxgfr/csv-ai-analyzer"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gray-700 border-2 border-gray-600 text-white font-medium hover:bg-gray-600 transition-all duration-200 shadow-lg shadow-gray-700/25"
+              className="flex items-center gap-2 rounded-xl border-2 border-gray-600 bg-gray-700 px-4 py-2.5 font-medium text-white shadow-lg shadow-gray-700/25 transition-all duration-200 hover:bg-gray-600"
               title="View source code on GitHub"
             >
-              <Github className="w-4 h-4" />
-              <span className="text-sm hidden sm:inline">Source Code</span>
+              <Github className="h-4 w-4" />
+              <span className="hidden text-sm sm:inline">Source Code</span>
             </a>
             <CSVSettingsButton
               settings={csvSettings}
@@ -74,18 +74,23 @@ export function Hero({
         </div>
 
         {/* Hero Content */}
-        <div className="text-center max-w-4xl mx-auto mb-12">
-          <h2 className="text-4xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white via-violet-200 to-fuchsia-200">
+        <div className="mx-auto mb-12 max-w-4xl text-center">
+          <h2 className="mb-6 bg-gradient-to-r from-white via-violet-200 to-fuchsia-200 bg-clip-text text-4xl font-bold text-transparent md:text-6xl">
             Analyze your CSV files with AI in seconds
           </h2>
-          <p className="text-xl text-gray-400 mb-8 max-w-2xl mx-auto">
-            Upload your data, let AI analyze it, and get intelligent chart suggestions. 
-            <span className="text-violet-400 font-semibold"> 100% private</span> — your data never leaves your browser.
+          <p className="mx-auto mb-8 max-w-2xl text-xl text-gray-400">
+            Upload your data, let AI analyze it, and get intelligent chart
+            suggestions.
+            <span className="font-semibold text-violet-400">
+              {" "}
+              100% private
+            </span>{" "}
+            — your data never leaves your browser.
           </p>
         </div>
 
         {/* Upload Section */}
-        <div id="upload-section" className="max-w-4xl mx-auto mb-12">
+        <div id="upload-section" className="mx-auto mb-12 max-w-4xl">
           <FileUpload
             onFileLoaded={onFileLoaded}
             currentFileName={currentFileName}
@@ -93,27 +98,29 @@ export function Hero({
           />
 
           {/* Sample Data Loader */}
-          <div className="flex items-center justify-center gap-3 mt-6 animate-fade-in">
+          <div className="animate-fade-in mt-6 flex items-center justify-center gap-3">
             <span className="text-sm text-gray-500">Or try a sample:</span>
             <div className="relative">
               <button
                 onClick={onToggleSampleDropdown}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all text-sm text-gray-300"
+                className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-gray-300 transition-all hover:bg-white/10"
               >
-                <Database className="w-4 h-4" />
+                <Database className="h-4 w-4" />
                 Load Sample Data
-                <ChevronDown className={`w-4 h-4 transition-transform ${showSampleDropdown ? "rotate-180" : ""}`} />
+                <ChevronDown
+                  className={`h-4 w-4 transition-transform ${showSampleDropdown ? "rotate-180" : ""}`}
+                />
               </button>
 
               {/* Dropdown */}
               {showSampleDropdown && (
-                <div className="absolute bottom-full left-0 mb-2 w-56 bg-gray-900 border border-gray-700 rounded-xl shadow-xl overflow-hidden z-50">
+                <div className="absolute bottom-full left-0 z-50 mb-2 w-56 overflow-hidden rounded-xl border border-gray-700 bg-gray-900 shadow-xl">
                   <div className="py-1">
                     {SAMPLE_DATASETS.map((dataset) => (
                       <button
                         key={dataset.id}
                         onClick={() => onLoadSample(dataset.id)}
-                        className="w-full text-left px-4 py-3 text-sm text-gray-300 hover:bg-white/10 hover:text-white transition-colors"
+                        className="w-full px-4 py-3 text-left text-sm text-gray-300 transition-colors hover:bg-white/10 hover:text-white"
                       >
                         {dataset.name}
                       </button>

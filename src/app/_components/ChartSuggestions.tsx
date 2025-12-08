@@ -1,7 +1,17 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Sparkles, Loader2, Check, BarChart3, MessageSquare, Send, RefreshCw, Settings2, X } from "lucide-react";
+import {
+  Sparkles,
+  Loader2,
+  Check,
+  BarChart3,
+  MessageSquare,
+  Send,
+  RefreshCw,
+  Settings2,
+  X,
+} from "lucide-react";
 import { type CSVData, generateDataSummary } from "~/lib/csv-parser";
 import {
   generateChartSuggestions,
@@ -38,7 +48,11 @@ const CHART_TYPES: { id: ChartType; name: string; icon: string }[] = [
   { id: "area", name: "Area Chart", icon: "📉" },
 ];
 
-const AGGREGATION_TYPES: { id: AggregationType; name: string; description: string }[] = [
+const AGGREGATION_TYPES: {
+  id: AggregationType;
+  name: string;
+  description: string;
+}[] = [
   { id: "none", name: "None", description: "Raw values" },
   { id: "sum", name: "Sum", description: "Total" },
   { id: "avg", name: "Average", description: "Mean value" },
@@ -84,7 +98,7 @@ export function ChartSuggestions({
     if (externalSuggestions) {
       setSuggestions(externalSuggestions);
       // Auto-select ALL valid charts
-      const validCharts = externalSuggestions.filter(chart => {
+      const validCharts = externalSuggestions.filter((chart) => {
         const hasValidX = data.headers.includes(chart.xAxis);
         const hasValidY = data.headers.includes(chart.yAxis);
         return hasValidX && hasValidY;
@@ -110,7 +124,9 @@ export function ChartSuggestions({
 
   const getConfig = (): AIServiceConfig | null => {
     // Allow custom endpoint without API key
-    const hasValidConfig = apiSettings?.customEndpoint ? !!apiSettings.customModel : !!apiSettings?.apiKey;
+    const hasValidConfig = apiSettings?.customEndpoint
+      ? !!apiSettings.customModel
+      : !!apiSettings?.apiKey;
     if (!hasValidConfig) return null;
     return {
       apiKey: apiSettings!.apiKey,
@@ -136,10 +152,14 @@ export function ChartSuggestions({
 
     try {
       const dataSummary = generateDataSummary(data);
-      const charts = await generateChartSuggestions(config, dataSummary, data.headers);
+      const charts = await generateChartSuggestions(
+        config,
+        dataSummary,
+        data.headers,
+      );
 
       // Filter out charts with invalid columns
-      const validCharts = charts.filter(chart => {
+      const validCharts = charts.filter((chart) => {
         const hasValidX = data.headers.includes(chart.xAxis);
         const hasValidY = data.headers.includes(chart.yAxis);
         return hasValidX && hasValidY;
@@ -149,7 +169,10 @@ export function ChartSuggestions({
       // Auto-select all valid charts
       setSelectedCharts(new Set(validCharts.map((c) => c.id)));
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Unable to generate charts. Please try again.";
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "Unable to generate charts. Please try again.";
       setError(errorMessage);
       console.error("Chart generation failed:", err);
     } finally {
@@ -171,7 +194,12 @@ export function ChartSuggestions({
 
     try {
       const dataSummary = generateDataSummary(data);
-      const chart = await generateCustomChart(config, dataSummary, customPrompt, data.headers);
+      const chart = await generateCustomChart(
+        config,
+        dataSummary,
+        customPrompt,
+        data.headers,
+      );
 
       if (chart) {
         // Validate columns
@@ -187,10 +215,15 @@ export function ChartSuggestions({
           setError(`Invalid columns. Available: ${data.headers.join(", ")}`);
         }
       } else {
-        setError("Could not generate chart from your description. Please try rephrasing your request or check the console for more details.");
+        setError(
+          "Could not generate chart from your description. Please try rephrasing your request or check the console for more details.",
+        );
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Unable to generate custom chart. Please try again.";
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "Unable to generate custom chart. Please try again.";
       setError(errorMessage);
       console.error("Custom chart generation failed:", err);
     } finally {
@@ -210,8 +243,6 @@ export function ChartSuggestions({
     });
   };
 
-
-
   const removeChart = (chartId: string) => {
     setSuggestions((prev) => prev.filter((s) => s.id !== chartId));
     setSelectedCharts((prev) => {
@@ -228,9 +259,10 @@ export function ChartSuggestions({
     }
 
     // For count aggregation, yColumn can be same as xColumn
-    const yColumn = manualConfig.aggregation === "count" 
-      ? (manualConfig.yColumn || manualConfig.xColumn)
-      : manualConfig.yColumn;
+    const yColumn =
+      manualConfig.aggregation === "count"
+        ? manualConfig.yColumn || manualConfig.xColumn
+        : manualConfig.yColumn;
 
     if (!yColumn) {
       setError("Please select a Y column");
@@ -254,7 +286,7 @@ export function ChartSuggestions({
     // Add to suggestions and select it (auto-apply via useEffect)
     setSuggestions((prev) => [...prev, newChart]);
     setSelectedCharts((prev) => new Set([...prev, newChart.id]));
-    
+
     setShowManualCreate(false);
     setManualConfig({
       type: "bar",
@@ -266,11 +298,11 @@ export function ChartSuggestions({
   };
 
   return (
-    <div className="glass-card p-6 animate-fade-in">
-      <div className="flex items-center justify-between mb-6">
+    <div className="glass-card animate-fade-in p-6">
+      <div className="mb-6 flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <div className="p-3 rounded-xl bg-linear-to-br from-amber-500/20 to-orange-500/20 border border-amber-500/30">
-            <Sparkles className="w-6 h-6 text-amber-400" />
+          <div className="rounded-xl border border-amber-500/30 bg-linear-to-br from-amber-500/20 to-orange-500/20 p-3">
+            <Sparkles className="h-6 w-6 text-amber-400" />
           </div>
           <div>
             <h3 className="font-semibold text-white">AI Chart Suggestions</h3>
@@ -289,12 +321,12 @@ export function ChartSuggestions({
           >
             {isLoading ? (
               <>
-                <Loader2 className="w-4 h-4 animate-spin" />
+                <Loader2 className="h-4 w-4 animate-spin" />
                 Generating...
               </>
             ) : (
               <>
-                <BarChart3 className="w-4 h-4" />
+                <BarChart3 className="h-4 w-4" />
                 Generate Charts
               </>
             )}
@@ -303,13 +335,15 @@ export function ChartSuggestions({
       </div>
 
       {error && (
-        <div className="mb-4 p-4 rounded-xl bg-red-500/10 border border-red-500/30 animate-fade-in">
+        <div className="animate-fade-in mb-4 rounded-xl border border-red-500/30 bg-red-500/10 p-4">
           <div className="flex items-start gap-3">
-            <div className="shrink-0 w-5 h-5 rounded-full bg-red-500/20 flex items-center justify-center mt-0.5">
-              <span className="text-red-400 text-xs font-bold">!</span>
+            <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-red-500/20">
+              <span className="text-xs font-bold text-red-400">!</span>
             </div>
             <div className="flex-1">
-              <p className="text-sm font-medium text-red-400 mb-1">Error generating charts</p>
+              <p className="mb-1 text-sm font-medium text-red-400">
+                Error generating charts
+              </p>
               <p className="text-sm text-red-300/80">{error}</p>
             </div>
           </div>
@@ -317,7 +351,7 @@ export function ChartSuggestions({
       )}
 
       {!apiSettings?.apiKey && (
-        <div className="text-center py-6">
+        <div className="py-6 text-center">
           <p className="text-gray-400">
             Configure your API key to generate AI-powered chart suggestions
           </p>
@@ -326,17 +360,15 @@ export function ChartSuggestions({
 
       {suggestions.length > 0 && (
         <div className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             {suggestions.map((suggestion) => (
               <div
                 key={suggestion.id}
-                className={`
-                  p-4 rounded-xl border transition-all duration-200 relative
-                  ${selectedCharts.has(suggestion.id)
+                className={`relative rounded-xl border p-4 transition-all duration-200 ${
+                  selectedCharts.has(suggestion.id)
                     ? "border-amber-500 bg-amber-500/10 ring-2 ring-amber-500/30"
                     : "border-white/10 bg-white/5 hover:border-white/20"
-                  }
-                `}
+                } `}
               >
                 <button
                   type="button"
@@ -344,32 +376,37 @@ export function ChartSuggestions({
                   className="w-full text-left"
                 >
                   <div className="flex items-start gap-3">
-                    <div className="text-2xl">{CHART_ICONS[suggestion.type] ?? "📊"}</div>
+                    <div className="text-2xl">
+                      {CHART_ICONS[suggestion.type] ?? "📊"}
+                    </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <h4 className="font-medium text-white">{suggestion.title}</h4>
+                        <h4 className="font-medium text-white">
+                          {suggestion.title}
+                        </h4>
                         {selectedCharts.has(suggestion.id) && (
-                          <Check className="w-4 h-4 text-amber-400" />
+                          <Check className="h-4 w-4 text-amber-400" />
                         )}
                       </div>
-                      <p className="text-sm text-gray-400 mt-1">
+                      <p className="mt-1 text-sm text-gray-400">
                         {suggestion.description}
                       </p>
-                      <div className="flex flex-wrap gap-2 mt-2">
-                        <span className="text-xs px-2 py-0.5 rounded bg-white/10 text-gray-300">
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        <span className="rounded bg-white/10 px-2 py-0.5 text-xs text-gray-300">
                           {suggestion.type}
                         </span>
-                        <span className="text-xs px-2 py-0.5 rounded bg-white/10 text-gray-300">
+                        <span className="rounded bg-white/10 px-2 py-0.5 text-xs text-gray-300">
                           X: {suggestion.xAxis}
                         </span>
-                        <span className="text-xs px-2 py-0.5 rounded bg-white/10 text-gray-300">
+                        <span className="rounded bg-white/10 px-2 py-0.5 text-xs text-gray-300">
                           Y: {suggestion.yAxis}
                         </span>
-                        {suggestion.aggregation && suggestion.aggregation !== "none" && (
-                          <span className="text-xs px-2 py-0.5 rounded bg-violet-500/20 text-violet-300">
-                            {suggestion.aggregation}
-                          </span>
-                        )}
+                        {suggestion.aggregation &&
+                          suggestion.aggregation !== "none" && (
+                            <span className="rounded bg-violet-500/20 px-2 py-0.5 text-xs text-violet-300">
+                              {suggestion.aggregation}
+                            </span>
+                          )}
                       </div>
                     </div>
                   </div>
@@ -378,7 +415,7 @@ export function ChartSuggestions({
                 <button
                   type="button"
                   onClick={() => removeChart(suggestion.id)}
-                  className="absolute top-2 right-2 p-1 rounded-lg hover:bg-white/10 text-gray-500 hover:text-red-400 transition-colors"
+                  className="absolute top-2 right-2 rounded-lg p-1 text-gray-500 transition-colors hover:bg-white/10 hover:text-red-400"
                   title="Remove chart"
                 >
                   ×
@@ -389,9 +426,9 @@ export function ChartSuggestions({
 
           {/* Custom Chart Input */}
           {showCustomInput ? (
-            <div className="p-4 rounded-xl bg-white/5 border border-white/10">
-              <div className="flex items-center gap-3 mb-3">
-                <MessageSquare className="w-5 h-5 text-violet-400" />
+            <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+              <div className="mb-3 flex items-center gap-3">
+                <MessageSquare className="h-5 w-5 text-violet-400" />
                 <h4 className="font-medium text-white">Describe your chart</h4>
               </div>
               <div className="flex gap-3">
@@ -416,9 +453,9 @@ export function ChartSuggestions({
                   className="btn-primary px-4 disabled:opacity-50"
                 >
                   {isCustomLoading ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <Loader2 className="h-4 w-4 animate-spin" />
                   ) : (
-                    <Send className="w-4 h-4" />
+                    <Send className="h-4 w-4" />
                   )}
                 </button>
                 <button
@@ -432,34 +469,43 @@ export function ChartSuggestions({
                   Cancel
                 </button>
               </div>
-              <p className="text-xs text-gray-500 mt-2">
+              <p className="mt-2 text-xs text-gray-500">
                 Available columns: {data.headers.join(", ")}
               </p>
             </div>
           ) : showManualCreate ? (
-            <div className="p-4 rounded-xl bg-white/5 border border-white/10">
-              <div className="flex items-center justify-between mb-4">
+            <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+              <div className="mb-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <Settings2 className="w-5 h-5 text-cyan-400" />
-                  <h4 className="font-medium text-white">Create Chart Manually</h4>
+                  <Settings2 className="h-5 w-5 text-cyan-400" />
+                  <h4 className="font-medium text-white">
+                    Create Chart Manually
+                  </h4>
                 </div>
                 <button
                   type="button"
                   onClick={() => setShowManualCreate(false)}
-                  className="p-1 rounded-lg hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
+                  className="rounded-lg p-1 text-gray-400 transition-colors hover:bg-white/10 hover:text-white"
                 >
-                  <X className="w-4 h-4" />
+                  <X className="h-4 w-4" />
                 </button>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 {/* Chart Title */}
                 <div className="md:col-span-2">
-                  <label className="block text-sm text-gray-400 mb-1">Chart Title *</label>
+                  <label className="mb-1 block text-sm text-gray-400">
+                    Chart Title *
+                  </label>
                   <input
                     type="text"
                     value={manualConfig.title}
-                    onChange={(e) => setManualConfig((prev) => ({ ...prev, title: e.target.value }))}
+                    onChange={(e) =>
+                      setManualConfig((prev) => ({
+                        ...prev,
+                        title: e.target.value,
+                      }))
+                    }
                     placeholder="e.g., Sales by Region"
                     className="input-field w-full"
                   />
@@ -467,10 +513,17 @@ export function ChartSuggestions({
 
                 {/* Chart Type */}
                 <div>
-                  <label className="block text-sm text-gray-400 mb-1">Chart Type</label>
+                  <label className="mb-1 block text-sm text-gray-400">
+                    Chart Type
+                  </label>
                   <select
                     value={manualConfig.type}
-                    onChange={(e) => setManualConfig((prev) => ({ ...prev, type: e.target.value as ChartType }))}
+                    onChange={(e) =>
+                      setManualConfig((prev) => ({
+                        ...prev,
+                        type: e.target.value as ChartType,
+                      }))
+                    }
                     className="input-field w-full"
                   >
                     {CHART_TYPES.map((type) => (
@@ -483,10 +536,17 @@ export function ChartSuggestions({
 
                 {/* Aggregation */}
                 <div>
-                  <label className="block text-sm text-gray-400 mb-1">Aggregation</label>
+                  <label className="mb-1 block text-sm text-gray-400">
+                    Aggregation
+                  </label>
                   <select
                     value={manualConfig.aggregation}
-                    onChange={(e) => setManualConfig((prev) => ({ ...prev, aggregation: e.target.value as AggregationType }))}
+                    onChange={(e) =>
+                      setManualConfig((prev) => ({
+                        ...prev,
+                        aggregation: e.target.value as AggregationType,
+                      }))
+                    }
                     className="input-field w-full"
                   >
                     {AGGREGATION_TYPES.map((agg) => (
@@ -499,10 +559,17 @@ export function ChartSuggestions({
 
                 {/* X Column */}
                 <div>
-                  <label className="block text-sm text-gray-400 mb-1">X Axis (Categories) *</label>
+                  <label className="mb-1 block text-sm text-gray-400">
+                    X Axis (Categories) *
+                  </label>
                   <select
                     value={manualConfig.xColumn}
-                    onChange={(e) => setManualConfig((prev) => ({ ...prev, xColumn: e.target.value }))}
+                    onChange={(e) =>
+                      setManualConfig((prev) => ({
+                        ...prev,
+                        xColumn: e.target.value,
+                      }))
+                    }
                     className="input-field w-full"
                   >
                     <option value="">Select column...</option>
@@ -516,16 +583,24 @@ export function ChartSuggestions({
 
                 {/* Y Column */}
                 <div>
-                  <label className="block text-sm text-gray-400 mb-1">
-                    Y Axis (Values) {manualConfig.aggregation !== "count" && "*"}
+                  <label className="mb-1 block text-sm text-gray-400">
+                    Y Axis (Values){" "}
+                    {manualConfig.aggregation !== "count" && "*"}
                   </label>
                   <select
                     value={manualConfig.yColumn}
-                    onChange={(e) => setManualConfig((prev) => ({ ...prev, yColumn: e.target.value }))}
+                    onChange={(e) =>
+                      setManualConfig((prev) => ({
+                        ...prev,
+                        yColumn: e.target.value,
+                      }))
+                    }
                     className="input-field w-full"
                   >
                     <option value="">
-                      {manualConfig.aggregation === "count" ? "(Optional for count)" : "Select column..."}
+                      {manualConfig.aggregation === "count"
+                        ? "(Optional for count)"
+                        : "Select column..."}
                     </option>
                     {data.headers.map((header) => (
                       <option key={header} value={header}>
@@ -534,14 +609,14 @@ export function ChartSuggestions({
                     ))}
                   </select>
                   {manualConfig.aggregation === "count" && (
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="mt-1 text-xs text-gray-500">
                       Optional: leave empty to count occurrences of X values
                     </p>
                   )}
                 </div>
               </div>
 
-              <div className="flex justify-end gap-3 mt-4">
+              <div className="mt-4 flex justify-end gap-3">
                 <button
                   type="button"
                   onClick={() => setShowManualCreate(false)}
@@ -552,10 +627,15 @@ export function ChartSuggestions({
                 <button
                   type="button"
                   onClick={handleManualCreate}
-                  disabled={!manualConfig.title.trim() || !manualConfig.xColumn || (manualConfig.aggregation !== "count" && !manualConfig.yColumn)}
+                  disabled={
+                    !manualConfig.title.trim() ||
+                    !manualConfig.xColumn ||
+                    (manualConfig.aggregation !== "count" &&
+                      !manualConfig.yColumn)
+                  }
                   className="btn-primary disabled:opacity-50"
                 >
-                  <Check className="w-4 h-4 mr-2" />
+                  <Check className="mr-2 h-4 w-4" />
                   Create Chart
                 </button>
               </div>
@@ -565,43 +645,44 @@ export function ChartSuggestions({
               <button
                 type="button"
                 onClick={() => setShowCustomInput(true)}
-                className="flex-1 p-4 rounded-xl border border-dashed border-white/20 hover:border-violet-500/50 hover:bg-violet-500/5 transition-all flex items-center justify-center gap-2 text-gray-400 hover:text-violet-400"
+                className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-dashed border-white/20 p-4 text-gray-400 transition-all hover:border-violet-500/50 hover:bg-violet-500/5 hover:text-violet-400"
               >
-                <MessageSquare className="w-4 h-4" />
+                <MessageSquare className="h-4 w-4" />
                 AI Chart from description
               </button>
               <button
                 type="button"
                 onClick={() => setShowManualCreate(true)}
-                className="flex-1 p-4 rounded-xl border border-dashed border-white/20 hover:border-cyan-500/50 hover:bg-cyan-500/5 transition-all flex items-center justify-center gap-2 text-gray-400 hover:text-cyan-400"
+                className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-dashed border-white/20 p-4 text-gray-400 transition-all hover:border-cyan-500/50 hover:bg-cyan-500/5 hover:text-cyan-400"
               >
-                <Settings2 className="w-4 h-4" />
+                <Settings2 className="h-4 w-4" />
                 Manual column selection
               </button>
             </div>
           )}
 
-          <div className="flex items-center justify-between pt-4 border-t border-white/10">
+          <div className="flex items-center justify-between border-t border-white/10 pt-4">
             <button
               type="button"
               onClick={handleGenerate}
               disabled={disabled || isLoading}
-              className="btn-secondary text-sm inline-flex items-center gap-2"
+              className="btn-secondary inline-flex items-center gap-2 text-sm"
             >
               {isLoading ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <Loader2 className="h-4 w-4 animate-spin" />
                   Generating...
                 </>
               ) : (
                 <>
-                  <RefreshCw className="w-4 h-4" />
+                  <RefreshCw className="h-4 w-4" />
                   Regenerate
                 </>
               )}
             </button>
             <span className="text-sm text-gray-400">
-              {selectedCharts.size} chart{selectedCharts.size !== 1 ? "s" : ""} selected
+              {selectedCharts.size} chart{selectedCharts.size !== 1 ? "s" : ""}{" "}
+              selected
             </span>
           </div>
         </div>

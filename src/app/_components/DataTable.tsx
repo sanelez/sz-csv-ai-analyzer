@@ -1,7 +1,12 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { ChevronUp, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  ChevronUp,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import type { CSVData } from "~/lib/csv-parser";
 
 interface DataTableProps {
@@ -23,23 +28,23 @@ export function DataTable({ data }: DataTableProps) {
 
   const sortedRows = useMemo(() => {
     if (sortColumn === null) return data.rows;
-    
+
     const sorted = [...data.rows].sort((a, b) => {
       const aVal = a[sortColumn] ?? "";
       const bVal = b[sortColumn] ?? "";
-      
+
       // Try numeric sort first
       const aNum = Number(aVal);
       const bNum = Number(bVal);
       if (!Number.isNaN(aNum) && !Number.isNaN(bNum)) {
         return sortDirection === "asc" ? aNum - bNum : bNum - aNum;
       }
-      
+
       // Fall back to string sort
       const comparison = String(aVal).localeCompare(String(bVal));
       return sortDirection === "asc" ? comparison : -comparison;
     });
-    
+
     return sorted;
   }, [data.rows, sortColumn, sortDirection]);
 
@@ -75,24 +80,25 @@ export function DataTable({ data }: DataTableProps) {
                   <button
                     type="button"
                     onClick={() => handleSort(i)}
-                    className="flex items-center gap-2 hover:text-white transition-colors group"
+                    className="group flex items-center gap-2 transition-colors hover:text-white"
                   >
                     <span>{header}</span>
                     <span
-                      className={`text-xs px-1.5 py-0.5 rounded ${
-                        TYPE_COLORS[data.columns[i]?.type ?? "string"] ?? TYPE_COLORS.string
+                      className={`rounded px-1.5 py-0.5 text-xs ${
+                        TYPE_COLORS[data.columns[i]?.type ?? "string"] ??
+                        TYPE_COLORS.string
                       }`}
                     >
                       {data.columns[i]?.type ?? "string"}
                     </span>
                     {sortColumn === i ? (
                       sortDirection === "asc" ? (
-                        <ChevronUp className="w-4 h-4" />
+                        <ChevronUp className="h-4 w-4" />
                       ) : (
-                        <ChevronDown className="w-4 h-4" />
+                        <ChevronDown className="h-4 w-4" />
                       )
                     ) : (
-                      <ChevronUp className="w-4 h-4 opacity-0 group-hover:opacity-30" />
+                      <ChevronUp className="h-4 w-4 opacity-0 group-hover:opacity-30" />
                     )}
                   </button>
                 </th>
@@ -103,14 +109,17 @@ export function DataTable({ data }: DataTableProps) {
             {paginatedRows.map((row, rowIndex) => (
               <tr
                 key={`row-${page * rowsPerPage + rowIndex}`}
-                className="border-b border-white/5 hover:bg-white/5 transition-colors"
+                className="border-b border-white/5 transition-colors hover:bg-white/5"
               >
                 {row.map((cell, cellIndex) => (
                   <td
                     key={`cell-${page * rowsPerPage + rowIndex}-${cellIndex}`}
                     className="px-4 py-3 text-gray-400"
                   >
-                    <span className="max-w-[200px] truncate block" title={String(cell)}>
+                    <span
+                      className="block max-w-[200px] truncate"
+                      title={String(cell)}
+                    >
                       {cell ?? "—"}
                     </span>
                   </td>
@@ -122,7 +131,7 @@ export function DataTable({ data }: DataTableProps) {
       </div>
 
       {/* Pagination */}
-      <div className="flex items-center justify-between px-4 py-3 border-t border-white/10">
+      <div className="flex items-center justify-between border-t border-white/10 px-4 py-3">
         <div className="flex items-center gap-4">
           <span className="text-sm text-gray-400">Rows per page:</span>
           <select
@@ -131,7 +140,7 @@ export function DataTable({ data }: DataTableProps) {
               setRowsPerPage(Number(e.target.value));
               setPage(0);
             }}
-            className="bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-sm text-gray-300 focus:outline-none focus:ring-2 focus:ring-violet-500/50"
+            className="rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-sm text-gray-300 focus:ring-2 focus:ring-violet-500/50 focus:outline-none"
           >
             {[10, 25, 50, 100].map((n) => (
               <option key={n} value={n}>
@@ -143,7 +152,8 @@ export function DataTable({ data }: DataTableProps) {
 
         <div className="flex items-center gap-4">
           <span className="text-sm text-gray-400">
-            {page * rowsPerPage + 1}-{Math.min((page + 1) * rowsPerPage, data.rowCount)} of{" "}
+            {page * rowsPerPage + 1}-
+            {Math.min((page + 1) * rowsPerPage, data.rowCount)} of{" "}
             {data.rowCount}
           </span>
           <div className="flex gap-1">
@@ -151,17 +161,17 @@ export function DataTable({ data }: DataTableProps) {
               type="button"
               onClick={() => setPage((p) => Math.max(0, p - 1))}
               disabled={page === 0}
-              className="p-1.5 rounded-lg hover:bg-white/10 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+              className="rounded-lg p-1.5 transition-colors hover:bg-white/10 disabled:opacity-30 disabled:hover:bg-transparent"
             >
-              <ChevronLeft className="w-4 h-4 text-gray-400" />
+              <ChevronLeft className="h-4 w-4 text-gray-400" />
             </button>
             <button
               type="button"
               onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
               disabled={page >= totalPages - 1}
-              className="p-1.5 rounded-lg hover:bg-white/10 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+              className="rounded-lg p-1.5 transition-colors hover:bg-white/10 disabled:opacity-30 disabled:hover:bg-transparent"
             >
-              <ChevronRight className="w-4 h-4 text-gray-400" />
+              <ChevronRight className="h-4 w-4 text-gray-400" />
             </button>
           </div>
         </div>

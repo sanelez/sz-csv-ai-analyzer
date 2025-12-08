@@ -29,11 +29,13 @@ import {
 import { loadApiSettings, type StoredSettings } from "~/lib/storage";
 import { Sparkles, Play, Loader2 } from "lucide-react";
 
-
 export default function HomePage() {
   const [csvData, setCsvData] = useState<CSVData | null>(null);
-  const [currentFileName, setCurrentFileName] = useState<string | undefined>(undefined);
-  const [csvSettings, setCsvSettings] = useState<CSVSettings>(DEFAULT_CSV_SETTINGS);
+  const [currentFileName, setCurrentFileName] = useState<string | undefined>(
+    undefined,
+  );
+  const [csvSettings, setCsvSettings] =
+    useState<CSVSettings>(DEFAULT_CSV_SETTINGS);
   const [apiSettings, setApiSettings] = useState<StoredSettings | null>(null);
   const [generatedCharts, setGeneratedCharts] = useState<ChartSuggestion[]>([]);
 
@@ -48,7 +50,9 @@ export default function HomePage() {
     anomalies: null,
     charts: null,
   });
-  const [chartGenerationError, setChartGenerationError] = useState<string | null>(null);
+  const [chartGenerationError, setChartGenerationError] = useState<
+    string | null
+  >(null);
   const [summaryError, setSummaryError] = useState<string | null>(null);
   const [anomaliesError, setAnomaliesError] = useState<string | null>(null);
 
@@ -92,7 +96,9 @@ export default function HomePage() {
 
   const handleRunAllAnalysis = async () => {
     // Allow running with custom endpoint (API key may be optional) or with OpenAI API key
-    const hasValidConfig = apiSettings?.customEndpoint ? !!apiSettings.customModel : !!apiSettings?.apiKey;
+    const hasValidConfig = apiSettings?.customEndpoint
+      ? !!apiSettings.customModel
+      : !!apiSettings?.apiKey;
     if (!csvData || !hasValidConfig) return;
 
     setIsAnalyzingAll(true);
@@ -129,7 +135,10 @@ export default function HomePage() {
         return summary;
       })
       .catch((error) => {
-        const errorMessage = error instanceof Error ? error.message : "Unable to generate summary. Please try again.";
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : "Unable to generate summary. Please try again.";
         console.error("Summary failed:", errorMessage);
         setSummaryError(errorMessage);
         return null;
@@ -142,19 +151,26 @@ export default function HomePage() {
         return anomalies;
       })
       .catch((error) => {
-        const errorMessage = error instanceof Error ? error.message : "Unable to detect anomalies. Please try again.";
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : "Unable to detect anomalies. Please try again.";
         console.error("Anomalies failed:", errorMessage);
         setAnomaliesError(errorMessage);
         return null;
       });
 
-    const chartsPromise = generateChartSuggestions(config, csvSummary, csvData.headers)
+    const chartsPromise = generateChartSuggestions(
+      config,
+      csvSummary,
+      csvData.headers,
+    )
       .then((charts) => {
         setChartGenerationError(null);
         setAnalysisResults((prev) => ({ ...prev, charts }));
         // Auto-generate all suggested charts
         if (charts && charts.length > 0) {
-          const validCharts = charts.filter(chart => {
+          const validCharts = charts.filter((chart) => {
             const hasValidX = csvData.headers.includes(chart.xAxis);
             const hasValidY = csvData.headers.includes(chart.yAxis);
             return hasValidX && hasValidY;
@@ -164,7 +180,10 @@ export default function HomePage() {
         return charts;
       })
       .catch((error) => {
-        const errorMessage = error instanceof Error ? error.message : "Unable to generate charts. Please try again.";
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : "Unable to generate charts. Please try again.";
         console.error("Charts failed:", errorMessage);
         setChartGenerationError(errorMessage);
         return null;
@@ -176,7 +195,9 @@ export default function HomePage() {
   };
 
   const handleRegenerateChart = async (failedChart: ChartSuggestion) => {
-    const hasValidConfig = apiSettings?.customEndpoint ? !!apiSettings.customModel : !!apiSettings?.apiKey;
+    const hasValidConfig = apiSettings?.customEndpoint
+      ? !!apiSettings.customModel
+      : !!apiSettings?.apiKey;
     if (!csvData || !hasValidConfig) return;
 
     const config = {
@@ -195,12 +216,12 @@ export default function HomePage() {
         config,
         failedChart,
         csvData.headers,
-        "Failed to render chart with current configuration"
+        "Failed to render chart with current configuration",
       );
 
       if (repairedChart) {
         setGeneratedCharts((prev) =>
-          prev.map((c) => (c.id === failedChart.id ? repairedChart : c))
+          prev.map((c) => (c.id === failedChart.id ? repairedChart : c)),
         );
       } else {
         alert("Could not repair this chart automatically.");
@@ -212,13 +233,15 @@ export default function HomePage() {
   };
 
   return (
-    <ClientOnly fallback={
-      <main className="min-h-screen bg-linear-to-b from-slate-950 to-black text-white p-4 md:p-8">
-        <div className="max-w-7xl mx-auto flex items-center justify-center min-h-[50vh]">
-          <div className="animate-pulse text-gray-400">Loading...</div>
-        </div>
-      </main>
-    }>
+    <ClientOnly
+      fallback={
+        <main className="min-h-screen bg-linear-to-b from-slate-950 to-black p-4 text-white md:p-8">
+          <div className="mx-auto flex min-h-[50vh] max-w-7xl items-center justify-center">
+            <div className="animate-pulse text-gray-400">Loading...</div>
+          </div>
+        </main>
+      }
+    >
       <main className="min-h-screen bg-linear-to-b from-slate-950 to-black text-white">
         {/* Landing Section - Only show when no data */}
         {!csvData && (
@@ -237,26 +260,29 @@ export default function HomePage() {
         {/* App Section - Show when data is loaded */}
         {csvData && (
           <div className="p-4 md:p-8">
-            <div className="max-w-7xl mx-auto space-y-8">
+            <div className="mx-auto max-w-7xl space-y-8">
               {/* Header */}
-              <div className="flex flex-col md:flex-row items-center justify-between gap-4 animate-fade-in">
+              <div className="animate-fade-in flex flex-col items-center justify-between gap-4 md:flex-row">
                 <div className="flex items-center gap-4">
-                  <div className="p-3 rounded-2xl bg-linear-to-br from-violet-600 to-indigo-600 shadow-lg shadow-violet-500/20">
-                    <Sparkles className="w-8 h-8 text-white" />
+                  <div className="rounded-2xl bg-linear-to-br from-violet-600 to-indigo-600 p-3 shadow-lg shadow-violet-500/20">
+                    <Sparkles className="h-8 w-8 text-white" />
                   </div>
                   <div>
-                    <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-linear-to-r from-white to-gray-400">
+                    <h1 className="bg-linear-to-r from-white to-gray-400 bg-clip-text text-3xl font-bold text-transparent">
                       CSV AI Analyzer
                     </h1>
                     <p className="text-gray-400">
-                      Analyzing: <span className="text-violet-400 font-medium">{currentFileName}</span>
+                      Analyzing:{" "}
+                      <span className="font-medium text-violet-400">
+                        {currentFileName}
+                      </span>
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
                   <button
                     onClick={handleClearFile}
-                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gray-700 border-2 border-gray-600 text-white font-medium hover:bg-gray-600 transition-all duration-200 shadow-lg shadow-gray-700/25"
+                    className="flex items-center gap-2 rounded-xl border-2 border-gray-600 bg-gray-700 px-4 py-2.5 font-medium text-white shadow-lg shadow-gray-700/25 transition-all duration-200 hover:bg-gray-600"
                   >
                     <span className="text-sm">← New File</span>
                   </button>
@@ -276,49 +302,47 @@ export default function HomePage() {
                 <button
                   onClick={handleRunAllAnalysis}
                   disabled={isAnalyzingAll || !apiSettings?.apiKey}
-                  className={`
-                      group relative px-8 py-4 rounded-2xl font-bold text-lg shadow-2xl transition-all duration-300
-                      ${!apiSettings?.apiKey
-                      ? "bg-gray-800 text-gray-500 cursor-not-allowed"
-                      : "bg-linear-to-r from-violet-600 via-fuchsia-600 to-pink-600 hover:scale-105 hover:shadow-violet-500/40 text-white"
-                    }
-                    `}
+                  className={`group relative rounded-2xl px-8 py-4 text-lg font-bold shadow-2xl transition-all duration-300 ${
+                    !apiSettings?.apiKey
+                      ? "cursor-not-allowed bg-gray-800 text-gray-500"
+                      : "bg-linear-to-r from-violet-600 via-fuchsia-600 to-pink-600 text-white hover:scale-105 hover:shadow-violet-500/40"
+                  } `}
                 >
                   {isAnalyzingAll ? (
                     <span className="flex items-center gap-3">
-                      <Loader2 className="w-6 h-6 animate-spin" />
+                      <Loader2 className="h-6 w-6 animate-spin" />
                       Running Full Analysis...
                     </span>
                   ) : (
                     <span className="flex items-center gap-3">
-                      <Sparkles className="w-6 h-6 animate-pulse" />
+                      <Sparkles className="h-6 w-6 animate-pulse" />
                       Run Complete Analysis
-                      <Play className="w-5 h-5 fill-current opacity-80" />
+                      <Play className="h-5 w-5 fill-current opacity-80" />
                     </span>
                   )}
 
                   {/* Glow effect */}
-                    {!isAnalyzingAll && apiSettings?.apiKey && (
-                    <div className="absolute inset-0 rounded-2xl bg-linear-to-r from-violet-600 via-fuchsia-600 to-pink-600 blur-xl opacity-40 group-hover:opacity-60 transition-opacity -z-10" />
+                  {!isAnalyzingAll && apiSettings?.apiKey && (
+                    <div className="absolute inset-0 -z-10 rounded-2xl bg-linear-to-r from-violet-600 via-fuchsia-600 to-pink-600 opacity-40 blur-xl transition-opacity group-hover:opacity-60" />
                   )}
                 </button>
               </div>
 
               {!apiSettings?.apiKey && (
-                <p className="text-center text-amber-400 text-sm">
+                <p className="text-center text-sm text-amber-400">
                   Please configure your API key to enable AI analysis
                 </p>
               )}
 
               {/* Full-width Cards Stack */}
-              <div className="space-y-8 animate-slide-up">
+              <div className="animate-slide-up space-y-8">
                 {/* Data Table - Full Width */}
-                <FullscreenCard className="bg-slate-900/50 rounded-2xl border border-white/10 overflow-hidden">
+                <FullscreenCard className="overflow-hidden rounded-2xl border border-white/10 bg-slate-900/50">
                   <DataTable data={csvData} />
                 </FullscreenCard>
 
                 {/* AI Analysis - Full Width */}
-                <FullscreenCard className="bg-slate-900/50 rounded-2xl border border-white/10 overflow-hidden">
+                <FullscreenCard className="overflow-hidden rounded-2xl border border-white/10 bg-slate-900/50">
                   <AIAnalysis
                     data={csvData}
                     apiSettings={apiSettings}
@@ -331,7 +355,7 @@ export default function HomePage() {
                 </FullscreenCard>
 
                 {/* Chart Suggestions - Full Width */}
-                <FullscreenCard className="bg-slate-900/50 rounded-2xl border border-white/10 overflow-hidden">
+                <FullscreenCard className="overflow-hidden rounded-2xl border border-white/10 bg-slate-900/50">
                   <ChartSuggestions
                     data={csvData}
                     apiSettings={apiSettings}
@@ -343,7 +367,7 @@ export default function HomePage() {
                 </FullscreenCard>
 
                 {generatedCharts && generatedCharts.length > 0 && (
-                  <FullscreenCard className="bg-slate-900/50 rounded-2xl border border-white/10 overflow-hidden">
+                  <FullscreenCard className="overflow-hidden rounded-2xl border border-white/10 bg-slate-900/50">
                     <ChartDisplay
                       data={csvData}
                       charts={generatedCharts}

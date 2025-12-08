@@ -14,7 +14,7 @@ const subscribe = () => () => undefined;
 /**
  * Wrapper component that only renders children on the client side.
  * This prevents hydration mismatches from browser extensions like Dark Reader.
- * 
+ *
  * Uses useSyncExternalStore for reliable SSR/client detection.
  */
 export function ClientOnly({ children, fallback = null }: ClientOnlyProps) {
@@ -23,8 +23,8 @@ export function ClientOnly({ children, fallback = null }: ClientOnlyProps) {
   // - Client: returns the clientSnapshot (true)
   const isClient = useSyncExternalStore(
     subscribe,
-    () => true,  // Client snapshot - always true on client
-    () => false  // Server snapshot - always false on server
+    () => true, // Client snapshot - always true on client
+    () => false, // Server snapshot - always false on server
   );
 
   if (!isClient) {

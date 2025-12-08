@@ -38,7 +38,7 @@ const detectDelimiter = (sample: string): string => {
 };
 
 const inferColumnType = (
-  values: string[]
+  values: string[],
 ): "string" | "number" | "date" | "boolean" => {
   const sampleSize = Math.min(values.length, 100);
   const sample = values.slice(0, sampleSize).filter((v) => v.trim() !== "");
@@ -48,7 +48,7 @@ const inferColumnType = (
   // Check for boolean
   const booleanValues = ["true", "false", "yes", "no", "1", "0", "oui", "non"];
   const isBool = sample.every((v) =>
-    booleanValues.includes(v.toLowerCase().trim())
+    booleanValues.includes(v.toLowerCase().trim()),
   );
   if (isBool) return "boolean";
 
@@ -67,7 +67,7 @@ const inferColumnType = (
     /^\d{4}\/\d{2}\/\d{2}$/,
   ];
   const isDate = sample.every((v) =>
-    datePatterns.some((pattern) => pattern.test(v.trim()))
+    datePatterns.some((pattern) => pattern.test(v.trim())),
   );
   if (isDate) return "date";
 
@@ -76,9 +76,10 @@ const inferColumnType = (
 
 export const parseCSV = (
   content: string,
-  settings: CSVSettings = DEFAULT_CSV_SETTINGS
+  settings: CSVSettings = DEFAULT_CSV_SETTINGS,
 ): CSVData => {
-  const delimiter = settings.delimiter || detectDelimiter(content.slice(0, 2000));
+  const delimiter =
+    settings.delimiter || detectDelimiter(content.slice(0, 2000));
 
   const result: ParseResult<string[]> = Papa.parse<string[]>(content, {
     delimiter,
@@ -122,25 +123,27 @@ export const parseCSV = (
 
 export const generateDataSummary = (data: CSVData): string => {
   const summary: string[] = [];
-  
-  summary.push(`Dataset with ${data.rowCount} rows and ${data.columns.length} columns.`);
+
+  summary.push(
+    `Dataset with ${data.rowCount} rows and ${data.columns.length} columns.`,
+  );
   summary.push("\nColumns:");
-  
+
   data.columns.forEach((col) => {
     const values = data.rows.map((row) => row[col.index] ?? "");
     const nonEmpty = values.filter((v) => v.trim() !== "");
-    
+
     if (col.type === "number") {
-      const numbers = nonEmpty.map((v) =>
-        parseFloat(v.replace(/[\s,]/g, "").replace(",", "."))
-      ).filter((n) => !isNaN(n));
-      
+      const numbers = nonEmpty
+        .map((v) => parseFloat(v.replace(/[\s,]/g, "").replace(",", ".")))
+        .filter((n) => !isNaN(n));
+
       if (numbers.length > 0) {
         const min = Math.min(...numbers);
         const max = Math.max(...numbers);
         const avg = numbers.reduce((a, b) => a + b, 0) / numbers.length;
         summary.push(
-          `- ${col.name} (number): min=${min.toFixed(2)}, max=${max.toFixed(2)}, avg=${avg.toFixed(2)}, ${numbers.length} values`
+          `- ${col.name} (number): min=${min.toFixed(2)}, max=${max.toFixed(2)}, avg=${avg.toFixed(2)}, ${numbers.length} values`,
         );
       } else {
         summary.push(`- ${col.name} (number): no valid values`);
@@ -150,7 +153,7 @@ export const generateDataSummary = (data: CSVData): string => {
       const uniqueCount = uniqueValues.size;
       const sampleValues = Array.from(uniqueValues).slice(0, 5).join(", ");
       summary.push(
-        `- ${col.name} (text): ${uniqueCount} unique values, examples: ${sampleValues}`
+        `- ${col.name} (text): ${uniqueCount} unique values, examples: ${sampleValues}`,
       );
     } else if (col.type === "date") {
       summary.push(`- ${col.name} (date): ${nonEmpty.length} values`);
