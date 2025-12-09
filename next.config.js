@@ -26,8 +26,20 @@ const config = {
   trailingSlash: true,
 
   
-  // Handle SPA routing for GitHub Pages
-  // The rewrites are handled automatically by Next.js static export
+   // Handle redirects for GitHub Pages
+  async redirects() {
+    return [];
+  },
+  
+  // Handle rewrites for GitHub Pages SPA routing
+  async rewrites() {
+    return [
+      {
+        source: '/:path*',
+        destination: '/index.html',
+      },
+    ];
+  },
 };
 
 export default config;
