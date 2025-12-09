@@ -53,10 +53,13 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build static export
-        run: pnpm run build
+      - name: Build static export for GitHub Pages
+        run: pnpm run build:export
         env:
           NEXT_PUBLIC_BASE_PATH: /${{ github.event.repository.name }}
+          NEXT_OUTPUT_MODE: export
+          GENERATE_SOURCEMAP: false
+          NODE_ENV: production
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

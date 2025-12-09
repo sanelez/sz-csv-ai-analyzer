@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>Redirection...</title>
+  <script type="text/javascript">
+    // Redirection pour GitHub Pages - SPA routing
+    var path = window.location.pathname;
+    path = path.replace(/\/$/, '');
+    path = decodeURIComponent(path);
+    
+    // Obtenir le nom du repository depuis l'URL ou utiliser le nom par défaut
+    var repoName = window.location.pathname.split('/')[1] || '';
+    
+    // Construire l'URL de base
+    var basePath = window.location.origin;
+    if (repoName) {
+      basePath += '/' + repoName;
+    }
+    
+    // Construire l'URL de redirection vers index.html
+    var redirectUrl = basePath + '/index.html' + path;
+    
+    // Ajouter un paramètre pour indiquer que c'est une redirection 404
+    if (window.location.search) {
+      redirectUrl += window.location.search;
+    }
+    
+    // Rediriger vers index.html avec le path comme hash pour React Router
+    window.location.replace(
+      basePath + '/index.html#' + path
+    );
+  </script>
+</head>
+<body>
+</body>
+</html>

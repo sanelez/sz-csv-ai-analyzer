@@ -22,8 +22,24 @@ const config = {
 
   reactCompiler: true,
 
-  // Trailing slash for GitHub Pages compatibility (only in export mode)
-  trailingSlash: process.env.NEXT_OUTPUT_MODE !== "standalone",
+  // Always use trailing slash for GitHub Pages compatibility
+  trailingSlash: true,
+
+  
+  // Handle redirects for GitHub Pages
+  async redirects() {
+    return [];
+  },
+  
+  // Handle rewrites for GitHub Pages SPA routing
+  async rewrites() {
+    return [
+      {
+        source: '/:path*',
+        destination: '/index.html',
+      },
+    ];
+  },
 };
 
 export default config;
