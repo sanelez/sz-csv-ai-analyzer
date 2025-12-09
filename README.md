@@ -164,36 +164,6 @@ Click "Run Complete Analysis" and the AI will analyze your data, detect anomalie
 | **Lucide React** | Modern icons |
 | **js-cookie** | Secure local persistence |
 
-## 📁 Project Structure
-
-```
-src/
-├── app/
-│   ├── _components/
-│   │   ├── FileUpload.tsx      # CSV drop zone
-│   │   ├── CSVSettings.tsx     # Parsing configuration
-│   │   ├── DataTable.tsx       # Data table
-│   │   ├── APIKeySettings.tsx  # API key config
-│   │   ├── ChartSuggestions.tsx# AI Suggestions
-│   │   └── ChartDisplay.tsx    # Chart rendering
-│   ├── layout.tsx
-│   └── page.tsx                # Main page
-├── lib/
-│   ├── csv-parser.ts           # Parsing utilities
-│   ├── ai-service.ts           # AI API calls
-│   └── storage.ts              # Storage utils
-└── styles/
-    └── globals.css             # Global styles
-```
-
-## 🎨 Design
-
-The application uses a modern design with:
-- **Dark mode** default
-- **Glassmorphism** for components
-- **Gradients** violet/cyan
-- **Smooth animations** on interactions
-
 ## 📝 License
 
 MIT - Use as you wish!
