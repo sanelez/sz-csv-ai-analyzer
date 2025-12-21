@@ -3184,6 +3184,35 @@
           "output": 2048
         }
       },
+      "nvidia/nemotron-3-nano-30b-a3b": {
+        "id": "nvidia/nemotron-3-nano-30b-a3b",
+        "name": "nemotron-3-nano-30b-a3b",
+        "family": "nemotron",
+        "attachment": false,
+        "reasoning": true,
+        "tool_call": true,
+        "temperature": true,
+        "knowledge": "2024-09",
+        "release_date": "2024-12",
+        "last_updated": "2024-12",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 131072,
+          "output": 131072
+        }
+      },
       "nvidia/parakeet-tdt-0.6b-v2": {
         "id": "nvidia/parakeet-tdt-0.6b-v2",
         "name": "Parakeet TDT 0.6B v2",
@@ -11547,7 +11576,7 @@
     "env": [
       "VENICE_API_KEY"
     ],
-    "npm": "@openrouter/ai-sdk-provider",
+    "npm": "@ai-sdk/openai-compatible",
     "api": "https://api.venice.ai/api/v1",
     "name": "Venice AI",
     "doc": "https://docs.venice.ai",
@@ -11804,35 +11833,6 @@
         "limit": {
           "context": 262144,
           "output": 65536
-        }
-      },
-      "qwen3-235b": {
-        "id": "qwen3-235b",
-        "name": "Venice Large 1.1",
-        "family": "qwen3",
-        "attachment": false,
-        "reasoning": true,
-        "tool_call": true,
-        "temperature": true,
-        "knowledge": "2024-10",
-        "release_date": "2025-07-27",
-        "last_updated": "2025-12-09",
-        "modalities": {
-          "input": [
-            "text"
-          ],
-          "output": [
-            "text"
-          ]
-        },
-        "open_weights": true,
-        "cost": {
-          "input": 0.45,
-          "output": 3.5
-        },
-        "limit": {
-          "context": 131072,
-          "output": 8192
         }
       },
       "qwen3-4b": {
@@ -27107,39 +27107,6 @@
           "npm": "@ai-sdk/openai"
         }
       },
-      "alpha-minimax-m2": {
-        "id": "alpha-minimax-m2",
-        "name": "MiniMax M2 (alpha)",
-        "family": "minimax",
-        "attachment": false,
-        "reasoning": true,
-        "tool_call": true,
-        "temperature": true,
-        "knowledge": "2024-10",
-        "release_date": "2025-10-27",
-        "last_updated": "2025-10-27",
-        "modalities": {
-          "input": [
-            "text"
-          ],
-          "output": [
-            "text"
-          ]
-        },
-        "open_weights": true,
-        "cost": {
-          "input": 0.3,
-          "output": 1.2
-        },
-        "limit": {
-          "context": 204800,
-          "output": 131072
-        },
-        "status": "alpha",
-        "provider": {
-          "npm": "@ai-sdk/anthropic"
-        }
-      },
       "gpt-5-nano": {
         "id": "gpt-5-nano",
         "name": "GPT-5 Nano",
@@ -27522,6 +27489,41 @@
         },
         "provider": {
           "npm": "@ai-sdk/openai"
+        }
+      },
+      "minimax-m2.1": {
+        "id": "minimax-m2.1",
+        "name": "MiniMax M2.1",
+        "family": "minimax",
+        "attachment": false,
+        "reasoning": true,
+        "tool_call": true,
+        "temperature": true,
+        "knowledge": "2025-01",
+        "release_date": "2025-12-20",
+        "last_updated": "2025-12-20",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": false,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cache_read": 0,
+          "cache_write": 0
+        },
+        "limit": {
+          "context": 204800,
+          "output": 131072
+        },
+        "status": "deprecated",
+        "provider": {
+          "npm": "@ai-sdk/anthropic"
         }
       },
       "gpt-5.2": {
@@ -42384,6 +42386,70 @@
         },
         "limit": {
           "context": 131072,
+          "output": 32768
+        }
+      },
+      "moonshotai/Kimi-K2-Thinking": {
+        "id": "moonshotai/Kimi-K2-Thinking",
+        "name": "Kimi K2 Thinking",
+        "family": "kimi-k2",
+        "attachment": false,
+        "reasoning": true,
+        "tool_call": true,
+        "interleaved": {
+          "field": "reasoning_content"
+        },
+        "temperature": true,
+        "knowledge": "2024-10",
+        "release_date": "2025-11-06",
+        "last_updated": "2025-11-07",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0.47,
+          "output": 2
+        },
+        "limit": {
+          "context": 131072,
+          "output": 32768
+        }
+      },
+      "MiniMaxAI/MiniMax-M2": {
+        "id": "MiniMaxAI/MiniMax-M2",
+        "name": "MiniMax M2",
+        "family": "minimax",
+        "attachment": false,
+        "reasoning": true,
+        "tool_call": true,
+        "interleaved": {
+          "field": "reasoning_content"
+        },
+        "temperature": true,
+        "knowledge": "2024-10",
+        "release_date": "2025-11-13",
+        "last_updated": "2025-11-13",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0.254,
+          "output": 1.02
+        },
+        "limit": {
+          "context": 262144,
           "output": 32768
         }
       },
