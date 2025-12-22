@@ -11923,35 +11923,6 @@
           "output": 32768
         }
       },
-      "devstral-2-2512": {
-        "id": "devstral-2-2512",
-        "name": "Devstral 2",
-        "family": "devstral",
-        "attachment": false,
-        "reasoning": false,
-        "tool_call": true,
-        "structured_output": true,
-        "temperature": true,
-        "release_date": "2025-12-18",
-        "last_updated": "2025-12-18",
-        "modalities": {
-          "input": [
-            "text"
-          ],
-          "output": [
-            "text"
-          ]
-        },
-        "open_weights": true,
-        "cost": {
-          "input": 0.25,
-          "output": 0.25
-        },
-        "limit": {
-          "context": 262144,
-          "output": 65536
-        }
-      },
       "kimi-k2-thinking": {
         "id": "kimi-k2-thinking",
         "name": "Kimi K2 Thinking",
