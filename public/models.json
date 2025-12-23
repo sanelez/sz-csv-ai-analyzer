@@ -409,6 +409,40 @@
     "name": "Z.AI Coding Plan",
     "doc": "https://docs.z.ai/devpack/overview",
     "models": {
+      "glm-4.7": {
+        "id": "glm-4.7",
+        "name": "GLM-4.7",
+        "family": "glm-4.7",
+        "attachment": false,
+        "reasoning": true,
+        "tool_call": true,
+        "interleaved": {
+          "field": "reasoning_content"
+        },
+        "temperature": true,
+        "knowledge": "2025-04",
+        "release_date": "2025-12-22",
+        "last_updated": "2025-12-22",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cache_read": 0,
+          "cache_write": 0
+        },
+        "limit": {
+          "context": 204800,
+          "output": 131072
+        }
+      },
       "glm-4.5-flash": {
         "id": "glm-4.5-flash",
         "name": "GLM-4.5-Flash",
@@ -11592,7 +11626,7 @@
         "temperature": true,
         "knowledge": "2025-07",
         "release_date": "2025-04-29",
-        "last_updated": "2025-12-18",
+        "last_updated": "2025-12-23",
         "modalities": {
           "input": [
             "text",
@@ -11605,7 +11639,8 @@
         "open_weights": false,
         "cost": {
           "input": 0.5,
-          "output": 1.25
+          "output": 1.25,
+          "cache_read": 0.125
         },
         "limit": {
           "context": 262144,
@@ -11655,8 +11690,8 @@
         "structured_output": true,
         "temperature": true,
         "knowledge": "2025-01",
-        "release_date": "2025-12-18",
-        "last_updated": "2025-12-18",
+        "release_date": "2025-12-13",
+        "last_updated": "2025-12-23",
         "modalities": {
           "input": [
             "text",
@@ -11689,8 +11724,8 @@
         "structured_output": true,
         "temperature": true,
         "knowledge": "2025-03",
-        "release_date": "2025-12-18",
-        "last_updated": "2025-12-18",
+        "release_date": "2024-12-05",
+        "last_updated": "2025-12-23",
         "modalities": {
           "input": [
             "text",
@@ -11704,7 +11739,8 @@
         "open_weights": false,
         "cost": {
           "input": 6,
-          "output": 30
+          "output": 30,
+          "cache_read": 0.6
         },
         "limit": {
           "context": 202752,
@@ -11783,7 +11819,7 @@
         "temperature": true,
         "knowledge": "2024-04",
         "release_date": "2024-06-07",
-        "last_updated": "2025-12-18",
+        "last_updated": "2025-12-23",
         "modalities": {
           "input": [
             "text",
@@ -11798,7 +11834,8 @@
         "open_weights": false,
         "cost": {
           "input": 2.5,
-          "output": 15
+          "output": 15,
+          "cache_read": 0.625
         },
         "limit": {
           "context": 202752,
@@ -11815,8 +11852,8 @@
         "structured_output": true,
         "temperature": true,
         "knowledge": "2025-08-31",
-        "release_date": "2025-12-18",
-        "last_updated": "2025-12-18",
+        "release_date": "2024-12-11",
+        "last_updated": "2025-12-23",
         "modalities": {
           "input": [
             "text"
@@ -11828,7 +11865,8 @@
         "open_weights": false,
         "cost": {
           "input": 2.19,
-          "output": 17.5
+          "output": 17.5,
+          "cache_read": 0.219
         },
         "limit": {
           "context": 262144,
@@ -12203,7 +12241,7 @@
         "temperature": true,
         "knowledge": "2025-10",
         "release_date": "2025-12-07",
-        "last_updated": "2025-12-18",
+        "last_updated": "2025-12-23",
         "modalities": {
           "input": [
             "text"
@@ -12215,7 +12253,8 @@
         "open_weights": true,
         "cost": {
           "input": 0.4,
-          "output": 1
+          "output": 1,
+          "cache_read": 0.2
         },
         "limit": {
           "context": 163840,
@@ -27218,7 +27257,7 @@
       "glm-4.6": {
         "id": "glm-4.6",
         "name": "GLM-4.6",
-        "family": "glm-4.6",
+        "family": "glm",
         "attachment": false,
         "reasoning": true,
         "tool_call": true,
@@ -27239,6 +27278,36 @@
           "input": 0.6,
           "output": 2.2,
           "cache_read": 0.1
+        },
+        "limit": {
+          "context": 204800,
+          "output": 131072
+        }
+      },
+      "glm-4.7-free": {
+        "id": "glm-4.7-free",
+        "name": "GLM-4.7",
+        "family": "glm-free",
+        "attachment": false,
+        "reasoning": true,
+        "tool_call": true,
+        "temperature": true,
+        "knowledge": "2025-04",
+        "release_date": "2025-12-22",
+        "last_updated": "2025-12-22",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cache_read": 0
         },
         "limit": {
           "context": 204800,
@@ -32040,34 +32109,6 @@
     "name": "Cloudflare AI Gateway",
     "doc": "https://developers.cloudflare.com/ai-gateway/",
     "models": {
-      "workers-ai/aura-1": {
-        "id": "workers-ai/aura-1",
-        "name": "Aura 1",
-        "family": "aura",
-        "attachment": false,
-        "reasoning": false,
-        "tool_call": false,
-        "temperature": true,
-        "release_date": "2025-11-14",
-        "last_updated": "2025-11-14",
-        "modalities": {
-          "input": [
-            "text"
-          ],
-          "output": [
-            "text"
-          ]
-        },
-        "open_weights": false,
-        "cost": {
-          "input": 0,
-          "output": 0
-        },
-        "limit": {
-          "context": 128000,
-          "output": 16384
-        }
-      },
       "workers-ai/llama-3.2-11b-vision-instruct": {
         "id": "workers-ai/llama-3.2-11b-vision-instruct",
         "name": "Llama 3.2 11B Vision Instruct",
@@ -32146,34 +32187,6 @@
         "cost": {
           "input": 150000,
           "output": 290000
-        },
-        "limit": {
-          "context": 128000,
-          "output": 16384
-        }
-      },
-      "workers-ai/whisper": {
-        "id": "workers-ai/whisper",
-        "name": "Whisper",
-        "family": "whisper",
-        "attachment": false,
-        "reasoning": false,
-        "tool_call": false,
-        "temperature": true,
-        "release_date": "2025-11-14",
-        "last_updated": "2025-11-14",
-        "modalities": {
-          "input": [
-            "text"
-          ],
-          "output": [
-            "text"
-          ]
-        },
-        "open_weights": false,
-        "cost": {
-          "input": 0,
-          "output": 0
         },
         "limit": {
           "context": 128000,
@@ -32852,34 +32865,6 @@
           "output": 16384
         }
       },
-      "workers-ai/whisper-large-v3-turbo": {
-        "id": "workers-ai/whisper-large-v3-turbo",
-        "name": "Whisper Large V3 Turbo",
-        "family": "whisper-large",
-        "attachment": false,
-        "reasoning": false,
-        "tool_call": false,
-        "temperature": true,
-        "release_date": "2025-11-14",
-        "last_updated": "2025-11-14",
-        "modalities": {
-          "input": [
-            "text"
-          ],
-          "output": [
-            "text"
-          ]
-        },
-        "open_weights": false,
-        "cost": {
-          "input": 0,
-          "output": 0
-        },
-        "limit": {
-          "context": 128000,
-          "output": 16384
-        }
-      },
       "workers-ai/llama-4-scout-17b-16e-instruct": {
         "id": "workers-ai/llama-4-scout-17b-16e-instruct",
         "name": "Llama 4 Scout 17B 16E Instruct",
@@ -33328,34 +33313,6 @@
           "output": 16384
         }
       },
-      "openai/o1-preview": {
-        "id": "openai/o1-preview",
-        "name": "o1 Preview",
-        "family": "o1-preview",
-        "attachment": false,
-        "reasoning": false,
-        "tool_call": false,
-        "temperature": true,
-        "release_date": "2024-09-12",
-        "last_updated": "2024-09-12",
-        "modalities": {
-          "input": [
-            "text"
-          ],
-          "output": [
-            "text"
-          ]
-        },
-        "open_weights": false,
-        "cost": {
-          "input": 15,
-          "output": 60
-        },
-        "limit": {
-          "context": 128000,
-          "output": 16384
-        }
-      },
       "openai/o3-mini": {
         "id": "openai/o3-mini",
         "name": "o3 mini",
@@ -33496,34 +33453,6 @@
           "output": 16384
         }
       },
-      "openai/o1-mini": {
-        "id": "openai/o1-mini",
-        "name": "o1 mini",
-        "family": "o1-mini",
-        "attachment": false,
-        "reasoning": false,
-        "tool_call": false,
-        "temperature": true,
-        "release_date": "2025-02-10",
-        "last_updated": "2025-02-10",
-        "modalities": {
-          "input": [
-            "text"
-          ],
-          "output": [
-            "text"
-          ]
-        },
-        "open_weights": false,
-        "cost": {
-          "input": 1.1,
-          "output": 4.4
-        },
-        "limit": {
-          "context": 128000,
-          "output": 16384
-        }
-      },
       "openai/o3-pro": {
         "id": "openai/o3-pro",
         "name": "O3 Pro",
@@ -33608,19 +33537,21 @@
           "output": 16384
         }
       },
-      "replicate/meta/meta-llama-3.1-405b-instruct": {
-        "id": "replicate/meta/meta-llama-3.1-405b-instruct",
-        "name": "Llama 3.1 405B Instruct",
-        "family": "llama-3.1",
-        "attachment": false,
-        "reasoning": false,
-        "tool_call": false,
-        "temperature": true,
-        "release_date": "2024-09-25",
-        "last_updated": "2024-09-25",
+      "openai/gpt-5.2": {
+        "id": "openai/gpt-5.2",
+        "name": "GPT-5.2",
+        "family": "gpt-5",
+        "attachment": true,
+        "reasoning": true,
+        "tool_call": true,
+        "temperature": false,
+        "knowledge": "2025-08-31",
+        "release_date": "2025-12-11",
+        "last_updated": "2025-12-11",
         "modalities": {
           "input": [
-            "text"
+            "text",
+            "image"
           ],
           "output": [
             "text"
@@ -33628,111 +33559,31 @@
         },
         "open_weights": false,
         "cost": {
-          "input": 9.5,
-          "output": 9.5
+          "input": 1.75,
+          "output": 14,
+          "cache_read": 0.175
         },
         "limit": {
-          "context": 128000,
-          "output": 16384
-        }
-      },
-      "replicate/meta/meta-llama-3-70b-instruct": {
-        "id": "replicate/meta/meta-llama-3-70b-instruct",
-        "name": "Llama 3 70B Instruct",
-        "family": "llama-3",
-        "attachment": false,
-        "reasoning": false,
-        "tool_call": false,
-        "temperature": true,
-        "release_date": "2024-10-08",
-        "last_updated": "2024-10-08",
-        "modalities": {
-          "input": [
-            "text"
-          ],
-          "output": [
-            "text"
-          ]
-        },
-        "open_weights": false,
-        "cost": {
-          "input": 0,
-          "output": 2.75
-        },
-        "limit": {
-          "context": 128000,
-          "output": 16384
-        }
-      },
-      "replicate/meta/meta-llama-3-8b-instruct": {
-        "id": "replicate/meta/meta-llama-3-8b-instruct",
-        "name": "Llama 3 8B Instruct",
-        "family": "llama-3",
-        "attachment": false,
-        "reasoning": false,
-        "tool_call": false,
-        "temperature": true,
-        "release_date": "2025-02-05",
-        "last_updated": "2025-02-05",
-        "modalities": {
-          "input": [
-            "text"
-          ],
-          "output": [
-            "text"
-          ]
-        },
-        "open_weights": false,
-        "cost": {
-          "input": 0,
-          "output": 0
-        },
-        "limit": {
-          "context": 128000,
-          "output": 16384
-        }
-      },
-      "replicate/deepseek-ai/deepseek-r1": {
-        "id": "replicate/deepseek-ai/deepseek-r1",
-        "name": "DeepSeek R1",
-        "family": "deepseek-r1",
-        "attachment": false,
-        "reasoning": false,
-        "tool_call": false,
-        "temperature": true,
-        "release_date": "2025-03-11",
-        "last_updated": "2025-03-11",
-        "modalities": {
-          "input": [
-            "text"
-          ],
-          "output": [
-            "text"
-          ]
-        },
-        "open_weights": false,
-        "cost": {
-          "input": 10,
-          "output": 10
-        },
-        "limit": {
-          "context": 128000,
-          "output": 16384
+          "context": 400000,
+          "output": 128000
         }
       },
       "anthropic/claude-opus-4": {
         "id": "anthropic/claude-opus-4",
-        "name": "Claude Opus 4",
+        "name": "Claude Opus 4 (latest)",
         "family": "claude-opus",
-        "attachment": false,
-        "reasoning": false,
-        "tool_call": false,
+        "attachment": true,
+        "reasoning": true,
+        "tool_call": true,
         "temperature": true,
+        "knowledge": "2025-03-31",
         "release_date": "2025-05-22",
         "last_updated": "2025-05-22",
         "modalities": {
           "input": [
-            "text"
+            "text",
+            "image",
+            "pdf"
           ],
           "output": [
             "text"
@@ -33741,26 +33592,64 @@
         "open_weights": false,
         "cost": {
           "input": 15,
-          "output": 75
+          "output": 75,
+          "cache_read": 1.5,
+          "cache_write": 18.75
         },
         "limit": {
-          "context": 128000,
-          "output": 16384
+          "context": 200000,
+          "output": 32000
         }
       },
-      "anthropic/claude-haiku-4.5": {
-        "id": "anthropic/claude-haiku-4.5",
-        "name": "Claude Haiku 4.5",
-        "family": "claude-haiku",
-        "attachment": false,
-        "reasoning": false,
-        "tool_call": false,
+      "anthropic/claude-opus-4-1": {
+        "id": "anthropic/claude-opus-4-1",
+        "name": "Claude Opus 4.1 (latest)",
+        "family": "claude-opus",
+        "attachment": true,
+        "reasoning": true,
+        "tool_call": true,
         "temperature": true,
-        "release_date": "2025-11-14",
-        "last_updated": "2025-11-14",
+        "knowledge": "2025-03-31",
+        "release_date": "2025-08-05",
+        "last_updated": "2025-08-05",
         "modalities": {
           "input": [
+            "text",
+            "image",
+            "pdf"
+          ],
+          "output": [
             "text"
+          ]
+        },
+        "open_weights": false,
+        "cost": {
+          "input": 15,
+          "output": 75,
+          "cache_read": 1.5,
+          "cache_write": 18.75
+        },
+        "limit": {
+          "context": 200000,
+          "output": 32000
+        }
+      },
+      "anthropic/claude-haiku-4-5": {
+        "id": "anthropic/claude-haiku-4-5",
+        "name": "Claude Haiku 4.5 (latest)",
+        "family": "claude-haiku",
+        "attachment": true,
+        "reasoning": true,
+        "tool_call": true,
+        "temperature": true,
+        "knowledge": "2025-02-28",
+        "release_date": "2025-10-15",
+        "last_updated": "2025-10-15",
+        "modalities": {
+          "input": [
+            "text",
+            "image",
+            "pdf"
           ],
           "output": [
             "text"
@@ -33769,26 +33658,31 @@
         "open_weights": false,
         "cost": {
           "input": 1,
-          "output": 5
+          "output": 5,
+          "cache_read": 0.1,
+          "cache_write": 1.25
         },
         "limit": {
-          "context": 128000,
-          "output": 16384
+          "context": 200000,
+          "output": 64000
         }
       },
       "anthropic/claude-3-haiku": {
         "id": "anthropic/claude-3-haiku",
-        "name": "Claude 3 Haiku",
+        "name": "Claude Haiku 3",
         "family": "claude-haiku",
-        "attachment": false,
+        "attachment": true,
         "reasoning": false,
-        "tool_call": false,
+        "tool_call": true,
         "temperature": true,
-        "release_date": "2024-07-31",
-        "last_updated": "2024-07-31",
+        "knowledge": "2023-08-31",
+        "release_date": "2024-03-13",
+        "last_updated": "2024-03-13",
         "modalities": {
           "input": [
-            "text"
+            "text",
+            "image",
+            "pdf"
           ],
           "output": [
             "text"
@@ -33796,195 +33690,32 @@
         },
         "open_weights": false,
         "cost": {
-          "input": 0,
-          "output": 1.25
+          "input": 0.25,
+          "output": 1.25,
+          "cache_read": 0.03,
+          "cache_write": 0.3
         },
         "limit": {
-          "context": 128000,
-          "output": 16384
+          "context": 200000,
+          "output": 4096
         }
       },
-      "anthropic/claude-3-opus": {
-        "id": "anthropic/claude-3-opus",
-        "name": "Claude 3 Opus",
+      "anthropic/claude-opus-4-5": {
+        "id": "anthropic/claude-opus-4-5",
+        "name": "Claude Opus 4.5 (latest)",
         "family": "claude-opus",
-        "attachment": false,
-        "reasoning": false,
-        "tool_call": false,
+        "attachment": true,
+        "reasoning": true,
+        "tool_call": true,
         "temperature": true,
-        "release_date": "2024-07-31",
-        "last_updated": "2024-07-31",
-        "modalities": {
-          "input": [
-            "text"
-          ],
-          "output": [
-            "text"
-          ]
-        },
-        "open_weights": false,
-        "cost": {
-          "input": 15,
-          "output": 75
-        },
-        "limit": {
-          "context": 128000,
-          "output": 16384
-        }
-      },
-      "anthropic/claude-3.5-sonnet": {
-        "id": "anthropic/claude-3.5-sonnet",
-        "name": "Claude 3.5 Sonnet",
-        "family": "claude-sonnet",
-        "attachment": false,
-        "reasoning": false,
-        "tool_call": false,
-        "temperature": true,
-        "release_date": "2024-07-31",
-        "last_updated": "2024-07-31",
-        "modalities": {
-          "input": [
-            "text"
-          ],
-          "output": [
-            "text"
-          ]
-        },
-        "open_weights": false,
-        "cost": {
-          "input": 6,
-          "output": 30
-        },
-        "limit": {
-          "context": 128000,
-          "output": 16384
-        }
-      },
-      "anthropic/claude-3-sonnet": {
-        "id": "anthropic/claude-3-sonnet",
-        "name": "Claude 3 Sonnet",
-        "family": "claude-sonnet",
-        "attachment": false,
-        "reasoning": false,
-        "tool_call": false,
-        "temperature": true,
-        "release_date": "2024-07-31",
-        "last_updated": "2024-07-31",
-        "modalities": {
-          "input": [
-            "text"
-          ],
-          "output": [
-            "text"
-          ]
-        },
-        "open_weights": false,
-        "cost": {
-          "input": 3,
-          "output": 15
-        },
-        "limit": {
-          "context": 128000,
-          "output": 16384
-        }
-      },
-      "anthropic/claude-opus-4.1": {
-        "id": "anthropic/claude-opus-4.1",
-        "name": "Claude Opus 4.1",
-        "family": "claude-opus",
-        "attachment": false,
-        "reasoning": false,
-        "tool_call": false,
-        "temperature": true,
-        "release_date": "2025-08-05",
-        "last_updated": "2025-08-05",
-        "modalities": {
-          "input": [
-            "text"
-          ],
-          "output": [
-            "text"
-          ]
-        },
-        "open_weights": false,
-        "cost": {
-          "input": 15,
-          "output": 75
-        },
-        "limit": {
-          "context": 128000,
-          "output": 16384
-        }
-      },
-      "anthropic/claude-3.5-haiku": {
-        "id": "anthropic/claude-3.5-haiku",
-        "name": "Claude 3.5 Haiku",
-        "family": "claude-haiku",
-        "attachment": false,
-        "reasoning": false,
-        "tool_call": false,
-        "temperature": true,
-        "release_date": "2025-01-07",
-        "last_updated": "2025-01-07",
-        "modalities": {
-          "input": [
-            "text"
-          ],
-          "output": [
-            "text"
-          ]
-        },
-        "open_weights": false,
-        "cost": {
-          "input": 0,
-          "output": 4
-        },
-        "limit": {
-          "context": 128000,
-          "output": 16384
-        }
-      },
-      "anthropic/claude-sonnet-4": {
-        "id": "anthropic/claude-sonnet-4",
-        "name": "Claude Sonnet 4",
-        "family": "claude-sonnet",
-        "attachment": false,
-        "reasoning": false,
-        "tool_call": false,
-        "temperature": true,
-        "release_date": "2025-05-22",
-        "last_updated": "2025-05-22",
-        "modalities": {
-          "input": [
-            "text"
-          ],
-          "output": [
-            "text"
-          ]
-        },
-        "open_weights": false,
-        "cost": {
-          "input": 3,
-          "output": 15
-        },
-        "limit": {
-          "context": 128000,
-          "output": 16384
-        }
-      },
-      "anthropic/claude-opus-4.5": {
-        "id": "anthropic/claude-opus-4.5",
-        "name": "Claude Opus 4.5",
-        "family": "claude-opus",
-        "attachment": false,
-        "reasoning": false,
-        "tool_call": false,
-        "temperature": true,
+        "knowledge": "2025-03-31",
         "release_date": "2025-11-24",
         "last_updated": "2025-11-24",
         "modalities": {
           "input": [
-            "text"
+            "text",
+            "image",
+            "pdf"
           ],
           "output": [
             "text"
@@ -33993,26 +33724,64 @@
         "open_weights": false,
         "cost": {
           "input": 5,
-          "output": 25
+          "output": 25,
+          "cache_read": 0.5,
+          "cache_write": 6.25
         },
         "limit": {
-          "context": 128000,
-          "output": 16384
+          "context": 200000,
+          "output": 64000
         }
       },
-      "anthropic/claude-sonnet-4.5": {
-        "id": "anthropic/claude-sonnet-4.5",
-        "name": "Claude Sonnet 4.5",
-        "family": "claude-sonnet",
-        "attachment": false,
+      "anthropic/claude-3-opus": {
+        "id": "anthropic/claude-3-opus",
+        "name": "Claude Opus 3",
+        "family": "claude-opus",
+        "attachment": true,
         "reasoning": false,
-        "tool_call": false,
+        "tool_call": true,
         "temperature": true,
-        "release_date": "2025-10-08",
-        "last_updated": "2025-10-08",
+        "knowledge": "2023-08-31",
+        "release_date": "2024-02-29",
+        "last_updated": "2024-02-29",
         "modalities": {
           "input": [
+            "text",
+            "image",
+            "pdf"
+          ],
+          "output": [
             "text"
+          ]
+        },
+        "open_weights": false,
+        "cost": {
+          "input": 15,
+          "output": 75,
+          "cache_read": 1.5,
+          "cache_write": 18.75
+        },
+        "limit": {
+          "context": 200000,
+          "output": 4096
+        }
+      },
+      "anthropic/claude-sonnet-4-5": {
+        "id": "anthropic/claude-sonnet-4-5",
+        "name": "Claude Sonnet 4.5 (latest)",
+        "family": "claude-sonnet",
+        "attachment": true,
+        "reasoning": true,
+        "tool_call": true,
+        "temperature": true,
+        "knowledge": "2025-07-31",
+        "release_date": "2025-09-29",
+        "last_updated": "2025-09-29",
+        "modalities": {
+          "input": [
+            "text",
+            "image",
+            "pdf"
           ],
           "output": [
             "text"
@@ -34021,11 +33790,178 @@
         "open_weights": false,
         "cost": {
           "input": 3,
-          "output": 15
+          "output": 15,
+          "cache_read": 0.3,
+          "cache_write": 3.75
         },
         "limit": {
-          "context": 128000,
-          "output": 16384
+          "context": 200000,
+          "output": 64000
+        }
+      },
+      "anthropic/claude-3.5-sonnet": {
+        "id": "anthropic/claude-3.5-sonnet",
+        "name": "Claude Sonnet 3.5 v2",
+        "family": "claude-sonnet",
+        "attachment": true,
+        "reasoning": false,
+        "tool_call": true,
+        "temperature": true,
+        "knowledge": "2024-04-30",
+        "release_date": "2024-10-22",
+        "last_updated": "2024-10-22",
+        "modalities": {
+          "input": [
+            "text",
+            "image",
+            "pdf"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": false,
+        "cost": {
+          "input": 3,
+          "output": 15,
+          "cache_read": 0.3,
+          "cache_write": 3.75
+        },
+        "limit": {
+          "context": 200000,
+          "output": 8192
+        }
+      },
+      "anthropic/claude-3-sonnet": {
+        "id": "anthropic/claude-3-sonnet",
+        "name": "Claude Sonnet 3",
+        "family": "claude-sonnet",
+        "attachment": true,
+        "reasoning": false,
+        "tool_call": true,
+        "temperature": true,
+        "knowledge": "2023-08-31",
+        "release_date": "2024-03-04",
+        "last_updated": "2024-03-04",
+        "modalities": {
+          "input": [
+            "text",
+            "image",
+            "pdf"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": false,
+        "cost": {
+          "input": 3,
+          "output": 15,
+          "cache_read": 0.3,
+          "cache_write": 0.3
+        },
+        "limit": {
+          "context": 200000,
+          "output": 4096
+        }
+      },
+      "anthropic/claude-3-5-haiku": {
+        "id": "anthropic/claude-3-5-haiku",
+        "name": "Claude Haiku 3.5 (latest)",
+        "family": "claude-haiku",
+        "attachment": true,
+        "reasoning": false,
+        "tool_call": true,
+        "temperature": true,
+        "knowledge": "2024-07-31",
+        "release_date": "2024-10-22",
+        "last_updated": "2024-10-22",
+        "modalities": {
+          "input": [
+            "text",
+            "image",
+            "pdf"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": false,
+        "cost": {
+          "input": 0.8,
+          "output": 4,
+          "cache_read": 0.08,
+          "cache_write": 1
+        },
+        "limit": {
+          "context": 200000,
+          "output": 8192
+        }
+      },
+      "anthropic/claude-3.5-haiku": {
+        "id": "anthropic/claude-3.5-haiku",
+        "name": "Claude Haiku 3.5 (latest)",
+        "family": "claude-haiku",
+        "attachment": true,
+        "reasoning": false,
+        "tool_call": true,
+        "temperature": true,
+        "knowledge": "2024-07-31",
+        "release_date": "2024-10-22",
+        "last_updated": "2024-10-22",
+        "modalities": {
+          "input": [
+            "text",
+            "image",
+            "pdf"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": false,
+        "cost": {
+          "input": 0.8,
+          "output": 4,
+          "cache_read": 0.08,
+          "cache_write": 1
+        },
+        "limit": {
+          "context": 200000,
+          "output": 8192
+        }
+      },
+      "anthropic/claude-sonnet-4": {
+        "id": "anthropic/claude-sonnet-4",
+        "name": "Claude Sonnet 4 (latest)",
+        "family": "claude-sonnet",
+        "attachment": true,
+        "reasoning": true,
+        "tool_call": true,
+        "temperature": true,
+        "knowledge": "2025-03-31",
+        "release_date": "2025-05-22",
+        "last_updated": "2025-05-22",
+        "modalities": {
+          "input": [
+            "text",
+            "image",
+            "pdf"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": false,
+        "cost": {
+          "input": 3,
+          "output": 15,
+          "cache_read": 0.3,
+          "cache_write": 3.75
+        },
+        "limit": {
+          "context": 200000,
+          "output": 64000
         }
       }
     }
@@ -35486,6 +35422,40 @@
         "limit": {
           "context": 131072,
           "output": 98304
+        }
+      },
+      "glm-4.7": {
+        "id": "glm-4.7",
+        "name": "GLM-4.7",
+        "family": "glm-4.7",
+        "attachment": false,
+        "reasoning": true,
+        "tool_call": true,
+        "interleaved": {
+          "field": "reasoning_content"
+        },
+        "temperature": true,
+        "knowledge": "2025-04",
+        "release_date": "2025-12-22",
+        "last_updated": "2025-12-22",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cache_read": 0,
+          "cache_write": 0
+        },
+        "limit": {
+          "context": 204800,
+          "output": 131072
         }
       }
     }
@@ -38127,6 +38097,42 @@
         "limit": {
           "context": 1840000,
           "output": 0
+        }
+      },
+      "z-ai/glm-4.7": {
+        "id": "z-ai/glm-4.7",
+        "name": "GLM-4.7",
+        "family": "glm-4.7",
+        "attachment": false,
+        "reasoning": true,
+        "tool_call": true,
+        "interleaved": {
+          "field": "reasoning_details"
+        },
+        "temperature": true,
+        "knowledge": "2025-04",
+        "release_date": "2025-12-22",
+        "last_updated": "2025-12-22",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0.6,
+          "output": 2.2,
+          "cache_read": 0.11
+        },
+        "limit": {
+          "context": 204800,
+          "output": 131072
+        },
+        "provider": {
+          "npm": "@openrouter/ai-sdk-provider"
         }
       },
       "z-ai/glm-4.5": {
@@ -42061,6 +42067,38 @@
           "output": 96000
         }
       },
+      "hf:zai-org/GLM-4.7": {
+        "id": "hf:zai-org/GLM-4.7",
+        "name": "GLM 4.7",
+        "family": "glm-4.7",
+        "attachment": false,
+        "reasoning": true,
+        "tool_call": true,
+        "interleaved": {
+          "field": "reasoning_content"
+        },
+        "temperature": true,
+        "knowledge": "2025-04",
+        "release_date": "2025-12-22",
+        "last_updated": "2025-12-22",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0.55,
+          "output": 2.19
+        },
+        "limit": {
+          "context": 200000,
+          "output": 64000
+        }
+      },
       "hf:zai-org/GLM-4.6": {
         "id": "hf:zai-org/GLM-4.6",
         "name": "GLM 4.6",
@@ -42795,6 +42833,40 @@
           "context": 131072,
           "output": 98304
         }
+      },
+      "glm-4.7": {
+        "id": "glm-4.7",
+        "name": "GLM-4.7",
+        "family": "glm-4.7",
+        "attachment": false,
+        "reasoning": true,
+        "tool_call": true,
+        "interleaved": {
+          "field": "reasoning_content"
+        },
+        "temperature": true,
+        "knowledge": "2025-04",
+        "release_date": "2025-12-22",
+        "last_updated": "2025-12-22",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0.6,
+          "output": 2.2,
+          "cache_read": 0.11,
+          "cache_write": 0
+        },
+        "limit": {
+          "context": 204800,
+          "output": 131072
+        }
       }
     }
   },
@@ -43072,6 +43144,40 @@
     "name": "Z.AI",
     "doc": "https://docs.z.ai/guides/overview/pricing",
     "models": {
+      "glm-4.7": {
+        "id": "glm-4.7",
+        "name": "GLM-4.7",
+        "family": "glm-4.7",
+        "attachment": false,
+        "reasoning": true,
+        "tool_call": true,
+        "interleaved": {
+          "field": "reasoning_content"
+        },
+        "temperature": true,
+        "knowledge": "2025-04",
+        "release_date": "2025-12-22",
+        "last_updated": "2025-12-22",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0.6,
+          "output": 2.2,
+          "cache_read": 0.11,
+          "cache_write": 0
+        },
+        "limit": {
+          "context": 204800,
+          "output": 131072
+        }
+      },
       "glm-4.5-flash": {
         "id": "glm-4.5-flash",
         "name": "GLM-4.5-Flash",
