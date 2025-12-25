@@ -3305,6 +3305,90 @@
           "output": 4096
         }
       },
+      "nvidia/llama-3.3-nemotron-super-49b-v1": {
+        "id": "nvidia/llama-3.3-nemotron-super-49b-v1",
+        "name": "Llama 3.3 Nemotron Super 49b V1",
+        "attachment": false,
+        "reasoning": false,
+        "tool_call": false,
+        "structured_output": false,
+        "temperature": true,
+        "release_date": "2025-03-16",
+        "last_updated": "2025-03-16",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": false,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 128000,
+          "output": 4096
+        }
+      },
+      "nvidia/llama-3.1-nemotron-51b-instruct": {
+        "id": "nvidia/llama-3.1-nemotron-51b-instruct",
+        "name": "Llama 3.1 Nemotron 51b Instruct",
+        "attachment": false,
+        "reasoning": false,
+        "tool_call": true,
+        "structured_output": true,
+        "temperature": true,
+        "release_date": "2024-09-22",
+        "last_updated": "2024-09-22",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": false,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 128000,
+          "output": 4096
+        }
+      },
+      "nvidia/llama3-chatqa-1.5-70b": {
+        "id": "nvidia/llama3-chatqa-1.5-70b",
+        "name": "Llama3 Chatqa 1.5 70b",
+        "attachment": false,
+        "reasoning": false,
+        "tool_call": true,
+        "structured_output": true,
+        "temperature": true,
+        "release_date": "2024-04-28",
+        "last_updated": "2024-04-28",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": false,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 128000,
+          "output": 4096
+        }
+      },
       "nvidia/llama-3.1-nemotron-ultra-253b-v1": {
         "id": "nvidia/llama-3.1-nemotron-ultra-253b-v1",
         "name": "Llama-3.1-Nemotron-Ultra-253B-v1",
@@ -3334,6 +3418,90 @@
           "output": 8192
         }
       },
+      "nvidia/llama-3.1-nemotron-70b-instruct": {
+        "id": "nvidia/llama-3.1-nemotron-70b-instruct",
+        "name": "Llama 3.1 Nemotron 70b Instruct",
+        "attachment": false,
+        "reasoning": false,
+        "tool_call": true,
+        "structured_output": true,
+        "temperature": true,
+        "release_date": "2024-10-12",
+        "last_updated": "2024-10-12",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": false,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 128000,
+          "output": 4096
+        }
+      },
+      "nvidia/nemotron-4-340b-instruct": {
+        "id": "nvidia/nemotron-4-340b-instruct",
+        "name": "Nemotron 4 340b Instruct",
+        "attachment": false,
+        "reasoning": false,
+        "tool_call": true,
+        "structured_output": true,
+        "temperature": true,
+        "release_date": "2024-06-13",
+        "last_updated": "2024-06-13",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": false,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 128000,
+          "output": 4096
+        }
+      },
+      "nvidia/llama-3.3-nemotron-super-49b-v1.5": {
+        "id": "nvidia/llama-3.3-nemotron-super-49b-v1.5",
+        "name": "Llama 3.3 Nemotron Super 49b V1.5",
+        "attachment": false,
+        "reasoning": false,
+        "tool_call": false,
+        "structured_output": false,
+        "temperature": true,
+        "release_date": "2025-03-16",
+        "last_updated": "2025-03-16",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": false,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 128000,
+          "output": 4096
+        }
+      },
       "minimaxai/minimax-m2": {
         "id": "minimaxai/minimax-m2",
         "name": "MiniMax-M2",
@@ -3361,6 +3529,235 @@
         "limit": {
           "context": 128000,
           "output": 16384
+        }
+      },
+      "google/gemma-3n-e2b-it": {
+        "id": "google/gemma-3n-e2b-it",
+        "name": "Gemma 3n E2b It",
+        "attachment": true,
+        "reasoning": false,
+        "tool_call": true,
+        "structured_output": true,
+        "temperature": true,
+        "knowledge": "2024-06",
+        "release_date": "2025-06-12",
+        "last_updated": "2025-06-12",
+        "modalities": {
+          "input": [
+            "text",
+            "image"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 128000,
+          "output": 4096
+        }
+      },
+      "google/codegemma-1.1-7b": {
+        "id": "google/codegemma-1.1-7b",
+        "name": "Codegemma 1.1 7b",
+        "attachment": false,
+        "reasoning": false,
+        "tool_call": false,
+        "structured_output": false,
+        "temperature": true,
+        "release_date": "2024-04-30",
+        "last_updated": "2024-04-30",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 128000,
+          "output": 4096
+        }
+      },
+      "google/gemma-3n-e4b-it": {
+        "id": "google/gemma-3n-e4b-it",
+        "name": "Gemma 3n E4b It",
+        "attachment": true,
+        "reasoning": false,
+        "tool_call": true,
+        "structured_output": true,
+        "temperature": true,
+        "knowledge": "2024-06",
+        "release_date": "2025-06-03",
+        "last_updated": "2025-06-03",
+        "modalities": {
+          "input": [
+            "text",
+            "image"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 128000,
+          "output": 4096
+        }
+      },
+      "google/gemma-2-2b-it": {
+        "id": "google/gemma-2-2b-it",
+        "name": "Gemma 2 2b It",
+        "attachment": false,
+        "reasoning": false,
+        "tool_call": true,
+        "structured_output": true,
+        "temperature": true,
+        "release_date": "2024-07-16",
+        "last_updated": "2024-07-16",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 128000,
+          "output": 4096
+        }
+      },
+      "google/gemma-3-12b-it": {
+        "id": "google/gemma-3-12b-it",
+        "name": "Gemma 3 12b It",
+        "attachment": false,
+        "reasoning": false,
+        "tool_call": true,
+        "structured_output": true,
+        "temperature": true,
+        "release_date": "2025-03-01",
+        "last_updated": "2025-03-01",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 128000,
+          "output": 4096
+        }
+      },
+      "google/codegemma-7b": {
+        "id": "google/codegemma-7b",
+        "name": "Codegemma 7b",
+        "attachment": false,
+        "reasoning": false,
+        "tool_call": false,
+        "structured_output": false,
+        "temperature": true,
+        "release_date": "2024-03-21",
+        "last_updated": "2024-03-21",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 128000,
+          "output": 4096
+        }
+      },
+      "google/gemma-3-1b-it": {
+        "id": "google/gemma-3-1b-it",
+        "name": "Gemma 3 1b It",
+        "attachment": true,
+        "reasoning": false,
+        "tool_call": true,
+        "structured_output": true,
+        "temperature": true,
+        "release_date": "2025-03-10",
+        "last_updated": "2025-03-10",
+        "modalities": {
+          "input": [
+            "text",
+            "image"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 128000,
+          "output": 4096
+        }
+      },
+      "google/gemma-2-27b-it": {
+        "id": "google/gemma-2-27b-it",
+        "name": "Gemma 2 27b It",
+        "attachment": false,
+        "reasoning": false,
+        "tool_call": true,
+        "structured_output": true,
+        "temperature": true,
+        "release_date": "2024-06-24",
+        "last_updated": "2024-06-24",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 128000,
+          "output": 4096
         }
       },
       "google/gemma-3-27b-it": {
@@ -3393,6 +3790,153 @@
           "output": 8192
         }
       },
+      "microsoft/phi-3-medium-128k-instruct": {
+        "id": "microsoft/phi-3-medium-128k-instruct",
+        "name": "Phi 3 Medium 128k Instruct",
+        "attachment": true,
+        "reasoning": false,
+        "tool_call": true,
+        "structured_output": true,
+        "temperature": true,
+        "knowledge": "2023-10",
+        "release_date": "2024-05-07",
+        "last_updated": "2024-05-07",
+        "modalities": {
+          "input": [
+            "text",
+            "image"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 128000,
+          "output": 4096
+        }
+      },
+      "microsoft/phi-3-small-128k-instruct": {
+        "id": "microsoft/phi-3-small-128k-instruct",
+        "name": "Phi 3 Small 128k Instruct",
+        "attachment": true,
+        "reasoning": false,
+        "tool_call": true,
+        "structured_output": true,
+        "temperature": true,
+        "knowledge": "2023-10",
+        "release_date": "2024-05-07",
+        "last_updated": "2024-05-07",
+        "modalities": {
+          "input": [
+            "text",
+            "image"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 128000,
+          "output": 4096
+        }
+      },
+      "microsoft/phi-3.5-vision-instruct": {
+        "id": "microsoft/phi-3.5-vision-instruct",
+        "name": "Phi 3.5 Vision Instruct",
+        "attachment": false,
+        "reasoning": false,
+        "tool_call": true,
+        "structured_output": true,
+        "temperature": true,
+        "release_date": "2024-08-16",
+        "last_updated": "2024-08-16",
+        "modalities": {
+          "input": [
+            "text",
+            "image"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 128000,
+          "output": 4096
+        }
+      },
+      "microsoft/phi-3-small-8k-instruct": {
+        "id": "microsoft/phi-3-small-8k-instruct",
+        "name": "Phi 3 Small 8k Instruct",
+        "attachment": true,
+        "reasoning": false,
+        "tool_call": true,
+        "structured_output": true,
+        "temperature": true,
+        "knowledge": "2023-10",
+        "release_date": "2024-05-07",
+        "last_updated": "2024-05-07",
+        "modalities": {
+          "input": [
+            "text",
+            "image"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 8000,
+          "output": 4096
+        }
+      },
+      "microsoft/phi-3.5-moe-instruct": {
+        "id": "microsoft/phi-3.5-moe-instruct",
+        "name": "Phi 3.5 Moe Instruct",
+        "attachment": false,
+        "reasoning": false,
+        "tool_call": true,
+        "structured_output": true,
+        "temperature": true,
+        "release_date": "2024-08-17",
+        "last_updated": "2024-08-17",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 128000,
+          "output": 4096
+        }
+      },
       "microsoft/phi-4-mini-instruct": {
         "id": "microsoft/phi-4-mini-instruct",
         "name": "Phi-4-Mini",
@@ -3422,6 +3966,65 @@
         "limit": {
           "context": 131072,
           "output": 8192
+        }
+      },
+      "microsoft/phi-3-medium-4k-instruct": {
+        "id": "microsoft/phi-3-medium-4k-instruct",
+        "name": "Phi 3 Medium 4k Instruct",
+        "attachment": true,
+        "reasoning": false,
+        "tool_call": true,
+        "structured_output": true,
+        "temperature": true,
+        "knowledge": "2023-10",
+        "release_date": "2024-05-07",
+        "last_updated": "2024-05-07",
+        "modalities": {
+          "input": [
+            "text",
+            "image"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 4000,
+          "output": 4096
+        }
+      },
+      "microsoft/phi-3-vision-128k-instruct": {
+        "id": "microsoft/phi-3-vision-128k-instruct",
+        "name": "Phi 3 Vision 128k Instruct",
+        "attachment": false,
+        "reasoning": false,
+        "tool_call": true,
+        "structured_output": true,
+        "temperature": true,
+        "release_date": "2024-05-19",
+        "last_updated": "2024-05-19",
+        "modalities": {
+          "input": [
+            "text",
+            "image"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 128000,
+          "output": 4096
         }
       },
       "openai/whisper-large-v3": {
@@ -3511,6 +4114,62 @@
           "output": 16384
         }
       },
+      "qwen/qwen2.5-coder-32b-instruct": {
+        "id": "qwen/qwen2.5-coder-32b-instruct",
+        "name": "Qwen2.5 Coder 32b Instruct",
+        "attachment": false,
+        "reasoning": false,
+        "tool_call": true,
+        "structured_output": true,
+        "temperature": true,
+        "release_date": "2024-11-06",
+        "last_updated": "2024-11-06",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 128000,
+          "output": 4096
+        }
+      },
+      "qwen/qwen2.5-coder-7b-instruct": {
+        "id": "qwen/qwen2.5-coder-7b-instruct",
+        "name": "Qwen2.5 Coder 7b Instruct",
+        "attachment": false,
+        "reasoning": false,
+        "tool_call": true,
+        "structured_output": true,
+        "temperature": true,
+        "release_date": "2024-09-17",
+        "last_updated": "2024-09-17",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 128000,
+          "output": 4096
+        }
+      },
       "qwen/qwen3-235b-a22b": {
         "id": "qwen/qwen3-235b-a22b",
         "name": "Qwen3-235B-A22B",
@@ -3567,6 +4226,34 @@
         "limit": {
           "context": 262144,
           "output": 66536
+        }
+      },
+      "qwen/qwq-32b": {
+        "id": "qwen/qwq-32b",
+        "name": "Qwq 32b",
+        "attachment": false,
+        "reasoning": true,
+        "tool_call": false,
+        "structured_output": false,
+        "temperature": true,
+        "release_date": "2025-03-05",
+        "last_updated": "2025-03-05",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 128000,
+          "output": 4096
         }
       },
       "qwen/qwen3-next-80b-a3b-thinking": {
@@ -3690,6 +4377,461 @@
           "output": 262144
         }
       },
+      "mistralai/mamba-codestral-7b-v0.1": {
+        "id": "mistralai/mamba-codestral-7b-v0.1",
+        "name": "Mamba Codestral 7b V0.1",
+        "attachment": false,
+        "reasoning": false,
+        "tool_call": false,
+        "structured_output": false,
+        "temperature": true,
+        "release_date": "2024-07-16",
+        "last_updated": "2024-07-16",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 128000,
+          "output": 4096
+        }
+      },
+      "mistralai/mistral-large-2-instruct": {
+        "id": "mistralai/mistral-large-2-instruct",
+        "name": "Mistral Large 2 Instruct",
+        "attachment": false,
+        "reasoning": false,
+        "tool_call": true,
+        "structured_output": true,
+        "temperature": true,
+        "release_date": "2024-07-24",
+        "last_updated": "2024-07-24",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 128000,
+          "output": 4096
+        }
+      },
+      "mistralai/codestral-22b-instruct-v0.1": {
+        "id": "mistralai/codestral-22b-instruct-v0.1",
+        "name": "Codestral 22b Instruct V0.1",
+        "attachment": false,
+        "reasoning": false,
+        "tool_call": true,
+        "structured_output": true,
+        "temperature": true,
+        "release_date": "2024-05-29",
+        "last_updated": "2024-05-29",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 128000,
+          "output": 4096
+        }
+      },
+      "mistralai/mistral-small-3.1-24b-instruct-2503": {
+        "id": "mistralai/mistral-small-3.1-24b-instruct-2503",
+        "name": "Mistral Small 3.1 24b Instruct 2503",
+        "attachment": false,
+        "reasoning": false,
+        "tool_call": true,
+        "structured_output": true,
+        "temperature": true,
+        "release_date": "2025-03-11",
+        "last_updated": "2025-03-11",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 128000,
+          "output": 4096
+        }
+      },
+      "meta/llama-3.2-11b-vision-instruct": {
+        "id": "meta/llama-3.2-11b-vision-instruct",
+        "name": "Llama 3.2 11b Vision Instruct",
+        "attachment": true,
+        "reasoning": false,
+        "tool_call": true,
+        "structured_output": true,
+        "temperature": true,
+        "knowledge": "2023-12",
+        "release_date": "2024-09-18",
+        "last_updated": "2024-09-18",
+        "modalities": {
+          "input": [
+            "text",
+            "image"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 128000,
+          "output": 4096
+        }
+      },
+      "meta/llama3-70b-instruct": {
+        "id": "meta/llama3-70b-instruct",
+        "name": "Llama3 70b Instruct",
+        "attachment": false,
+        "reasoning": false,
+        "tool_call": true,
+        "structured_output": true,
+        "temperature": true,
+        "release_date": "2024-04-17",
+        "last_updated": "2024-04-17",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 128000,
+          "output": 4096
+        }
+      },
+      "meta/llama-3.3-70b-instruct": {
+        "id": "meta/llama-3.3-70b-instruct",
+        "name": "Llama 3.3 70b Instruct",
+        "attachment": false,
+        "reasoning": false,
+        "tool_call": true,
+        "structured_output": true,
+        "temperature": true,
+        "release_date": "2024-11-26",
+        "last_updated": "2024-11-26",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 128000,
+          "output": 4096
+        }
+      },
+      "meta/llama-3.2-1b-instruct": {
+        "id": "meta/llama-3.2-1b-instruct",
+        "name": "Llama 3.2 1b Instruct",
+        "attachment": false,
+        "reasoning": false,
+        "tool_call": true,
+        "structured_output": true,
+        "temperature": true,
+        "knowledge": "2023-12",
+        "release_date": "2024-09-18",
+        "last_updated": "2024-09-18",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 128000,
+          "output": 4096
+        }
+      },
+      "meta/llama-4-scout-17b-16e-instruct": {
+        "id": "meta/llama-4-scout-17b-16e-instruct",
+        "name": "Llama 4 Scout 17b 16e Instruct",
+        "attachment": true,
+        "reasoning": false,
+        "tool_call": true,
+        "structured_output": true,
+        "temperature": true,
+        "knowledge": "2024-02",
+        "release_date": "2025-04-02",
+        "last_updated": "2025-04-02",
+        "modalities": {
+          "input": [
+            "text",
+            "image"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 128000,
+          "output": 4096
+        }
+      },
+      "meta/llama-4-maverick-17b-128e-instruct": {
+        "id": "meta/llama-4-maverick-17b-128e-instruct",
+        "name": "Llama 4 Maverick 17b 128e Instruct",
+        "attachment": true,
+        "reasoning": false,
+        "tool_call": true,
+        "structured_output": true,
+        "temperature": true,
+        "knowledge": "2024-02",
+        "release_date": "2025-04-01",
+        "last_updated": "2025-04-01",
+        "modalities": {
+          "input": [
+            "text",
+            "image"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 128000,
+          "output": 4096
+        }
+      },
+      "meta/codellama-70b": {
+        "id": "meta/codellama-70b",
+        "name": "Codellama 70b",
+        "attachment": false,
+        "reasoning": false,
+        "tool_call": false,
+        "structured_output": false,
+        "temperature": true,
+        "release_date": "2024-01-29",
+        "last_updated": "2024-01-29",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 128000,
+          "output": 4096
+        }
+      },
+      "meta/llama-3.1-405b-instruct": {
+        "id": "meta/llama-3.1-405b-instruct",
+        "name": "Llama 3.1 405b Instruct",
+        "attachment": false,
+        "reasoning": false,
+        "tool_call": true,
+        "structured_output": true,
+        "temperature": true,
+        "release_date": "2024-07-16",
+        "last_updated": "2024-07-16",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 128000,
+          "output": 4096
+        }
+      },
+      "meta/llama3-8b-instruct": {
+        "id": "meta/llama3-8b-instruct",
+        "name": "Llama3 8b Instruct",
+        "attachment": false,
+        "reasoning": false,
+        "tool_call": true,
+        "structured_output": true,
+        "temperature": true,
+        "release_date": "2024-04-17",
+        "last_updated": "2024-04-17",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 128000,
+          "output": 4096
+        }
+      },
+      "meta/llama-3.1-70b-instruct": {
+        "id": "meta/llama-3.1-70b-instruct",
+        "name": "Llama 3.1 70b Instruct",
+        "attachment": false,
+        "reasoning": false,
+        "tool_call": true,
+        "structured_output": true,
+        "temperature": true,
+        "release_date": "2024-07-16",
+        "last_updated": "2024-07-16",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 128000,
+          "output": 4096
+        }
+      },
+      "deepseek-ai/deepseek-r1-0528": {
+        "id": "deepseek-ai/deepseek-r1-0528",
+        "name": "Deepseek R1 0528",
+        "attachment": false,
+        "reasoning": true,
+        "tool_call": true,
+        "structured_output": true,
+        "temperature": true,
+        "release_date": "2025-05-28",
+        "last_updated": "2025-05-28",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 128000,
+          "output": 4096
+        }
+      },
+      "deepseek-ai/deepseek-r1": {
+        "id": "deepseek-ai/deepseek-r1",
+        "name": "Deepseek R1",
+        "attachment": false,
+        "reasoning": true,
+        "tool_call": false,
+        "structured_output": false,
+        "temperature": true,
+        "release_date": "2025-01-20",
+        "last_updated": "2025-01-20",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 128000,
+          "output": 4096
+        }
+      },
       "deepseek-ai/deepseek-v3.1-terminus": {
         "id": "deepseek-ai/deepseek-v3.1-terminus",
         "name": "DeepSeek V3.1 Terminus",
@@ -3746,6 +4888,34 @@
         "limit": {
           "context": 128000,
           "output": 8192
+        }
+      },
+      "deepseek-ai/deepseek-coder-6.7b-instruct": {
+        "id": "deepseek-ai/deepseek-coder-6.7b-instruct",
+        "name": "Deepseek Coder 6.7b Instruct",
+        "attachment": false,
+        "reasoning": false,
+        "tool_call": true,
+        "structured_output": true,
+        "temperature": true,
+        "release_date": "2023-10-29",
+        "last_updated": "2023-10-29",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 128000,
+          "output": 4096
         }
       },
       "black-forest-labs/flux.1-dev": {
@@ -11780,18 +12950,16 @@
       },
       "zai-org-glm-4.7": {
         "id": "zai-org-glm-4.7",
-        "name": "GLM-4.7",
+        "name": "GLM 4.7",
         "family": "glm-4.7",
         "attachment": false,
-        "reasoning": true,
+        "reasoning": false,
         "tool_call": true,
-        "interleaved": {
-          "field": "reasoning_details"
-        },
+        "structured_output": true,
         "temperature": true,
         "knowledge": "2025-04",
-        "release_date": "2025-12-22",
-        "last_updated": "2025-12-22",
+        "release_date": "2024-04-01",
+        "last_updated": "2025-12-24",
         "modalities": {
           "input": [
             "text"
@@ -11802,13 +12970,12 @@
         },
         "open_weights": true,
         "cost": {
-          "input": 0.6,
-          "output": 2.2,
-          "cache_read": 0.11
+          "input": 0.85,
+          "output": 2.75
         },
         "limit": {
-          "context": 204800,
-          "output": 131072
+          "context": 131072,
+          "output": 32768
         }
       },
       "venice-uncensored": {
@@ -27038,6 +28205,40 @@
           "npm": "@ai-sdk/google"
         }
       },
+      "alpha-glm-4.7": {
+        "id": "alpha-glm-4.7",
+        "name": "Alpha GLM-4.7",
+        "family": "alpha-glm",
+        "attachment": false,
+        "reasoning": true,
+        "tool_call": true,
+        "interleaved": {
+          "field": "reasoning_content"
+        },
+        "temperature": true,
+        "knowledge": "2025-04",
+        "release_date": "2025-12-22",
+        "last_updated": "2025-12-22",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0.6,
+          "output": 2.2,
+          "cache_read": 0.6
+        },
+        "limit": {
+          "context": 204800,
+          "output": 131072
+        },
+        "status": "alpha"
+      },
       "claude-sonnet-4-5": {
         "id": "claude-sonnet-4-5",
         "name": "Claude Sonnet 4.5",
@@ -27483,42 +28684,6 @@
           "input": 272000,
           "output": 128000
         },
-        "provider": {
-          "npm": "@ai-sdk/openai"
-        }
-      },
-      "alpha-doubao-seed-code": {
-        "id": "alpha-doubao-seed-code",
-        "name": "Doubao Seed Code (alpha)",
-        "family": "doubao",
-        "attachment": false,
-        "reasoning": true,
-        "tool_call": true,
-        "temperature": true,
-        "knowledge": "2024-10",
-        "release_date": "2025-11-11",
-        "last_updated": "2025-11-11",
-        "modalities": {
-          "input": [
-            "text",
-            "image",
-            "video"
-          ],
-          "output": [
-            "text"
-          ]
-        },
-        "open_weights": true,
-        "cost": {
-          "input": 0,
-          "output": 0,
-          "cache_read": 0
-        },
-        "limit": {
-          "context": 256000,
-          "output": 32000
-        },
-        "status": "alpha",
         "provider": {
           "npm": "@ai-sdk/openai"
         }
@@ -42739,8 +43904,38 @@
           "output": 66536
         }
       },
-      "zai-org/glm-4.7": {
-        "id": "zai-org/glm-4.7",
+      "zai-org/GLM-4.5": {
+        "id": "zai-org/GLM-4.5",
+        "name": "GLM-4.5",
+        "family": "glm-4.5",
+        "attachment": false,
+        "reasoning": false,
+        "tool_call": true,
+        "temperature": true,
+        "knowledge": "2025-04",
+        "release_date": "2025-07-28",
+        "last_updated": "2025-07-28",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0.6,
+          "output": 2.2
+        },
+        "limit": {
+          "context": 131072,
+          "output": 98304
+        },
+        "status": "deprecated"
+      },
+      "zai-org/GLM-4.7": {
+        "id": "zai-org/GLM-4.7",
         "name": "GLM-4.7",
         "family": "glm-4.7",
         "attachment": false,
@@ -42771,36 +43966,6 @@
           "context": 202752,
           "output": 16384
         }
-      },
-      "zai-org/GLM-4.5": {
-        "id": "zai-org/GLM-4.5",
-        "name": "GLM-4.5",
-        "family": "glm-4.5",
-        "attachment": false,
-        "reasoning": false,
-        "tool_call": true,
-        "temperature": true,
-        "knowledge": "2025-04",
-        "release_date": "2025-07-28",
-        "last_updated": "2025-07-28",
-        "modalities": {
-          "input": [
-            "text"
-          ],
-          "output": [
-            "text"
-          ]
-        },
-        "open_weights": true,
-        "cost": {
-          "input": 0.6,
-          "output": 2.2
-        },
-        "limit": {
-          "context": 131072,
-          "output": 98304
-        },
-        "status": "deprecated"
       }
     }
   },
@@ -46753,6 +47918,39 @@
           "output": 163840
         }
       },
+      "accounts/fireworks/models/deepseek-v3p2": {
+        "id": "accounts/fireworks/models/deepseek-v3p2",
+        "name": "DeepSeek V3.2",
+        "family": "deepseek-v3",
+        "attachment": false,
+        "reasoning": true,
+        "tool_call": true,
+        "interleaved": {
+          "field": "reasoning_content"
+        },
+        "temperature": true,
+        "knowledge": "2025-09",
+        "release_date": "2025-12-01",
+        "last_updated": "2025-12-01",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0.56,
+          "output": 1.68,
+          "cache_read": 0.28
+        },
+        "limit": {
+          "context": 160000,
+          "output": 160000
+        }
+      },
       "accounts/fireworks/models/minimax-m2": {
         "id": "accounts/fireworks/models/minimax-m2",
         "name": "MiniMax-M2",
@@ -46760,6 +47958,9 @@
         "attachment": false,
         "reasoning": true,
         "tool_call": true,
+        "interleaved": {
+          "field": "reasoning_content"
+        },
         "temperature": true,
         "knowledge": "2024-11",
         "release_date": "2025-10-27",
@@ -46779,7 +47980,40 @@
         },
         "limit": {
           "context": 128000,
-          "output": 16384
+          "output": 128000
+        }
+      },
+      "accounts/fireworks/models/glm-4p7": {
+        "id": "accounts/fireworks/models/glm-4p7",
+        "name": "GLM 4.7",
+        "family": "glm-4",
+        "attachment": false,
+        "reasoning": true,
+        "tool_call": true,
+        "interleaved": {
+          "field": "reasoning_content"
+        },
+        "temperature": true,
+        "knowledge": "2025-04",
+        "release_date": "2025-12-22",
+        "last_updated": "2025-12-22",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0.6,
+          "output": 2.2,
+          "cache_read": 0.3
+        },
+        "limit": {
+          "context": 198000,
+          "output": 198000
         }
       },
       "accounts/fireworks/models/deepseek-v3-0324": {
@@ -46811,6 +48045,39 @@
           "output": 16384
         }
       },
+      "accounts/fireworks/models/glm-4p6": {
+        "id": "accounts/fireworks/models/glm-4p6",
+        "name": "GLM 4.6",
+        "family": "glm-4",
+        "attachment": false,
+        "reasoning": true,
+        "tool_call": true,
+        "interleaved": {
+          "field": "reasoning_content"
+        },
+        "temperature": true,
+        "knowledge": "2025-04",
+        "release_date": "2025-10-01",
+        "last_updated": "2025-10-01",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0.55,
+          "output": 2.19,
+          "cache_read": 0.28
+        },
+        "limit": {
+          "context": 198000,
+          "output": 198000
+        }
+      },
       "accounts/fireworks/models/kimi-k2-thinking": {
         "id": "accounts/fireworks/models/kimi-k2-thinking",
         "name": "Kimi K2 Thinking",
@@ -46818,6 +48085,9 @@
         "attachment": false,
         "reasoning": true,
         "tool_call": true,
+        "interleaved": {
+          "field": "reasoning_content"
+        },
         "temperature": true,
         "release_date": "2025-11-06",
         "last_updated": "2025-11-06",
@@ -46836,7 +48106,7 @@
         },
         "limit": {
           "context": 256000,
-          "output": 16384
+          "output": 256000
         }
       },
       "accounts/fireworks/models/kimi-k2-instruct": {
@@ -47017,6 +48287,9 @@
         "attachment": false,
         "reasoning": true,
         "tool_call": true,
+        "interleaved": {
+          "field": "reasoning_content"
+        },
         "temperature": true,
         "knowledge": "2025-04",
         "release_date": "2025-07-29",
