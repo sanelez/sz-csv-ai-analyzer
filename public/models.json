@@ -45873,31 +45873,6 @@
     "name": "Friendli",
     "doc": "https://friendli.ai/docs/guides/serverless_endpoints/introduction",
     "models": {
-      "Qwen-Qwen3-235B-A22B-Thinking-2507": {
-        "id": "Qwen-Qwen3-235B-A22B-Thinking-2507",
-        "name": "Qwen3 235B A22B Thinking 2507",
-        "family": "qwen3",
-        "attachment": false,
-        "reasoning": true,
-        "tool_call": true,
-        "structured_output": true,
-        "temperature": true,
-        "release_date": "2025-07-29",
-        "last_updated": "2025-12-23",
-        "modalities": {
-          "input": [
-            "text"
-          ],
-          "output": [
-            "text"
-          ]
-        },
-        "open_weights": true,
-        "limit": {
-          "context": 131072,
-          "output": 131072
-        }
-      },
       "meta-llama-3.3-70b-instruct": {
         "id": "meta-llama-3.3-70b-instruct",
         "name": "Llama 3.3 70B Instruct",
@@ -45925,160 +45900,6 @@
         "limit": {
           "context": 131072,
           "output": 131072
-        }
-      },
-      "Qwen-Qwen3-235B-A22B-Instruct-2507": {
-        "id": "Qwen-Qwen3-235B-A22B-Instruct-2507",
-        "name": "Qwen3 235B A22B Instruct 2507",
-        "family": "qwen3",
-        "attachment": false,
-        "reasoning": false,
-        "tool_call": true,
-        "structured_output": true,
-        "temperature": true,
-        "release_date": "2025-07-29",
-        "last_updated": "2025-12-23",
-        "modalities": {
-          "input": [
-            "text"
-          ],
-          "output": [
-            "text"
-          ]
-        },
-        "open_weights": true,
-        "cost": {
-          "input": 0.2,
-          "output": 0.8
-        },
-        "limit": {
-          "context": 131072,
-          "output": 131072
-        }
-      },
-      "meta-llama-Llama-4-Maverick-17B-128E-Instruct": {
-        "id": "meta-llama-Llama-4-Maverick-17B-128E-Instruct",
-        "name": "Llama 4 Maverick 17B 128E Instruct",
-        "family": "llama-4",
-        "attachment": false,
-        "reasoning": true,
-        "tool_call": false,
-        "structured_output": true,
-        "temperature": true,
-        "release_date": "2025-06-16",
-        "last_updated": "2025-12-23",
-        "modalities": {
-          "input": [
-            "text"
-          ],
-          "output": [
-            "text"
-          ]
-        },
-        "open_weights": true,
-        "limit": {
-          "context": 131072,
-          "output": 8000
-        }
-      },
-      "zai-org-GLM-4.6": {
-        "id": "zai-org-GLM-4.6",
-        "name": "GLM 4.6",
-        "family": "glm-4",
-        "attachment": false,
-        "reasoning": true,
-        "tool_call": true,
-        "structured_output": true,
-        "temperature": true,
-        "release_date": "2025-10-31",
-        "last_updated": "2025-12-23",
-        "modalities": {
-          "input": [
-            "text"
-          ],
-          "output": [
-            "text"
-          ]
-        },
-        "open_weights": true,
-        "limit": {
-          "context": 131072,
-          "output": 131072
-        }
-      },
-      "Qwen-Qwen3-30B-A3B": {
-        "id": "Qwen-Qwen3-30B-A3B",
-        "name": "Qwen3 30B A3B",
-        "family": "qwen3",
-        "attachment": false,
-        "reasoning": true,
-        "tool_call": true,
-        "structured_output": true,
-        "temperature": true,
-        "release_date": "2025-06-16",
-        "last_updated": "2025-12-23",
-        "modalities": {
-          "input": [
-            "text"
-          ],
-          "output": [
-            "text"
-          ]
-        },
-        "open_weights": true,
-        "limit": {
-          "context": 131072,
-          "output": 8000
-        }
-      },
-      "Qwen-Qwen3-32B": {
-        "id": "Qwen-Qwen3-32B",
-        "name": "Qwen3 32B",
-        "family": "qwen3",
-        "attachment": false,
-        "reasoning": true,
-        "tool_call": true,
-        "structured_output": true,
-        "temperature": true,
-        "release_date": "2025-06-16",
-        "last_updated": "2025-12-23",
-        "modalities": {
-          "input": [
-            "text"
-          ],
-          "output": [
-            "text"
-          ]
-        },
-        "open_weights": true,
-        "limit": {
-          "context": 131072,
-          "output": 8000
-        }
-      },
-      "deepseek-ai-DeepSeek-R1-0528": {
-        "id": "deepseek-ai-DeepSeek-R1-0528",
-        "name": "DeepSeek R1 0528",
-        "family": "deepseek-r1",
-        "attachment": false,
-        "reasoning": true,
-        "tool_call": false,
-        "structured_output": true,
-        "temperature": true,
-        "release_date": "2025-07-11",
-        "last_updated": "2025-12-23",
-        "modalities": {
-          "input": [
-            "text"
-          ],
-          "output": [
-            "text"
-          ]
-        },
-        "open_weights": true,
-        "limit": {
-          "context": 163840,
-          "output": 163840
         }
       },
       "meta-llama-3.1-8b-instruct": {
@@ -46110,8 +45931,8 @@
           "output": 8000
         }
       },
-      "LGAI-EXAONE-EXAONE-4.0.1-32B": {
-        "id": "LGAI-EXAONE-EXAONE-4.0.1-32B",
+      "LGAI-EXAONE/EXAONE-4.0.1-32B": {
+        "id": "LGAI-EXAONE/EXAONE-4.0.1-32B",
         "name": "EXAONE 4.0.1 32B",
         "family": "exaone",
         "attachment": false,
@@ -46139,8 +45960,33 @@
           "output": 131072
         }
       },
-      "meta-llama-Llama-4-Scout-17B-16E-Instruct": {
-        "id": "meta-llama-Llama-4-Scout-17B-16E-Instruct",
+      "meta-llama/Llama-4-Maverick-17B-128E-Instruct": {
+        "id": "meta-llama/Llama-4-Maverick-17B-128E-Instruct",
+        "name": "Llama 4 Maverick 17B 128E Instruct",
+        "family": "llama-4",
+        "attachment": false,
+        "reasoning": true,
+        "tool_call": false,
+        "structured_output": true,
+        "temperature": true,
+        "release_date": "2025-06-16",
+        "last_updated": "2025-12-23",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "limit": {
+          "context": 131072,
+          "output": 8000
+        }
+      },
+      "meta-llama/Llama-4-Scout-17B-16E-Instruct": {
+        "id": "meta-llama/Llama-4-Scout-17B-16E-Instruct",
         "name": "Llama 4 Scout 17B 16E Instruct",
         "family": "llama-4",
         "attachment": false,
@@ -46162,6 +46008,160 @@
         "limit": {
           "context": 131072,
           "output": 8000
+        }
+      },
+      "Qwen/Qwen3-30B-A3B": {
+        "id": "Qwen/Qwen3-30B-A3B",
+        "name": "Qwen3 30B A3B",
+        "family": "qwen3",
+        "attachment": false,
+        "reasoning": true,
+        "tool_call": true,
+        "structured_output": true,
+        "temperature": true,
+        "release_date": "2025-06-16",
+        "last_updated": "2025-12-23",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "limit": {
+          "context": 131072,
+          "output": 8000
+        }
+      },
+      "Qwen/Qwen3-235B-A22B-Instruct-2507": {
+        "id": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+        "name": "Qwen3 235B A22B Instruct 2507",
+        "family": "qwen3",
+        "attachment": false,
+        "reasoning": false,
+        "tool_call": true,
+        "structured_output": true,
+        "temperature": true,
+        "release_date": "2025-07-29",
+        "last_updated": "2025-12-23",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0.2,
+          "output": 0.8
+        },
+        "limit": {
+          "context": 131072,
+          "output": 131072
+        }
+      },
+      "Qwen/Qwen3-32B": {
+        "id": "Qwen/Qwen3-32B",
+        "name": "Qwen3 32B",
+        "family": "qwen3",
+        "attachment": false,
+        "reasoning": true,
+        "tool_call": true,
+        "structured_output": true,
+        "temperature": true,
+        "release_date": "2025-06-16",
+        "last_updated": "2025-12-23",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "limit": {
+          "context": 131072,
+          "output": 8000
+        }
+      },
+      "Qwen/Qwen3-235B-A22B-Thinking-2507": {
+        "id": "Qwen/Qwen3-235B-A22B-Thinking-2507",
+        "name": "Qwen3 235B A22B Thinking 2507",
+        "family": "qwen3",
+        "attachment": false,
+        "reasoning": true,
+        "tool_call": true,
+        "structured_output": true,
+        "temperature": true,
+        "release_date": "2025-07-29",
+        "last_updated": "2025-12-23",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "limit": {
+          "context": 131072,
+          "output": 131072
+        }
+      },
+      "zai-org/GLM-4.6": {
+        "id": "zai-org/GLM-4.6",
+        "name": "GLM 4.6",
+        "family": "glm-4",
+        "attachment": false,
+        "reasoning": true,
+        "tool_call": true,
+        "structured_output": true,
+        "temperature": true,
+        "release_date": "2025-10-31",
+        "last_updated": "2025-12-23",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "limit": {
+          "context": 131072,
+          "output": 131072
+        }
+      },
+      "deepseek-ai/DeepSeek-R1-0528": {
+        "id": "deepseek-ai/DeepSeek-R1-0528",
+        "name": "DeepSeek R1 0528",
+        "family": "deepseek-r1",
+        "attachment": false,
+        "reasoning": true,
+        "tool_call": false,
+        "structured_output": true,
+        "temperature": true,
+        "release_date": "2025-07-11",
+        "last_updated": "2025-12-23",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "limit": {
+          "context": 163840,
+          "output": 163840
         }
       }
     }
@@ -48279,11 +48279,44 @@
         "open_weights": true,
         "cost": {
           "input": 0.3,
-          "output": 1.2
+          "output": 1.2,
+          "cache_read": 0.15
         },
         "limit": {
-          "context": 128000,
-          "output": 128000
+          "context": 192000,
+          "output": 192000
+        }
+      },
+      "accounts/fireworks/models/minimax-m2p1": {
+        "id": "accounts/fireworks/models/minimax-m2p1",
+        "name": "MiniMax-M2.1",
+        "family": "minimax",
+        "attachment": false,
+        "reasoning": true,
+        "tool_call": true,
+        "interleaved": {
+          "field": "reasoning_content"
+        },
+        "temperature": true,
+        "release_date": "2025-12-23",
+        "last_updated": "2025-12-23",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0.3,
+          "output": 1.2,
+          "cache_read": 0.15
+        },
+        "limit": {
+          "context": 200000,
+          "output": 200000
         }
       },
       "accounts/fireworks/models/glm-4p7": {
