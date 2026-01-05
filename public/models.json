@@ -5269,7 +5269,7 @@
         },
         "limit": {
           "context": 131072,
-          "output": 8192
+          "output": 131072
         }
       },
       "mistral-saba-24b": {
@@ -5359,7 +5359,8 @@
         "limit": {
           "context": 131072,
           "output": 16384
-        }
+        },
+        "status": "deprecated"
       },
       "llama3-70b-8192": {
         "id": "llama3-70b-8192",
@@ -5516,6 +5517,7 @@
         "attachment": false,
         "reasoning": false,
         "tool_call": true,
+        "structured_output": true,
         "temperature": true,
         "knowledge": "2024-10",
         "release_date": "2025-09-05",
@@ -5575,6 +5577,7 @@
         "attachment": false,
         "reasoning": true,
         "tool_call": true,
+        "structured_output": true,
         "temperature": true,
         "release_date": "2025-08-05",
         "last_updated": "2025-08-05",
@@ -5588,12 +5591,12 @@
         },
         "open_weights": true,
         "cost": {
-          "input": 0.1,
-          "output": 0.5
+          "input": 0.075,
+          "output": 0.3
         },
         "limit": {
           "context": 131072,
-          "output": 32768
+          "output": 65536
         }
       },
       "openai/gpt-oss-120b": {
@@ -5603,6 +5606,7 @@
         "attachment": false,
         "reasoning": true,
         "tool_call": true,
+        "structured_output": true,
         "temperature": true,
         "release_date": "2025-08-05",
         "last_updated": "2025-08-05",
@@ -5617,11 +5621,11 @@
         "open_weights": true,
         "cost": {
           "input": 0.15,
-          "output": 0.75
+          "output": 0.6
         },
         "limit": {
           "context": 131072,
-          "output": 32768
+          "output": 65536
         }
       },
       "qwen/qwen3-32b": {
@@ -5660,6 +5664,7 @@
         "attachment": false,
         "reasoning": false,
         "tool_call": true,
+        "structured_output": true,
         "temperature": true,
         "knowledge": "2024-08",
         "release_date": "2025-04-05",
@@ -5690,6 +5695,7 @@
         "attachment": false,
         "reasoning": false,
         "tool_call": true,
+        "structured_output": true,
         "temperature": true,
         "knowledge": "2024-08",
         "release_date": "2025-04-05",
@@ -5739,7 +5745,7 @@
         },
         "limit": {
           "context": 131072,
-          "output": 128
+          "output": 1024
         }
       }
     }
@@ -50298,6 +50304,39 @@
           "output": 32768
         }
       },
+      "glm-4.7": {
+        "id": "glm-4.7",
+        "name": "GLM-4.7",
+        "family": "glm-4.7",
+        "attachment": false,
+        "reasoning": true,
+        "tool_call": true,
+        "interleaved": {
+          "field": "reasoning_details"
+        },
+        "temperature": true,
+        "knowledge": "2025-04",
+        "release_date": "2025-12-22",
+        "last_updated": "2025-12-22",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0.27,
+          "output": 1.1,
+          "cache_read": 0.548
+        },
+        "limit": {
+          "context": 204800,
+          "output": 131072
+        }
+      },
       "qwen3-235b-a22b-instruct-2507": {
         "id": "qwen3-235b-a22b-instruct-2507",
         "name": "Qwen3 235B A22B Instruct 2507",
@@ -50585,16 +50624,19 @@
           "output": 64000
         }
       },
-      "DeepSeek-V3.2-Exp": {
-        "id": "DeepSeek-V3.2-Exp",
-        "name": "DeepSeek-V3.2-Exp",
-        "family": "deepseek-v3",
+      "coding-glm-4.7-free": {
+        "id": "coding-glm-4.7-free",
+        "name": "Coding GLM-4.7 Free",
         "attachment": false,
         "reasoning": true,
         "tool_call": true,
+        "interleaved": {
+          "field": "reasoning_details"
+        },
         "temperature": true,
-        "release_date": "2025-09-29",
-        "last_updated": "2025-09-29",
+        "knowledge": "2025-04",
+        "release_date": "2025-12-22",
+        "last_updated": "2025-12-22",
         "modalities": {
           "input": [
             "text"
@@ -50605,12 +50647,14 @@
         },
         "open_weights": true,
         "cost": {
-          "input": 0.27,
-          "output": 0.41
+          "input": 0,
+          "output": 0,
+          "cache_read": 0,
+          "cache_write": 0
         },
         "limit": {
-          "context": 163000,
-          "output": 163000
+          "context": 204800,
+          "output": 131072
         }
       },
       "gpt-5.1-codex-mini": {
@@ -50828,37 +50872,6 @@
           "output": 32768
         }
       },
-      "glm-4.6": {
-        "id": "glm-4.6",
-        "name": "GLM-4.6",
-        "family": "glm-4.6",
-        "attachment": false,
-        "reasoning": true,
-        "tool_call": true,
-        "temperature": true,
-        "knowledge": "2025-04",
-        "release_date": "2025-09-30",
-        "last_updated": "2025-09-30",
-        "modalities": {
-          "input": [
-            "text"
-          ],
-          "output": [
-            "text"
-          ]
-        },
-        "open_weights": true,
-        "cost": {
-          "input": 0.27,
-          "output": 1.1,
-          "cache_read": 0.11,
-          "cache_write": 0
-        },
-        "limit": {
-          "context": 204800,
-          "output": 131072
-        }
-      },
       "o4-mini": {
         "id": "o4-mini",
         "name": "o4-mini",
@@ -50953,35 +50966,6 @@
           "output": 65000
         }
       },
-      "DeepSeek-V3.2-Exp-Think": {
-        "id": "DeepSeek-V3.2-Exp-Think",
-        "name": "DeepSeek-V3.2-Exp-Think",
-        "family": "deepseek-v3",
-        "attachment": false,
-        "reasoning": true,
-        "tool_call": true,
-        "temperature": true,
-        "knowledge": "2025-09",
-        "release_date": "2025-09-29",
-        "last_updated": "2025-09-29",
-        "modalities": {
-          "input": [
-            "text"
-          ],
-          "output": [
-            "text"
-          ]
-        },
-        "open_weights": true,
-        "cost": {
-          "input": 0.27,
-          "output": 0.41
-        },
-        "limit": {
-          "context": 131000,
-          "output": 64000
-        }
-      },
       "gpt-4o-2024-11-20": {
         "id": "gpt-4o-2024-11-20",
         "name": "GPT-4o (2024-11-20)",
@@ -51044,6 +51028,37 @@
           "output": 128000
         }
       },
+      "minimax-m2.1-free": {
+        "id": "minimax-m2.1-free",
+        "name": "MiniMax M2.1 Free",
+        "family": "minimax",
+        "attachment": false,
+        "reasoning": true,
+        "tool_call": true,
+        "interleaved": {
+          "field": "reasoning_details"
+        },
+        "temperature": true,
+        "release_date": "2025-12-23",
+        "last_updated": "2025-12-23",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 204800,
+          "output": 131072
+        }
+      },
       "qwen3-coder-480b-a35b-instruct": {
         "id": "qwen3-coder-480b-a35b-instruct",
         "name": "Qwen3 Coder 480B A35B Instruct",
@@ -51072,16 +51087,17 @@
           "output": 131000
         }
       },
-      "coding-glm-4.6-free": {
-        "id": "coding-glm-4.6-free",
-        "name": "Coding GLM-4.6 Free",
+      "deepseek-v3.2-think": {
+        "id": "deepseek-v3.2-think",
+        "name": "DeepSeek-V3.2-Think",
+        "family": "deepseek-v3",
         "attachment": false,
         "reasoning": true,
         "tool_call": true,
         "temperature": true,
-        "knowledge": "2025-04",
-        "release_date": "2025-09-30",
-        "last_updated": "2025-09-30",
+        "knowledge": "2024-07",
+        "release_date": "2025-12-01",
+        "last_updated": "2025-12-01",
         "modalities": {
           "input": [
             "text"
@@ -51092,14 +51108,12 @@
         },
         "open_weights": true,
         "cost": {
-          "input": 0,
-          "output": 0,
-          "cache_read": 0,
-          "cache_write": 0
+          "input": 0.3,
+          "output": 0.45
         },
         "limit": {
-          "context": 204800,
-          "output": 131072
+          "context": 131000,
+          "output": 64000
         }
       },
       "gpt-5": {
@@ -51131,6 +51145,66 @@
         "limit": {
           "context": 400000,
           "output": 128000
+        }
+      },
+      "minimax-m2.1": {
+        "id": "minimax-m2.1",
+        "name": "MiniMax M2.1",
+        "family": "minimax",
+        "attachment": false,
+        "reasoning": true,
+        "tool_call": true,
+        "interleaved": {
+          "field": "reasoning_details"
+        },
+        "temperature": true,
+        "release_date": "2025-12-23",
+        "last_updated": "2025-12-23",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0.29,
+          "output": 1.15
+        },
+        "limit": {
+          "context": 204800,
+          "output": 131072
+        }
+      },
+      "deepseek-v3.2": {
+        "id": "deepseek-v3.2",
+        "name": "DeepSeek-V3.2",
+        "family": "deepseek-v3",
+        "attachment": false,
+        "reasoning": true,
+        "tool_call": true,
+        "temperature": true,
+        "knowledge": "2024-07",
+        "release_date": "2025-12-01",
+        "last_updated": "2025-12-01",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0.3,
+          "output": 0.45
+        },
+        "limit": {
+          "context": 131000,
+          "output": 64000
         }
       },
       "Kimi-K2-0905": {
@@ -51187,6 +51261,37 @@
           "input": 7,
           "output": 28,
           "cache_read": 3.5
+        },
+        "limit": {
+          "context": 400000,
+          "output": 128000
+        }
+      },
+      "gpt-5.2": {
+        "id": "gpt-5.2",
+        "name": "GPT-5.2",
+        "family": "gpt-5",
+        "attachment": true,
+        "reasoning": true,
+        "tool_call": true,
+        "temperature": false,
+        "knowledge": "2025-08-31",
+        "release_date": "2025-12-11",
+        "last_updated": "2025-12-11",
+        "modalities": {
+          "input": [
+            "text",
+            "image"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": false,
+        "cost": {
+          "input": 1.75,
+          "output": 14,
+          "cache_read": 0.175
         },
         "limit": {
           "context": 400000,
