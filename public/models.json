@@ -1242,6 +1242,37 @@
           "output": 98304
         }
       },
+      "glm-4.7-flash": {
+        "id": "glm-4.7-flash",
+        "name": "GLM-4.7-Flash",
+        "family": "glm-flash",
+        "attachment": false,
+        "reasoning": true,
+        "tool_call": true,
+        "temperature": true,
+        "knowledge": "2025-04",
+        "release_date": "2026-01-19",
+        "last_updated": "2026-01-19",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cache_read": 0,
+          "cache_write": 0
+        },
+        "limit": {
+          "context": 200000,
+          "output": 131072
+        }
+      },
       "glm-4.5-air": {
         "id": "glm-4.5-air",
         "name": "GLM-4.5-Air",
@@ -1418,6 +1449,31 @@
           "input": [
             "text",
             "image"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "limit": {
+          "context": 200000,
+          "output": 8192
+        }
+      },
+      "glm-4.7:cloud": {
+        "id": "glm-4.7:cloud",
+        "name": "GLM-4.7",
+        "family": "glm",
+        "attachment": false,
+        "reasoning": false,
+        "tool_call": true,
+        "structured_output": true,
+        "temperature": true,
+        "release_date": "2025-12-22",
+        "last_updated": "2025-12-22",
+        "modalities": {
+          "input": [
+            "text"
           ],
           "output": [
             "text"
@@ -13753,6 +13809,7 @@
         },
         "limit": {
           "context": 400000,
+          "input": 272000,
           "output": 128000
         }
       },
@@ -13849,6 +13906,7 @@
         },
         "limit": {
           "context": 400000,
+          "input": 272000,
           "output": 128000
         }
       },
@@ -14009,6 +14067,7 @@
         },
         "limit": {
           "context": 400000,
+          "input": 272000,
           "output": 128000
         }
       },
@@ -14041,6 +14100,7 @@
         },
         "limit": {
           "context": 400000,
+          "input": 272000,
           "output": 128000
         }
       },
@@ -20508,6 +20568,36 @@
           "output": 50688
         }
       },
+      "qwen3-vl-235b-a22b": {
+        "id": "qwen3-vl-235b-a22b",
+        "name": "Qwen3 VL 235B",
+        "family": "qwen",
+        "attachment": true,
+        "reasoning": false,
+        "tool_call": true,
+        "structured_output": true,
+        "temperature": true,
+        "release_date": "2026-01-16",
+        "last_updated": "2026-01-19",
+        "modalities": {
+          "input": [
+            "text",
+            "image"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0.25,
+          "output": 1.5
+        },
+        "limit": {
+          "context": 262144,
+          "output": 65536
+        }
+      },
       "venice-uncensored": {
         "id": "venice-uncensored",
         "name": "Venice Uncensored 1.1",
@@ -20868,39 +20958,6 @@
         "cost": {
           "input": 1.1,
           "output": 3
-        },
-        "limit": {
-          "context": 131072,
-          "output": 32768
-        }
-      },
-      "zai-org-glm-4.6v": {
-        "id": "zai-org-glm-4.6v",
-        "name": "GLM 4.6V",
-        "family": "glmv",
-        "attachment": true,
-        "reasoning": false,
-        "tool_call": true,
-        "interleaved": {
-          "field": "reasoning_details"
-        },
-        "structured_output": true,
-        "temperature": true,
-        "release_date": "2025-12-11",
-        "last_updated": "2026-01-15",
-        "modalities": {
-          "input": [
-            "text",
-            "image"
-          ],
-          "output": [
-            "text"
-          ]
-        },
-        "open_weights": true,
-        "cost": {
-          "input": 0.39,
-          "output": 1.13
         },
         "limit": {
           "context": 131072,
@@ -35690,6 +35747,38 @@
           "output": 131072
         }
       },
+      "zai-org/GLM-4.7-Flash": {
+        "id": "zai-org/GLM-4.7-Flash",
+        "name": "GLM-4.7-Flash",
+        "family": "glm",
+        "attachment": false,
+        "reasoning": true,
+        "tool_call": true,
+        "interleaved": {
+          "field": "reasoning_details"
+        },
+        "temperature": true,
+        "knowledge": "2025-04",
+        "release_date": "2025-08-08",
+        "last_updated": "2025-08-08",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 200000,
+          "output": 128000
+        }
+      },
       "deepseek-ai/DeepSeek-R1-0528": {
         "id": "deepseek-ai/DeepSeek-R1-0528",
         "name": "DeepSeek-R1-0528",
@@ -36251,6 +36340,7 @@
         },
         "limit": {
           "context": 400000,
+          "input": 272000,
           "output": 128000
         },
         "provider": {
@@ -36286,6 +36376,7 @@
         },
         "limit": {
           "context": 400000,
+          "input": 272000,
           "output": 128000
         },
         "provider": {
@@ -36321,6 +36412,7 @@
         },
         "limit": {
           "context": 400000,
+          "input": 272000,
           "output": 128000
         },
         "provider": {
@@ -36665,6 +36757,7 @@
         },
         "limit": {
           "context": 400000,
+          "input": 272000,
           "output": 128000
         },
         "provider": {
@@ -36700,6 +36793,7 @@
         },
         "limit": {
           "context": 400000,
+          "input": 272000,
           "output": 128000
         },
         "provider": {
@@ -43520,6 +43614,7 @@
         },
         "limit": {
           "context": 400000,
+          "input": 272000,
           "output": 128000
         }
       },
@@ -43737,6 +43832,7 @@
         },
         "limit": {
           "context": 400000,
+          "input": 272000,
           "output": 128000
         }
       },
@@ -43799,6 +43895,7 @@
         },
         "limit": {
           "context": 400000,
+          "input": 272000,
           "output": 128000
         }
       },
@@ -43831,6 +43928,7 @@
         },
         "limit": {
           "context": 400000,
+          "input": 272000,
           "output": 128000
         }
       },
@@ -43991,6 +44089,7 @@
         },
         "limit": {
           "context": 400000,
+          "input": 272000,
           "output": 128000
         }
       },
@@ -44241,6 +44340,7 @@
         },
         "limit": {
           "context": 400000,
+          "input": 272000,
           "output": 128000
         }
       },
@@ -44305,6 +44405,7 @@
         },
         "limit": {
           "context": 400000,
+          "input": 272000,
           "output": 128000
         }
       },
@@ -44336,6 +44437,7 @@
         },
         "limit": {
           "context": 400000,
+          "input": 272000,
           "output": 272000
         }
       },
@@ -44367,6 +44469,7 @@
         },
         "limit": {
           "context": 400000,
+          "input": 272000,
           "output": 128000
         }
       },
@@ -47127,6 +47230,38 @@
           "input": 5,
           "output": 10,
           "cache_read": 1.25
+        },
+        "limit": {
+          "context": 400000,
+          "output": 128000
+        }
+      },
+      "openai/gpt-5.1-codex-max": {
+        "id": "openai/gpt-5.1-codex-max",
+        "name": "GPT-5.1-Codex-Max",
+        "family": "gpt-codex",
+        "attachment": true,
+        "reasoning": true,
+        "tool_call": true,
+        "structured_output": true,
+        "temperature": true,
+        "knowledge": "2024-09-30",
+        "release_date": "2025-11-13",
+        "last_updated": "2025-11-13",
+        "modalities": {
+          "input": [
+            "text",
+            "image"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": false,
+        "cost": {
+          "input": 1.1,
+          "output": 9,
+          "cache_read": 0.11
         },
         "limit": {
           "context": 400000,
@@ -67824,6 +67959,35 @@
         "limit": {
           "context": 131000,
           "output": 32000
+        }
+      },
+      "zai-glm-4.6": {
+        "id": "zai-glm-4.6",
+        "name": "Z.AI GLM-4.6",
+        "attachment": false,
+        "reasoning": false,
+        "tool_call": true,
+        "temperature": true,
+        "release_date": "2025-11-05",
+        "last_updated": "2026-01-19",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cache_read": 0,
+          "cache_write": 0
+        },
+        "limit": {
+          "context": 131072,
+          "output": 40960
         }
       },
       "gpt-oss-120b": {
