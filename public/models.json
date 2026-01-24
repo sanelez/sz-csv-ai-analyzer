@@ -35993,6 +35993,36 @@
     "name": "OpenCode Zen",
     "doc": "https://opencode.ai/docs/zen",
     "models": {
+      "glm-4.7": {
+        "id": "glm-4.7",
+        "name": "GLM-4.7",
+        "family": "glm",
+        "attachment": false,
+        "reasoning": true,
+        "tool_call": true,
+        "temperature": true,
+        "knowledge": "2025-04",
+        "release_date": "2025-12-22",
+        "last_updated": "2025-12-22",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0.6,
+          "output": 2.2,
+          "cache_read": 0.1
+        },
+        "limit": {
+          "context": 204800,
+          "output": 131072
+        }
+      },
       "qwen3-coder": {
         "id": "qwen3-coder",
         "name": "Qwen3 Coder",
@@ -36276,40 +36306,6 @@
           "npm": "@ai-sdk/google"
         }
       },
-      "alpha-glm-4.7": {
-        "id": "alpha-glm-4.7",
-        "name": "Alpha GLM-4.7",
-        "family": "glm",
-        "attachment": false,
-        "reasoning": true,
-        "tool_call": true,
-        "interleaved": {
-          "field": "reasoning_content"
-        },
-        "temperature": true,
-        "knowledge": "2025-04",
-        "release_date": "2025-12-22",
-        "last_updated": "2025-12-22",
-        "modalities": {
-          "input": [
-            "text"
-          ],
-          "output": [
-            "text"
-          ]
-        },
-        "open_weights": true,
-        "cost": {
-          "input": 0.6,
-          "output": 2.2,
-          "cache_read": 0.6
-        },
-        "limit": {
-          "context": 204800,
-          "output": 131072
-        },
-        "status": "alpha"
-      },
       "claude-sonnet-4-5": {
         "id": "claude-sonnet-4-5",
         "name": "Claude Sonnet 4.5",
@@ -36387,40 +36383,6 @@
         },
         "provider": {
           "npm": "@ai-sdk/openai"
-        }
-      },
-      "alpha-gd4": {
-        "id": "alpha-gd4",
-        "name": "Alpha GD4",
-        "family": "alpha",
-        "attachment": false,
-        "reasoning": true,
-        "tool_call": true,
-        "temperature": true,
-        "knowledge": "2025-01",
-        "release_date": "2025-01-01",
-        "last_updated": "2025-01-01",
-        "modalities": {
-          "input": [
-            "text"
-          ],
-          "output": [
-            "text"
-          ]
-        },
-        "open_weights": true,
-        "cost": {
-          "input": 0.5,
-          "output": 2,
-          "cache_read": 0.15
-        },
-        "limit": {
-          "context": 262144,
-          "output": 32768
-        },
-        "status": "alpha",
-        "provider": {
-          "npm": "@ai-sdk/anthropic"
         }
       },
       "kimi-k2-thinking": {
@@ -36692,7 +36654,8 @@
         "limit": {
           "context": 204800,
           "output": 131072
-        }
+        },
+        "status": "deprecated"
       },
       "grok-code": {
         "id": "grok-code",
@@ -36722,7 +36685,8 @@
         "limit": {
           "context": 256000,
           "output": 256000
-        }
+        },
+        "status": "deprecated"
       },
       "gemini-3-flash": {
         "id": "gemini-3-flash",
