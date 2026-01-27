@@ -1,7 +1,6 @@
 # 📊 CSV AI Analyzer
 
 [![Live Demo](https://img.shields.io/badge/demo-live-brightgreen.svg)](https://maxgfr.github.io/csv-ai-analyzer)
-[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/maxgfr/csv-ai-analyzer)
 [![Next.js](https://img.shields.io/badge/Next.js-black.svg)](https://nextjs.org/)
 [![TailwindCSS](https://img.shields.io/badge/TailwindCSS-38bdf8.svg)](https://tailwindcss.com/)
 [![Docker](https://img.shields.io/badge/Docker-ready-2496ED.svg)](https://www.docker.com/)
