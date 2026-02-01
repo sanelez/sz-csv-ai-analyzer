@@ -47103,6 +47103,7 @@
         "attachment": true,
         "reasoning": true,
         "tool_call": true,
+        "structured_output": true,
         "temperature": false,
         "knowledge": "2024-09-30",
         "release_date": "2025-11-13",
@@ -47740,6 +47741,7 @@
         "attachment": true,
         "reasoning": true,
         "tool_call": true,
+        "structured_output": true,
         "temperature": false,
         "knowledge": "2025-08-31",
         "release_date": "2025-12-11",
@@ -48575,6 +48577,65 @@
           "output": 8192
         }
       },
+      "nousresearch/hermes-3-llama-3.1-405b:free": {
+        "id": "nousresearch/hermes-3-llama-3.1-405b:free",
+        "name": "Hermes 3 405B Instruct (free)",
+        "family": "hermes",
+        "attachment": false,
+        "reasoning": true,
+        "tool_call": true,
+        "temperature": true,
+        "knowledge": "2023-12",
+        "release_date": "2024-08-16",
+        "last_updated": "2024-08-16",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 131072,
+          "output": 131072
+        }
+      },
+      "nvidia/nemotron-nano-12b-v2-vl:free": {
+        "id": "nvidia/nemotron-nano-12b-v2-vl:free",
+        "name": "Nemotron Nano 12B 2 VL (free)",
+        "family": "nemotron",
+        "attachment": false,
+        "reasoning": true,
+        "tool_call": true,
+        "temperature": true,
+        "knowledge": "2025-11",
+        "release_date": "2025-10-28",
+        "last_updated": "2026-01-31",
+        "modalities": {
+          "input": [
+            "text",
+            "image"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 128000,
+          "output": 128000
+        }
+      },
       "nvidia/nemotron-nano-9b-v2": {
         "id": "nvidia/nemotron-nano-9b-v2",
         "name": "nvidia-nemotron-nano-9b-v2",
@@ -48602,6 +48663,64 @@
         "limit": {
           "context": 131072,
           "output": 131072
+        }
+      },
+      "nvidia/nemotron-3-nano-30b-a3b:free": {
+        "id": "nvidia/nemotron-3-nano-30b-a3b:free",
+        "name": "Nemotron 3 Nano 30B A3B (free)",
+        "family": "nemotron",
+        "attachment": false,
+        "reasoning": true,
+        "tool_call": true,
+        "temperature": true,
+        "knowledge": "2025-11",
+        "release_date": "2025-12-14",
+        "last_updated": "2026-01-31",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 256000,
+          "output": 256000
+        }
+      },
+      "nvidia/nemotron-nano-9b-v2:free": {
+        "id": "nvidia/nemotron-nano-9b-v2:free",
+        "name": "Nemotron Nano 9B V2 (free)",
+        "family": "nemotron",
+        "attachment": false,
+        "reasoning": true,
+        "tool_call": true,
+        "temperature": true,
+        "knowledge": "2024-09",
+        "release_date": "2025-09-05",
+        "last_updated": "2025-08-18",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 128000,
+          "output": 128000
         }
       },
       "x-ai/grok-4": {
@@ -48882,6 +49001,35 @@
           "output": 65536
         }
       },
+      "cognitivecomputations/dolphin-mistral-24b-venice-edition:free": {
+        "id": "cognitivecomputations/dolphin-mistral-24b-venice-edition:free",
+        "name": "Uncensored (free)",
+        "family": "mistral",
+        "attachment": false,
+        "reasoning": false,
+        "tool_call": true,
+        "temperature": true,
+        "knowledge": "2025-06",
+        "release_date": "2025-07-09",
+        "last_updated": "2026-01-31",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 32768,
+          "output": 32768
+        }
+      },
       "cognitivecomputations/dolphin3.0-mistral-24b": {
         "id": "cognitivecomputations/dolphin3.0-mistral-24b",
         "name": "Dolphin3.0 Mistral 24B",
@@ -48937,6 +49085,96 @@
         },
         "limit": {
           "context": 32768,
+          "output": 8192
+        }
+      },
+      "sourceful/riverflow-v2-max-preview": {
+        "id": "sourceful/riverflow-v2-max-preview",
+        "name": "Riverflow V2 Max Preview",
+        "family": "sourceful",
+        "attachment": false,
+        "reasoning": false,
+        "tool_call": false,
+        "temperature": true,
+        "knowledge": "2025-06",
+        "release_date": "2025-12-08",
+        "last_updated": "2026-01-28",
+        "modalities": {
+          "input": [
+            "text",
+            "image"
+          ],
+          "output": [
+            "image"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 8192,
+          "output": 8192
+        }
+      },
+      "sourceful/riverflow-v2-fast-preview": {
+        "id": "sourceful/riverflow-v2-fast-preview",
+        "name": "Riverflow V2 Fast Preview",
+        "family": "sourceful",
+        "attachment": false,
+        "reasoning": false,
+        "tool_call": false,
+        "temperature": true,
+        "knowledge": "2025-06",
+        "release_date": "2025-12-08",
+        "last_updated": "2026-01-28",
+        "modalities": {
+          "input": [
+            "text",
+            "image"
+          ],
+          "output": [
+            "image"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 8192,
+          "output": 8192
+        }
+      },
+      "sourceful/riverflow-v2-standard-preview": {
+        "id": "sourceful/riverflow-v2-standard-preview",
+        "name": "Riverflow V2 Standard Preview",
+        "family": "sourceful",
+        "attachment": false,
+        "reasoning": false,
+        "tool_call": false,
+        "temperature": true,
+        "knowledge": "2025-06",
+        "release_date": "2025-12-08",
+        "last_updated": "2026-01-28",
+        "modalities": {
+          "input": [
+            "text",
+            "image"
+          ],
+          "output": [
+            "image"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 8192,
           "output": 8192
         }
       },
@@ -49152,7 +49390,7 @@
         "family": "deepseek",
         "attachment": false,
         "reasoning": true,
-        "tool_call": true,
+        "tool_call": false,
         "temperature": true,
         "knowledge": "2025-05",
         "release_date": "2025-05-28",
@@ -49323,6 +49561,35 @@
           "output": 8192
         }
       },
+      "tngtech/tng-r1t-chimera:free": {
+        "id": "tngtech/tng-r1t-chimera:free",
+        "name": "R1T Chimera (free)",
+        "family": "tngtech",
+        "attachment": false,
+        "reasoning": true,
+        "tool_call": false,
+        "temperature": true,
+        "knowledge": "2025-07",
+        "release_date": "2025-11-26",
+        "last_updated": "2026-01-31",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 163840,
+          "output": 163840
+        }
+      },
       "tngtech/deepseek-r1t2-chimera:free": {
         "id": "tngtech/deepseek-r1t2-chimera:free",
         "name": "DeepSeek R1T2 Chimera (free)",
@@ -49350,6 +49617,68 @@
         "limit": {
           "context": 163840,
           "output": 163840
+        }
+      },
+      "allenai/molmo-2-8b:free": {
+        "id": "allenai/molmo-2-8b:free",
+        "name": "Molmo2 8B (free)",
+        "family": "allenai",
+        "attachment": false,
+        "reasoning": true,
+        "tool_call": true,
+        "temperature": true,
+        "knowledge": "2025-06",
+        "release_date": "2026-01-09",
+        "last_updated": "2026-01-31",
+        "modalities": {
+          "input": [
+            "text",
+            "image",
+            "video"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 36864,
+          "output": 36864
+        }
+      },
+      "bytedance-seed/seedream-4.5": {
+        "id": "bytedance-seed/seedream-4.5",
+        "name": "Seedream 4.5",
+        "family": "seed",
+        "attachment": false,
+        "reasoning": false,
+        "tool_call": false,
+        "temperature": true,
+        "knowledge": "2025-06",
+        "release_date": "2025-12-23",
+        "last_updated": "2026-01-31",
+        "modalities": {
+          "input": [
+            "image",
+            "text"
+          ],
+          "output": [
+            "image",
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 4096,
+          "output": 4096
         }
       },
       "arcee-ai/trinity-mini:free": {
@@ -49408,6 +49737,64 @@
         "limit": {
           "context": 131072,
           "output": 131072
+        }
+      },
+      "liquid/lfm-2.5-1.2b-thinking:free": {
+        "id": "liquid/lfm-2.5-1.2b-thinking:free",
+        "name": "LFM2.5-1.2B-Thinking (free)",
+        "family": "liquid",
+        "attachment": false,
+        "reasoning": true,
+        "tool_call": true,
+        "temperature": true,
+        "knowledge": "2025-06",
+        "release_date": "2026-01-20",
+        "last_updated": "2026-01-28",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 131072,
+          "output": 32768
+        }
+      },
+      "liquid/lfm-2.5-1.2b-instruct:free": {
+        "id": "liquid/lfm-2.5-1.2b-instruct:free",
+        "name": "LFM2.5-1.2B-Instruct (free)",
+        "family": "liquid",
+        "attachment": false,
+        "reasoning": false,
+        "tool_call": true,
+        "temperature": true,
+        "knowledge": "2025-06",
+        "release_date": "2026-01-20",
+        "last_updated": "2026-01-28",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 131072,
+          "output": 32768
         }
       },
       "minimax/minimax-m1": {
@@ -50243,6 +50630,66 @@
           "output": 163840
         }
       },
+      "openai/gpt-5.2-chat": {
+        "id": "openai/gpt-5.2-chat",
+        "name": "GPT-5.2 Chat",
+        "family": "gpt-codex",
+        "attachment": true,
+        "reasoning": true,
+        "tool_call": true,
+        "structured_output": true,
+        "temperature": false,
+        "knowledge": "2025-08-31",
+        "release_date": "2025-12-11",
+        "last_updated": "2025-12-11",
+        "modalities": {
+          "input": [
+            "text",
+            "image"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": false,
+        "cost": {
+          "input": 1.75,
+          "output": 14,
+          "cache_read": 0.175
+        },
+        "limit": {
+          "context": 128000,
+          "output": 16384
+        }
+      },
+      "openai/gpt-oss-20b:free": {
+        "id": "openai/gpt-oss-20b:free",
+        "name": "gpt-oss-20b (free)",
+        "family": "gpt-oss",
+        "attachment": false,
+        "reasoning": true,
+        "tool_call": true,
+        "temperature": true,
+        "release_date": "2025-08-05",
+        "last_updated": "2026-01-31",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 131072,
+          "output": 32768
+        }
+      },
       "openai/gpt-oss-safeguard-20b": {
         "id": "openai/gpt-oss-safeguard-20b",
         "name": "GPT OSS Safeguard 20B",
@@ -50366,6 +50813,34 @@
           "output": 32768
         }
       },
+      "openai/gpt-oss-120b:free": {
+        "id": "openai/gpt-oss-120b:free",
+        "name": "gpt-oss-120b (free)",
+        "family": "gpt-oss",
+        "attachment": false,
+        "reasoning": true,
+        "tool_call": true,
+        "temperature": true,
+        "release_date": "2025-08-05",
+        "last_updated": "2025-08-05",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 131072,
+          "output": 32768
+        }
+      },
       "openai/gpt-5-chat": {
         "id": "openai/gpt-5-chat",
         "name": "GPT-5 Chat (latest)",
@@ -50457,38 +50932,6 @@
         "limit": {
           "context": 400000,
           "output": 100000
-        }
-      },
-      "openai/gpt-5.2-chat-latest": {
-        "id": "openai/gpt-5.2-chat-latest",
-        "name": "GPT-5.2 Chat",
-        "family": "gpt-codex",
-        "attachment": true,
-        "reasoning": true,
-        "tool_call": true,
-        "structured_output": true,
-        "temperature": false,
-        "knowledge": "2025-08-31",
-        "release_date": "2025-12-11",
-        "last_updated": "2025-12-11",
-        "modalities": {
-          "input": [
-            "text",
-            "image"
-          ],
-          "output": [
-            "text"
-          ]
-        },
-        "open_weights": false,
-        "cost": {
-          "input": 1.75,
-          "output": 14,
-          "cache_read": 0.175
-        },
-        "limit": {
-          "context": 128000,
-          "output": 16384
         }
       },
       "openai/gpt-5.1": {
@@ -51463,6 +51906,36 @@
           "output": 66536
         }
       },
+      "qwen/qwen-2.5-vl-7b-instruct:free": {
+        "id": "qwen/qwen-2.5-vl-7b-instruct:free",
+        "name": "Qwen2.5-VL 7B Instruct (free)",
+        "family": "qwen",
+        "attachment": true,
+        "reasoning": false,
+        "tool_call": true,
+        "temperature": true,
+        "knowledge": "2025-02",
+        "release_date": "2024-08-28",
+        "last_updated": "2024-08-28",
+        "modalities": {
+          "input": [
+            "text",
+            "image"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 32768,
+          "output": 32768
+        }
+      },
       "qwen/qwq-32b:free": {
         "id": "qwen/qwq-32b:free",
         "name": "QwQ 32B (free)",
@@ -51519,6 +51992,35 @@
         "limit": {
           "context": 262000,
           "output": 262000
+        }
+      },
+      "qwen/qwen3-4b:free": {
+        "id": "qwen/qwen3-4b:free",
+        "name": "Qwen3 4B (free)",
+        "family": "qwen",
+        "attachment": false,
+        "reasoning": true,
+        "tool_call": true,
+        "temperature": true,
+        "knowledge": "2025-04",
+        "release_date": "2025-04-30",
+        "last_updated": "2025-07-23",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 40960,
+          "output": 40960
         }
       },
       "qwen/qwen3-30b-a3b:free": {
@@ -51725,6 +52227,35 @@
         "limit": {
           "context": 8192,
           "output": 8192
+        }
+      },
+      "qwen/qwen3-next-80b-a3b-instruct:free": {
+        "id": "qwen/qwen3-next-80b-a3b-instruct:free",
+        "name": "Qwen3 Next 80B A3B Instruct (free)",
+        "family": "qwen",
+        "attachment": false,
+        "reasoning": false,
+        "tool_call": true,
+        "temperature": true,
+        "knowledge": "2025-04",
+        "release_date": "2025-09-11",
+        "last_updated": "2025-09-11",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 262144,
+          "output": 262144
         }
       },
       "qwen/qwen2.5-vl-72b-instruct:free": {
@@ -52454,8 +52985,8 @@
           "output": 0
         },
         "limit": {
-          "context": 65536,
-          "output": 65536
+          "context": 131072,
+          "output": 131072
         }
       },
       "meta-llama/llama-4-scout:free": {
@@ -52486,6 +53017,65 @@
         "limit": {
           "context": 64000,
           "output": 64000
+        }
+      },
+      "meta-llama/llama-3.2-3b-instruct:free": {
+        "id": "meta-llama/llama-3.2-3b-instruct:free",
+        "name": "Llama 3.2 3B Instruct (free)",
+        "family": "llama",
+        "attachment": true,
+        "reasoning": false,
+        "tool_call": true,
+        "temperature": true,
+        "knowledge": "2023-12",
+        "release_date": "2024-09-25",
+        "last_updated": "2024-09-25",
+        "modalities": {
+          "input": [
+            "text",
+            "image"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 131072,
+          "output": 131072
+        }
+      },
+      "meta-llama/llama-3.1-405b-instruct:free": {
+        "id": "meta-llama/llama-3.1-405b-instruct:free",
+        "name": "Llama 3.1 405B Instruct (free)",
+        "family": "llama",
+        "attachment": true,
+        "reasoning": false,
+        "tool_call": true,
+        "temperature": true,
+        "knowledge": "2024-08",
+        "release_date": "2024-07-23",
+        "last_updated": "2025-04-05",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 131072,
+          "output": 131072
         }
       },
       "anthropic/claude-opus-4": {
@@ -52791,6 +53381,130 @@
         "limit": {
           "context": 32768,
           "output": 32768
+        }
+      },
+      "black-forest-labs/flux.2-klein-4b": {
+        "id": "black-forest-labs/flux.2-klein-4b",
+        "name": "FLUX.2 Klein 4B",
+        "family": "flux",
+        "attachment": false,
+        "reasoning": false,
+        "tool_call": false,
+        "temperature": true,
+        "knowledge": "2025-06",
+        "release_date": "2026-01-14",
+        "last_updated": "2026-01-31",
+        "modalities": {
+          "input": [
+            "image",
+            "text"
+          ],
+          "output": [
+            "image",
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 40960,
+          "output": 40960
+        }
+      },
+      "black-forest-labs/flux.2-max": {
+        "id": "black-forest-labs/flux.2-max",
+        "name": "FLUX.2 Max",
+        "family": "flux",
+        "attachment": false,
+        "reasoning": false,
+        "tool_call": false,
+        "temperature": true,
+        "knowledge": "2025-06",
+        "release_date": "2025-12-16",
+        "last_updated": "2026-01-31",
+        "modalities": {
+          "input": [
+            "image",
+            "text"
+          ],
+          "output": [
+            "image",
+            "text"
+          ]
+        },
+        "open_weights": false,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 46864,
+          "output": 46864
+        }
+      },
+      "black-forest-labs/flux.2-pro": {
+        "id": "black-forest-labs/flux.2-pro",
+        "name": "FLUX.2 Pro",
+        "family": "flux",
+        "attachment": false,
+        "reasoning": false,
+        "tool_call": false,
+        "temperature": true,
+        "knowledge": "2025-06",
+        "release_date": "2025-11-25",
+        "last_updated": "2026-01-31",
+        "modalities": {
+          "input": [
+            "image",
+            "text"
+          ],
+          "output": [
+            "image",
+            "text"
+          ]
+        },
+        "open_weights": false,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 46864,
+          "output": 46864
+        }
+      },
+      "black-forest-labs/flux.2-flex": {
+        "id": "black-forest-labs/flux.2-flex",
+        "name": "FLUX.2 Flex",
+        "family": "flux",
+        "attachment": false,
+        "reasoning": false,
+        "tool_call": false,
+        "temperature": true,
+        "knowledge": "2025-06",
+        "release_date": "2025-11-25",
+        "last_updated": "2026-01-31",
+        "modalities": {
+          "input": [
+            "image",
+            "text"
+          ],
+          "output": [
+            "image",
+            "text"
+          ]
+        },
+        "open_weights": false,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 67344,
+          "output": 67344
         }
       }
     }
