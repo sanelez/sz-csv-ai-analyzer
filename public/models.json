@@ -4031,6 +4031,38 @@
           "output": 131072
         }
       },
+      "z-ai/glm5": {
+        "id": "z-ai/glm5",
+        "name": "GLM5",
+        "family": "glm",
+        "attachment": false,
+        "reasoning": true,
+        "tool_call": true,
+        "interleaved": {
+          "field": "reasoning_content"
+        },
+        "structured_output": true,
+        "temperature": true,
+        "release_date": "2026-02-12",
+        "last_updated": "2026-02-12",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 202752,
+          "output": 131000
+        }
+      },
       "qwen/qwen3-next-80b-a3b-thinking": {
         "id": "qwen/qwen3-next-80b-a3b-thinking",
         "name": "Qwen3-Next-80B-A3B-Thinking",
@@ -37714,6 +37746,33 @@
           "output": 0
         }
       },
+      "openrouter/aurora-alpha": {
+        "id": "openrouter/aurora-alpha",
+        "name": "Aurora Alpha",
+        "attachment": false,
+        "reasoning": true,
+        "tool_call": true,
+        "temperature": true,
+        "release_date": "2026-02-09",
+        "last_updated": "2026-02-09",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": false,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 128000,
+          "output": 50000
+        }
+      },
       "moonshotai/kimi-dev-72b:free": {
         "id": "moonshotai/kimi-dev-72b:free",
         "name": "Kimi Dev 72b (free)",
@@ -45525,6 +45584,39 @@
     "name": "GitHub Copilot",
     "doc": "https://docs.github.com/en/copilot",
     "models": {
+      "gpt-5.3-codex": {
+        "id": "gpt-5.3-codex",
+        "name": "GPT-5.3-Codex",
+        "family": "gpt-codex",
+        "attachment": true,
+        "reasoning": true,
+        "tool_call": true,
+        "structured_output": true,
+        "temperature": false,
+        "knowledge": "2025-08-31",
+        "release_date": "2026-02-05",
+        "last_updated": "2026-02-05",
+        "modalities": {
+          "input": [
+            "text",
+            "image",
+            "pdf"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": false,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 400000,
+          "input": 272000,
+          "output": 128000
+        }
+      },
       "gpt-5.1-codex-max": {
         "id": "gpt-5.1-codex-max",
         "name": "GPT-5.1-Codex-max",
@@ -50301,7 +50393,7 @@
         "reasoning": true,
         "tool_call": true,
         "temperature": true,
-        "release_date": "2026-12-03",
+        "release_date": "2025-12-03",
         "last_updated": "2026-01-03",
         "modalities": {
           "input": [
