@@ -5410,8 +5410,8 @@
         "tool_call": true,
         "temperature": true,
         "knowledge": "2025-04",
-        "release_date": "2026-02",
-        "last_updated": "2026-02",
+        "release_date": "2026-02-16",
+        "last_updated": "2026-02-16",
         "modalities": {
           "input": [
             "text",
@@ -6168,8 +6168,8 @@
         "tool_call": true,
         "temperature": true,
         "knowledge": "2025-04",
-        "release_date": "2026-02",
-        "last_updated": "2026-02",
+        "release_date": "2026-02-16",
+        "last_updated": "2026-02-16",
         "modalities": {
           "input": [
             "text",
@@ -23298,8 +23298,8 @@
         "tool_call": true,
         "temperature": true,
         "knowledge": "2025-04",
-        "release_date": "2026-02",
-        "last_updated": "2026-02",
+        "release_date": "2026-02-16",
+        "last_updated": "2026-02-16",
         "modalities": {
           "input": [
             "text",
@@ -24517,8 +24517,8 @@
         "tool_call": true,
         "temperature": true,
         "knowledge": "2025-04",
-        "release_date": "2026-02",
-        "last_updated": "2026-02",
+        "release_date": "2026-02-16",
+        "last_updated": "2026-02-16",
         "modalities": {
           "input": [
             "text",
@@ -28927,6 +28927,62 @@
           "output": 33000
         }
       },
+      "PaddlePaddle/PaddleOCR-VL-1.5": {
+        "id": "PaddlePaddle/PaddleOCR-VL-1.5",
+        "name": "PaddlePaddle/PaddleOCR-VL-1.5",
+        "attachment": true,
+        "reasoning": false,
+        "tool_call": false,
+        "temperature": true,
+        "release_date": "2026-01-29",
+        "last_updated": "2026-01-29",
+        "modalities": {
+          "input": [
+            "text",
+            "image"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 16384,
+          "output": 16384
+        }
+      },
+      "PaddlePaddle/PaddleOCR-VL": {
+        "id": "PaddlePaddle/PaddleOCR-VL",
+        "name": "PaddlePaddle/PaddleOCR-VL",
+        "attachment": true,
+        "reasoning": false,
+        "tool_call": false,
+        "temperature": true,
+        "release_date": "2025-10-16",
+        "last_updated": "2025-10-16",
+        "modalities": {
+          "input": [
+            "text",
+            "image"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 16384,
+          "output": 16384
+        }
+      },
       "THUDM/GLM-Z1-32B-0414": {
         "id": "THUDM/GLM-Z1-32B-0414",
         "name": "THUDM/GLM-Z1-32B-0414",
@@ -30190,6 +30246,34 @@
           "output": 131000
         }
       },
+      "deepseek-ai/DeepSeek-OCR": {
+        "id": "deepseek-ai/DeepSeek-OCR",
+        "name": "deepseek-ai/DeepSeek-OCR",
+        "attachment": true,
+        "reasoning": false,
+        "tool_call": false,
+        "temperature": true,
+        "release_date": "2025-10-20",
+        "last_updated": "2025-10-20",
+        "modalities": {
+          "input": [
+            "text",
+            "image"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 8192,
+          "output": 8192
+        }
+      },
       "deepseek-ai/DeepSeek-V3": {
         "id": "deepseek-ai/DeepSeek-V3",
         "name": "deepseek-ai/DeepSeek-V3",
@@ -30508,6 +30592,38 @@
         },
         "limit": {
           "context": 197000,
+          "output": 131000
+        }
+      },
+      "Pro/MiniMaxAI/MiniMax-M2.5": {
+        "id": "Pro/MiniMaxAI/MiniMax-M2.5",
+        "name": "Pro/MiniMaxAI/MiniMax-M2.5",
+        "family": "minimax",
+        "attachment": false,
+        "reasoning": false,
+        "tool_call": true,
+        "interleaved": {
+          "field": "reasoning_content"
+        },
+        "structured_output": true,
+        "temperature": true,
+        "release_date": "2026-02-13",
+        "last_updated": "2026-02-13",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": false,
+        "cost": {
+          "input": 0.3,
+          "output": 1.22
+        },
+        "limit": {
+          "context": 192000,
           "output": 131000
         }
       },
@@ -35692,6 +35808,35 @@
           "output": 131072
         }
       },
+      "Qwen/Qwen3.5-397B-A17B": {
+        "id": "Qwen/Qwen3.5-397B-A17B",
+        "name": "Qwen3.5 397B A17B",
+        "family": "qwen",
+        "attachment": false,
+        "reasoning": true,
+        "tool_call": true,
+        "temperature": true,
+        "release_date": "2026-02-16",
+        "last_updated": "2026-02-16",
+        "modalities": {
+          "input": [
+            "text",
+            "image"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0.6,
+          "output": 3.6
+        },
+        "limit": {
+          "context": 262144,
+          "output": 130000
+        }
+      },
       "Qwen/Qwen3-Coder-Next-FP8": {
         "id": "Qwen/Qwen3-Coder-Next-FP8",
         "name": "Qwen3 Coder Next FP8",
@@ -36236,7 +36381,8 @@
           "output": 32000
         },
         "provider": {
-          "npm": "@ai-sdk/anthropic"
+          "npm": "@ai-sdk/anthropic",
+          "api": "https://${AZURE_RESOURCE_NAME}.services.ai.azure.com/anthropic/v1"
         }
       },
       "gpt-5.2-chat": {
@@ -36692,7 +36838,8 @@
           "output": 64000
         },
         "provider": {
-          "npm": "@ai-sdk/anthropic"
+          "npm": "@ai-sdk/anthropic",
+          "api": "https://${AZURE_RESOURCE_NAME}.services.ai.azure.com/anthropic/v1"
         }
       },
       "deepseek-v3.2-speciale": {
@@ -36763,7 +36910,8 @@
           "output": 128000
         },
         "provider": {
-          "npm": "@ai-sdk/anthropic"
+          "npm": "@ai-sdk/anthropic",
+          "api": "https://${AZURE_RESOURCE_NAME}.services.ai.azure.com/anthropic/v1"
         }
       },
       "mistral-medium-2505": {
@@ -36829,7 +36977,8 @@
           "output": 64000
         },
         "provider": {
-          "npm": "@ai-sdk/anthropic"
+          "npm": "@ai-sdk/anthropic",
+          "api": "https://${AZURE_RESOURCE_NAME}.services.ai.azure.com/anthropic/v1"
         }
       },
       "phi-3-small-128k-instruct": {
@@ -37164,7 +37313,8 @@
           "output": 64000
         },
         "provider": {
-          "npm": "@ai-sdk/anthropic"
+          "npm": "@ai-sdk/anthropic",
+          "api": "https://${AZURE_RESOURCE_NAME}.services.ai.azure.com/anthropic/v1"
         }
       },
       "gpt-3.5-turbo-0125": {
@@ -45137,7 +45287,7 @@
         },
         "limit": {
           "context": 262144,
-          "output": 262144
+          "output": 65536
         }
       },
       "gemini-3-pro": {
@@ -81810,6 +81960,200 @@
     "name": "Azure Cognitive Services",
     "doc": "https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/models",
     "models": {
+      "claude-opus-4-1": {
+        "id": "claude-opus-4-1",
+        "name": "Claude Opus 4.1",
+        "family": "claude-opus",
+        "attachment": true,
+        "reasoning": true,
+        "tool_call": true,
+        "structured_output": true,
+        "temperature": true,
+        "knowledge": "2025-03-31",
+        "release_date": "2025-11-18",
+        "last_updated": "2025-11-18",
+        "modalities": {
+          "input": [
+            "text",
+            "image",
+            "pdf"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": false,
+        "cost": {
+          "input": 15,
+          "output": 75,
+          "cache_read": 1.5,
+          "cache_write": 18.75
+        },
+        "limit": {
+          "context": 200000,
+          "output": 32000
+        },
+        "provider": {
+          "npm": "@ai-sdk/anthropic",
+          "api": "https://${AZURE_COGNITIVE_SERVICES_RESOURCE_NAME}.services.ai.azure.com/anthropic/v1"
+        }
+      },
+      "claude-haiku-4-5": {
+        "id": "claude-haiku-4-5",
+        "name": "Claude Haiku 4.5",
+        "family": "claude-haiku",
+        "attachment": true,
+        "reasoning": true,
+        "tool_call": true,
+        "structured_output": true,
+        "temperature": true,
+        "knowledge": "2025-02-31",
+        "release_date": "2025-11-18",
+        "last_updated": "2025-11-18",
+        "modalities": {
+          "input": [
+            "text",
+            "image",
+            "pdf"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": false,
+        "cost": {
+          "input": 1,
+          "output": 5,
+          "cache_read": 0.1,
+          "cache_write": 1.25
+        },
+        "limit": {
+          "context": 200000,
+          "output": 64000
+        },
+        "provider": {
+          "npm": "@ai-sdk/anthropic",
+          "api": "https://${AZURE_COGNITIVE_SERVICES_RESOURCE_NAME}.services.ai.azure.com/anthropic/v1"
+        }
+      },
+      "claude-opus-4-6": {
+        "id": "claude-opus-4-6",
+        "name": "Claude Opus 4.6",
+        "family": "claude-opus",
+        "attachment": true,
+        "reasoning": true,
+        "tool_call": true,
+        "temperature": true,
+        "knowledge": "2025-05",
+        "release_date": "2026-02-05",
+        "last_updated": "2026-02-05",
+        "modalities": {
+          "input": [
+            "text",
+            "image",
+            "pdf"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": false,
+        "cost": {
+          "input": 5,
+          "output": 25,
+          "cache_read": 0.5,
+          "cache_write": 6.25,
+          "context_over_200k": {
+            "input": 10,
+            "output": 37.5,
+            "cache_read": 1,
+            "cache_write": 12.5
+          }
+        },
+        "limit": {
+          "context": 200000,
+          "output": 128000
+        },
+        "provider": {
+          "npm": "@ai-sdk/anthropic",
+          "api": "https://${AZURE_COGNITIVE_SERVICES_RESOURCE_NAME}.services.ai.azure.com/anthropic/v1"
+        }
+      },
+      "claude-opus-4-5": {
+        "id": "claude-opus-4-5",
+        "name": "Claude Opus 4.5",
+        "family": "claude-opus",
+        "attachment": true,
+        "reasoning": true,
+        "tool_call": true,
+        "temperature": true,
+        "knowledge": "2025-03-31",
+        "release_date": "2025-11-24",
+        "last_updated": "2025-08-01",
+        "modalities": {
+          "input": [
+            "text",
+            "image",
+            "pdf"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": false,
+        "cost": {
+          "input": 5,
+          "output": 25,
+          "cache_read": 0.5,
+          "cache_write": 6.25
+        },
+        "limit": {
+          "context": 200000,
+          "output": 64000
+        },
+        "provider": {
+          "npm": "@ai-sdk/anthropic",
+          "api": "https://${AZURE_COGNITIVE_SERVICES_RESOURCE_NAME}.services.ai.azure.com/anthropic/v1"
+        }
+      },
+      "claude-sonnet-4-5": {
+        "id": "claude-sonnet-4-5",
+        "name": "Claude Sonnet 4.5",
+        "family": "claude-sonnet",
+        "attachment": true,
+        "reasoning": true,
+        "tool_call": true,
+        "structured_output": true,
+        "temperature": true,
+        "knowledge": "2025-07-31",
+        "release_date": "2025-11-18",
+        "last_updated": "2025-11-18",
+        "modalities": {
+          "input": [
+            "text",
+            "image",
+            "pdf"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": false,
+        "cost": {
+          "input": 3,
+          "output": 15,
+          "cache_read": 0.3,
+          "cache_write": 3.75
+        },
+        "limit": {
+          "context": 200000,
+          "output": 64000
+        },
+        "provider": {
+          "npm": "@ai-sdk/anthropic",
+          "api": "https://${AZURE_COGNITIVE_SERVICES_RESOURCE_NAME}.services.ai.azure.com/anthropic/v1"
+        }
+      },
       "gpt-3.5-turbo-1106": {
         "id": "gpt-3.5-turbo-1106",
         "name": "GPT-3.5 Turbo 1106",
@@ -83481,43 +83825,6 @@
           "output": 16384
         }
       },
-      "claude-sonnet-4-5": {
-        "id": "claude-sonnet-4-5",
-        "name": "Claude Sonnet 4.5",
-        "family": "claude-sonnet",
-        "attachment": true,
-        "reasoning": true,
-        "tool_call": true,
-        "structured_output": true,
-        "temperature": true,
-        "knowledge": "2025-07-31",
-        "release_date": "2025-11-18",
-        "last_updated": "2025-11-18",
-        "modalities": {
-          "input": [
-            "text",
-            "image",
-            "pdf"
-          ],
-          "output": [
-            "text"
-          ]
-        },
-        "open_weights": false,
-        "cost": {
-          "input": 3,
-          "output": 15,
-          "cache_read": 0.3,
-          "cache_write": 3.75
-        },
-        "limit": {
-          "context": 200000,
-          "output": 64000
-        },
-        "provider": {
-          "npm": "@ai-sdk/anthropic"
-        }
-      },
       "phi-4-mini-reasoning": {
         "id": "phi-4-mini-reasoning",
         "name": "Phi-4-mini-reasoning",
@@ -83816,42 +84123,6 @@
           "output": 4096
         }
       },
-      "claude-opus-4-5": {
-        "id": "claude-opus-4-5",
-        "name": "Claude Opus 4.5",
-        "family": "claude-opus",
-        "attachment": true,
-        "reasoning": true,
-        "tool_call": true,
-        "temperature": true,
-        "knowledge": "2025-03-31",
-        "release_date": "2025-11-24",
-        "last_updated": "2025-08-01",
-        "modalities": {
-          "input": [
-            "text",
-            "image",
-            "pdf"
-          ],
-          "output": [
-            "text"
-          ]
-        },
-        "open_weights": false,
-        "cost": {
-          "input": 5,
-          "output": 25,
-          "cache_read": 0.5,
-          "cache_write": 6.25
-        },
-        "limit": {
-          "context": 200000,
-          "output": 64000
-        },
-        "provider": {
-          "npm": "@ai-sdk/anthropic"
-        }
-      },
       "mistral-medium-2505": {
         "id": "mistral-medium-2505",
         "name": "Mistral Medium 3",
@@ -83882,48 +84153,6 @@
           "output": 128000
         }
       },
-      "claude-opus-4-6": {
-        "id": "claude-opus-4-6",
-        "name": "Claude Opus 4.6",
-        "family": "claude-opus",
-        "attachment": true,
-        "reasoning": true,
-        "tool_call": true,
-        "temperature": true,
-        "knowledge": "2025-05",
-        "release_date": "2026-02-05",
-        "last_updated": "2026-02-05",
-        "modalities": {
-          "input": [
-            "text",
-            "image",
-            "pdf"
-          ],
-          "output": [
-            "text"
-          ]
-        },
-        "open_weights": false,
-        "cost": {
-          "input": 5,
-          "output": 25,
-          "cache_read": 0.5,
-          "cache_write": 6.25,
-          "context_over_200k": {
-            "input": 10,
-            "output": 37.5,
-            "cache_read": 1,
-            "cache_write": 12.5
-          }
-        },
-        "limit": {
-          "context": 200000,
-          "output": 128000
-        },
-        "provider": {
-          "npm": "@ai-sdk/anthropic"
-        }
-      },
       "deepseek-v3.2-speciale": {
         "id": "deepseek-v3.2-speciale",
         "name": "DeepSeek-V3.2-Speciale",
@@ -83951,43 +84180,6 @@
         "limit": {
           "context": 128000,
           "output": 128000
-        }
-      },
-      "claude-haiku-4-5": {
-        "id": "claude-haiku-4-5",
-        "name": "Claude Haiku 4.5",
-        "family": "claude-haiku",
-        "attachment": true,
-        "reasoning": true,
-        "tool_call": true,
-        "structured_output": true,
-        "temperature": true,
-        "knowledge": "2025-02-31",
-        "release_date": "2025-11-18",
-        "last_updated": "2025-11-18",
-        "modalities": {
-          "input": [
-            "text",
-            "image",
-            "pdf"
-          ],
-          "output": [
-            "text"
-          ]
-        },
-        "open_weights": false,
-        "cost": {
-          "input": 1,
-          "output": 5,
-          "cache_read": 0.1,
-          "cache_write": 1.25
-        },
-        "limit": {
-          "context": 200000,
-          "output": 64000
-        },
-        "provider": {
-          "npm": "@ai-sdk/anthropic"
         }
       },
       "phi-3-mini-4k-instruct": {
@@ -84407,43 +84599,6 @@
         "limit": {
           "context": 128000,
           "output": 16384
-        }
-      },
-      "claude-opus-4-1": {
-        "id": "claude-opus-4-1",
-        "name": "Claude Opus 4.1",
-        "family": "claude-opus",
-        "attachment": true,
-        "reasoning": true,
-        "tool_call": true,
-        "structured_output": true,
-        "temperature": true,
-        "knowledge": "2025-03-31",
-        "release_date": "2025-11-18",
-        "last_updated": "2025-11-18",
-        "modalities": {
-          "input": [
-            "text",
-            "image",
-            "pdf"
-          ],
-          "output": [
-            "text"
-          ]
-        },
-        "open_weights": false,
-        "cost": {
-          "input": 15,
-          "output": 75,
-          "cache_read": 1.5,
-          "cache_write": 18.75
-        },
-        "limit": {
-          "context": 200000,
-          "output": 32000
-        },
-        "provider": {
-          "npm": "@ai-sdk/anthropic"
         }
       },
       "gpt-4": {
