@@ -18094,7 +18094,8 @@
         "limit": {
           "context": 262144,
           "output": 262144
-        }
+        },
+        "status": "deprecated"
       },
       "gpt-5-codex": {
         "id": "gpt-5-codex",
@@ -18976,7 +18977,8 @@
         "limit": {
           "context": 262144,
           "output": 262144
-        }
+        },
+        "status": "deprecated"
       },
       "claude-haiku-4-5": {
         "id": "claude-haiku-4-5",
