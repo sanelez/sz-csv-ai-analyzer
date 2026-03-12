@@ -742,7 +742,8 @@
           "cache_write": 0
         },
         "limit": {
-          "context": 16608,
+          "context": 196608,
+          "input": 196601,
           "output": 24576
         }
       },
@@ -4903,8 +4904,8 @@
           "output": 131000
         }
       },
-      "stepfun-ai/step-3-5-flash": {
-        "id": "stepfun-ai/step-3-5-flash",
+      "stepfun-ai/step-3.5-flash": {
+        "id": "stepfun-ai/step-3.5-flash",
         "name": "Step 3.5 Flash",
         "attachment": false,
         "reasoning": true,
@@ -8549,6 +8550,39 @@
     "name": "Synthetic",
     "doc": "https://synthetic.new/pricing",
     "models": {
+      "hf:MiniMaxAI/MiniMax-M2.5": {
+        "id": "hf:MiniMaxAI/MiniMax-M2.5",
+        "name": "MiniMax-M2.5",
+        "family": "minimax",
+        "attachment": false,
+        "reasoning": true,
+        "tool_call": true,
+        "interleaved": {
+          "field": "reasoning_content"
+        },
+        "structured_output": true,
+        "temperature": true,
+        "release_date": "2026-02-07",
+        "last_updated": "2026-02-07",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0.6,
+          "output": 3,
+          "cache_read": 0.6
+        },
+        "limit": {
+          "context": 191488,
+          "output": 65536
+        }
+      },
       "hf:MiniMaxAI/MiniMax-M2": {
         "id": "hf:MiniMaxAI/MiniMax-M2",
         "name": "MiniMax-M2",
@@ -9138,6 +9172,39 @@
           "output": 4096
         }
       },
+      "hf:zai-org/GLM-4.7-Flash": {
+        "id": "hf:zai-org/GLM-4.7-Flash",
+        "name": "GLM-4.7-Flash",
+        "family": "glm",
+        "attachment": false,
+        "reasoning": true,
+        "tool_call": true,
+        "interleaved": {
+          "field": "reasoning_content"
+        },
+        "structured_output": true,
+        "temperature": true,
+        "release_date": "2026-01-18",
+        "last_updated": "2026-01-18",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0.06,
+          "output": 0.4,
+          "cache_read": 0.06
+        },
+        "limit": {
+          "context": 196608,
+          "output": 65536
+        }
+      },
       "hf:zai-org/GLM-4.6": {
         "id": "hf:zai-org/GLM-4.6",
         "name": "GLM 4.6",
@@ -9421,6 +9488,41 @@
           "context": 128000,
           "input": 124000,
           "output": 4096
+        }
+      },
+      "zai-org/GLM-5": {
+        "id": "zai-org/GLM-5",
+        "name": "GLM-5",
+        "attachment": false,
+        "reasoning": true,
+        "tool_call": true,
+        "interleaved": {
+          "field": "reasoning_content"
+        },
+        "structured_output": true,
+        "temperature": true,
+        "knowledge": "2026-01",
+        "release_date": "2026-03-01",
+        "last_updated": "2026-03-10",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": false,
+        "cost": {
+          "input": 1,
+          "output": 3.2,
+          "cache_read": 0.1,
+          "cache_write": 1
+        },
+        "limit": {
+          "context": 202752,
+          "input": 200000,
+          "output": 16384
         }
       },
       "nvidia/Llama-3_1-Nemotron-Ultra-253B-v1": {
@@ -9820,9 +9922,9 @@
           "cache_write": 0.375
         },
         "limit": {
-          "context": 128000,
-          "input": 120000,
-          "output": 8192
+          "context": 163000,
+          "input": 160000,
+          "output": 16384
         }
       },
       "deepseek-ai/DeepSeek-V3-0324": {
@@ -10084,8 +10186,8 @@
           "cache_write": 0.25
         },
         "limit": {
-          "context": 128000,
-          "input": 120000,
+          "context": 110000,
+          "input": 100000,
           "output": 8192
         }
       },
@@ -10149,8 +10251,8 @@
           "cache_write": 0.125
         },
         "limit": {
-          "context": 128000,
-          "input": 120000,
+          "context": 110000,
+          "input": 100000,
           "output": 8192
         }
       },
@@ -19903,6 +20005,39 @@
         },
         "status": "deprecated"
       },
+      "nemotron-3-super-free": {
+        "id": "nemotron-3-super-free",
+        "name": "Nemotron 3 Super Free",
+        "family": "nemotron-free",
+        "attachment": false,
+        "reasoning": true,
+        "tool_call": true,
+        "interleaved": {
+          "field": "reasoning_content"
+        },
+        "temperature": true,
+        "knowledge": "2026-02",
+        "release_date": "2026-03-11",
+        "last_updated": "2026-03-11",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "cost": {
+          "input": 0,
+          "output": 0,
+          "cache_read": 0
+        },
+        "limit": {
+          "context": 1000000,
+          "output": 128000
+        }
+      },
       "claude-3-5-haiku": {
         "id": "claude-3-5-haiku",
         "name": "Claude Haiku 3.5",
@@ -28743,6 +28878,7 @@
       "gpt-5.4-pro": {
         "id": "gpt-5.4-pro",
         "name": "GPT-5.4 Pro",
+        "family": "gpt-pro",
         "attachment": true,
         "reasoning": true,
         "tool_call": true,
@@ -28892,6 +29028,7 @@
       "gpt-5.4": {
         "id": "gpt-5.4",
         "name": "GPT-5.4",
+        "family": "gpt",
         "attachment": true,
         "reasoning": true,
         "tool_call": true,
@@ -29401,6 +29538,8 @@
           "output": 262144
         },
         "provider": {
+          "npm": "@ai-sdk/openai-compatible",
+          "api": "https://${AZURE_RESOURCE_NAME}.services.ai.azure.com/models",
           "shape": "completions"
         }
       },
@@ -41571,7 +41710,8 @@
         "open_weights": true,
         "cost": {
           "input": 0.3,
-          "output": 1.2
+          "output": 1.2,
+          "cache_read": 0.06
         },
         "limit": {
           "context": 204800,
@@ -44244,6 +44384,38 @@
           "output": 163840
         }
       },
+      "openrouter/hunter-alpha": {
+        "id": "openrouter/hunter-alpha",
+        "name": "Hunter Alpha",
+        "family": "alpha",
+        "attachment": true,
+        "reasoning": true,
+        "tool_call": true,
+        "structured_output": true,
+        "temperature": true,
+        "knowledge": "2026-03-11",
+        "release_date": "2026-03-11",
+        "last_updated": "2026-03-11",
+        "modalities": {
+          "input": [
+            "text",
+            "image",
+            "pdf"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": false,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 1048576,
+          "output": 64000
+        }
+      },
       "openrouter/sherlock-think-alpha": {
         "id": "openrouter/sherlock-think-alpha",
         "name": "Sherlock Think Alpha",
@@ -44332,6 +44504,39 @@
           "context": 200000,
           "input": 200000,
           "output": 8000
+        }
+      },
+      "openrouter/healer-alpha": {
+        "id": "openrouter/healer-alpha",
+        "name": "Healer Alpha",
+        "family": "alpha",
+        "attachment": true,
+        "reasoning": true,
+        "tool_call": true,
+        "structured_output": true,
+        "temperature": true,
+        "knowledge": "2026-03-11",
+        "release_date": "2026-03-11",
+        "last_updated": "2026-03-11",
+        "modalities": {
+          "input": [
+            "text",
+            "image",
+            "audio",
+            "pdf"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": false,
+        "cost": {
+          "input": 0,
+          "output": 0
+        },
+        "limit": {
+          "context": 262144,
+          "output": 64000
         }
       },
       "openrouter/aurora-alpha": {
@@ -52576,6 +52781,7 @@
         },
         "limit": {
           "context": 400000,
+          "input": 272000,
           "output": 128000
         }
       },
@@ -52635,7 +52841,8 @@
           "output": 0
         },
         "limit": {
-          "context": 272000,
+          "context": 400000,
+          "input": 272000,
           "output": 128000
         }
       },
@@ -52846,7 +53053,8 @@
           "output": 0
         },
         "limit": {
-          "context": 128000,
+          "context": 264000,
+          "input": 128000,
           "output": 64000
         }
       },
@@ -52998,6 +53206,7 @@
         },
         "limit": {
           "context": 400000,
+          "input": 272000,
           "output": 128000
         }
       },
@@ -97296,151 +97505,6 @@
           "output": 8192
         }
       },
-      "THUDM 2/GLM-4-32B-0414": {
-        "id": "THUDM 2/GLM-4-32B-0414",
-        "name": "GLM 4 32B 0414",
-        "family": "glm",
-        "attachment": false,
-        "reasoning": false,
-        "tool_call": false,
-        "structured_output": false,
-        "release_date": "2025-04-14",
-        "last_updated": "2025-04-14",
-        "modalities": {
-          "input": [
-            "text"
-          ],
-          "output": [
-            "text"
-          ]
-        },
-        "open_weights": false,
-        "cost": {
-          "input": 0.2,
-          "output": 0.2
-        },
-        "limit": {
-          "context": 128000,
-          "input": 128000,
-          "output": 65536
-        }
-      },
-      "THUDM 2/GLM-4-9B-0414": {
-        "id": "THUDM 2/GLM-4-9B-0414",
-        "name": "GLM 4 9B 0414",
-        "family": "glm",
-        "attachment": false,
-        "reasoning": false,
-        "tool_call": false,
-        "structured_output": false,
-        "release_date": "2025-04-14",
-        "last_updated": "2025-04-14",
-        "modalities": {
-          "input": [
-            "text"
-          ],
-          "output": [
-            "text"
-          ]
-        },
-        "open_weights": false,
-        "cost": {
-          "input": 0.2,
-          "output": 0.2
-        },
-        "limit": {
-          "context": 32000,
-          "input": 32000,
-          "output": 8000
-        }
-      },
-      "THUDM 2/GLM-Z1-32B-0414": {
-        "id": "THUDM 2/GLM-Z1-32B-0414",
-        "name": "GLM Z1 32B 0414",
-        "family": "glm-z",
-        "attachment": false,
-        "reasoning": false,
-        "tool_call": false,
-        "structured_output": false,
-        "release_date": "2025-04-15",
-        "last_updated": "2025-04-15",
-        "modalities": {
-          "input": [
-            "text"
-          ],
-          "output": [
-            "text"
-          ]
-        },
-        "open_weights": false,
-        "cost": {
-          "input": 0.2,
-          "output": 0.2
-        },
-        "limit": {
-          "context": 128000,
-          "input": 128000,
-          "output": 65536
-        }
-      },
-      "THUDM 2/GLM-Z1-9B-0414": {
-        "id": "THUDM 2/GLM-Z1-9B-0414",
-        "name": "GLM Z1 9B 0414",
-        "family": "glm-z",
-        "attachment": false,
-        "reasoning": false,
-        "tool_call": false,
-        "structured_output": false,
-        "release_date": "2025-04-14",
-        "last_updated": "2025-04-14",
-        "modalities": {
-          "input": [
-            "text"
-          ],
-          "output": [
-            "text"
-          ]
-        },
-        "open_weights": false,
-        "cost": {
-          "input": 0.2,
-          "output": 0.2
-        },
-        "limit": {
-          "context": 32000,
-          "input": 32000,
-          "output": 8000
-        }
-      },
-      "THUDM 2/GLM-Z1-Rumination-32B-0414": {
-        "id": "THUDM 2/GLM-Z1-Rumination-32B-0414",
-        "name": "GLM Z1 Rumination 32B 0414",
-        "family": "glm-z",
-        "attachment": false,
-        "reasoning": false,
-        "tool_call": false,
-        "structured_output": false,
-        "release_date": "2025-04-15",
-        "last_updated": "2025-04-15",
-        "modalities": {
-          "input": [
-            "text"
-          ],
-          "output": [
-            "text"
-          ]
-        },
-        "open_weights": false,
-        "cost": {
-          "input": 0.2,
-          "output": 0.2
-        },
-        "limit": {
-          "context": 32000,
-          "input": 32000,
-          "output": 65536
-        }
-      },
       "Sao10K 2/L3.1-70B-Hanami-x1": {
         "id": "Sao10K 2/L3.1-70B-Hanami-x1",
         "name": "Llama 3.1 70B Hanami",
@@ -101742,6 +101806,151 @@
           "output": 4096
         }
       },
+      "THUDM/GLM-4-32B-0414": {
+        "id": "THUDM/GLM-4-32B-0414",
+        "name": "GLM 4 32B 0414",
+        "family": "glm",
+        "attachment": false,
+        "reasoning": false,
+        "tool_call": false,
+        "structured_output": false,
+        "release_date": "2025-04-14",
+        "last_updated": "2025-04-14",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": false,
+        "cost": {
+          "input": 0.2,
+          "output": 0.2
+        },
+        "limit": {
+          "context": 128000,
+          "input": 128000,
+          "output": 65536
+        }
+      },
+      "THUDM/GLM-4-9B-0414": {
+        "id": "THUDM/GLM-4-9B-0414",
+        "name": "GLM 4 9B 0414",
+        "family": "glm",
+        "attachment": false,
+        "reasoning": false,
+        "tool_call": false,
+        "structured_output": false,
+        "release_date": "2025-04-14",
+        "last_updated": "2025-04-14",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": false,
+        "cost": {
+          "input": 0.2,
+          "output": 0.2
+        },
+        "limit": {
+          "context": 32000,
+          "input": 32000,
+          "output": 8000
+        }
+      },
+      "THUDM/GLM-Z1-32B-0414": {
+        "id": "THUDM/GLM-Z1-32B-0414",
+        "name": "GLM Z1 32B 0414",
+        "family": "glm-z",
+        "attachment": false,
+        "reasoning": false,
+        "tool_call": false,
+        "structured_output": false,
+        "release_date": "2025-04-15",
+        "last_updated": "2025-04-15",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": false,
+        "cost": {
+          "input": 0.2,
+          "output": 0.2
+        },
+        "limit": {
+          "context": 128000,
+          "input": 128000,
+          "output": 65536
+        }
+      },
+      "THUDM/GLM-Z1-9B-0414": {
+        "id": "THUDM/GLM-Z1-9B-0414",
+        "name": "GLM Z1 9B 0414",
+        "family": "glm-z",
+        "attachment": false,
+        "reasoning": false,
+        "tool_call": false,
+        "structured_output": false,
+        "release_date": "2025-04-14",
+        "last_updated": "2025-04-14",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": false,
+        "cost": {
+          "input": 0.2,
+          "output": 0.2
+        },
+        "limit": {
+          "context": 32000,
+          "input": 32000,
+          "output": 8000
+        }
+      },
+      "THUDM/GLM-Z1-Rumination-32B-0414": {
+        "id": "THUDM/GLM-Z1-Rumination-32B-0414",
+        "name": "GLM Z1 Rumination 32B 0414",
+        "family": "glm-z",
+        "attachment": false,
+        "reasoning": false,
+        "tool_call": false,
+        "structured_output": false,
+        "release_date": "2025-04-15",
+        "last_updated": "2025-04-15",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": false,
+        "cost": {
+          "input": 0.2,
+          "output": 0.2
+        },
+        "limit": {
+          "context": 32000,
+          "input": 32000,
+          "output": 65536
+        }
+      },
       "minimax/minimax-01": {
         "id": "minimax/minimax-01",
         "name": "MiniMax 01",
@@ -104759,6 +104968,8 @@
           "output": 262144
         },
         "provider": {
+          "npm": "@ai-sdk/openai-compatible",
+          "api": "https://${AZURE_RESOURCE_NAME}.services.ai.azure.com/models",
           "shape": "completions"
         }
       },
@@ -105212,6 +105423,7 @@
       "gpt-5.4": {
         "id": "gpt-5.4",
         "name": "GPT-5.4",
+        "family": "gpt",
         "attachment": true,
         "reasoning": true,
         "tool_call": true,
@@ -105363,6 +105575,7 @@
       "gpt-5.4-pro": {
         "id": "gpt-5.4-pro",
         "name": "GPT-5.4 Pro",
+        "family": "gpt-pro",
         "attachment": true,
         "reasoning": true,
         "tool_call": true,
