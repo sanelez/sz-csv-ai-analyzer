@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useRef } from "react";
 import {
   BarChart,
   Bar,
@@ -28,8 +28,8 @@ import type {
   SortOrder,
   ChartDataPoint,
 } from "./types";
-import { COLORS } from "./constants";
-import { processChartData } from "./processChartData";
+import { useChartTheme } from "./ThemeContext";
+import { processChartDataMultiSeries } from "./processChartData";
 import { ChartToolbar } from "./ChartToolbar";
 
 export interface SingleChartProps {
@@ -39,16 +39,21 @@ export interface SingleChartProps {
 }
 
 export function SingleChart({ data, chart, onRegenerate }: SingleChartProps) {
+  const theme = useChartTheme();
+  const chartContainerRef = useRef<HTMLDivElement>(null);
   const [isRegenerating, setIsRegenerating] = useState(false);
   const [sortOrder, setSortOrder] = useState<SortOrder>("none");
   const [showBrush, setShowBrush] = useState(false);
   const [showTrendline, setShowTrendline] = useState(false);
   const [limitResults, setLimitResults] = useState<number>(20);
 
-  const processedData = useMemo(
-    () => processChartData(data, chart, sortOrder, limitResults),
+  const processed = useMemo(
+    () => processChartDataMultiSeries(data, chart, sortOrder, limitResults),
     [data, chart, sortOrder, limitResults],
   );
+
+  const { data: processedData, seriesKeys } = processed;
+  const isMultiSeries = seriesKeys.length > 0;
 
   // Find actual column names from data
   const xColName =
@@ -67,13 +72,13 @@ export function SingleChart({ data, chart, onRegenerate }: SingleChartProps) {
 
   // Calculate average for trend line
   const average = useMemo(() => {
-    if (processedData.length === 0) return 0;
+    if (processedData.length === 0 || isMultiSeries) return 0;
     const sum = processedData.reduce((acc, item) => {
       const val = item[yColName];
       return acc + (typeof val === "number" ? val : 0);
     }, 0);
     return sum / processedData.length;
-  }, [processedData, yColName]);
+  }, [processedData, yColName, isMultiSeries]);
 
   const handleRegenerate = async () => {
     if (!onRegenerate) return;
@@ -107,6 +112,57 @@ export function SingleChart({ data, chart, onRegenerate }: SingleChartProps) {
     URL.revokeObjectURL(url);
   }, [processedData, chart.title]);
 
+  const handleExportPNG = useCallback(() => {
+    const container = chartContainerRef.current;
+    if (!container) return;
+
+    const svgElement = container.querySelector("svg");
+    if (!svgElement) return;
+
+    const svgClone = svgElement.cloneNode(true) as SVGSVGElement;
+    svgClone.setAttribute(
+      "xmlns",
+      "http://www.w3.org/2000/svg",
+    );
+    // Ensure dimensions
+    const rect = svgElement.getBoundingClientRect();
+    svgClone.setAttribute("width", String(rect.width));
+    svgClone.setAttribute("height", String(rect.height));
+
+    const svgString = new XMLSerializer().serializeToString(svgClone);
+    const svgBlob = new Blob([svgString], {
+      type: "image/svg+xml;charset=utf-8",
+    });
+    const url = URL.createObjectURL(svgBlob);
+
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      const scale = 2; // retina
+      canvas.width = rect.width * scale;
+      canvas.height = rect.height * scale;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+      ctx.scale(scale, scale);
+      ctx.fillStyle = theme.tooltipBackground;
+      ctx.fillRect(0, 0, rect.width, rect.height);
+      ctx.drawImage(img, 0, 0, rect.width, rect.height);
+
+      canvas.toBlob((blob) => {
+        if (!blob) return;
+        const pngUrl = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = pngUrl;
+        a.download = `${chart.title.replace(/\s+/g, "_")}.png`;
+        a.click();
+        URL.revokeObjectURL(pngUrl);
+      }, "image/png");
+
+      URL.revokeObjectURL(url);
+    };
+    img.src = url;
+  }, [chart.title, theme.tooltipBackground]);
+
   const toggleSort = () => {
     setSortOrder((prev) => {
       if (prev === "none") return "desc";
@@ -130,54 +186,164 @@ export function SingleChart({ data, chart, onRegenerate }: SingleChartProps) {
       margin: { top: 20, right: 30, left: 20, bottom: 50 },
     };
 
+    const tooltipStyle = {
+      backgroundColor: theme.tooltipBackground,
+      border: theme.tooltipBorder,
+      borderRadius: "8px",
+    };
+
     const brushComponent = enableBrush ? (
-      <Brush dataKey={xKey} height={30} stroke="#8b5cf6" fill="#1e1b4b" />
+      <Brush
+        dataKey={xKey}
+        height={30}
+        stroke={theme.accentPrimary}
+        fill="#1e1b4b"
+      />
     ) : null;
 
     const trendlineComponent =
-      enableTrendline && avgValue ? (
+      enableTrendline && avgValue && !isMultiSeries ? (
         <ReferenceLine
           y={avgValue}
-          stroke="#10b981"
+          stroke={theme.accentSuccess}
           strokeDasharray="5 5"
           label={{
             value: `Avg: ${avgValue.toFixed(2)}`,
-            fill: "#10b981",
+            fill: theme.accentSuccess,
             fontSize: 12,
           }}
         />
       ) : null;
 
+    const xAxisProps = {
+      dataKey: xKey,
+      stroke: theme.textMuted,
+      fontSize: 11,
+      angle: -45,
+      textAnchor: "end" as const,
+      height: 80,
+      interval: 0 as const,
+      tick: { fill: theme.textMuted },
+    };
+
+    const yAxisProps = {
+      stroke: theme.textMuted,
+      fontSize: 12,
+      tick: { fill: theme.textMuted },
+    };
+
+    // Multi-series rendering
+    if (isMultiSeries && type !== "pie" && type !== "scatter") {
+      switch (type) {
+        case "bar":
+          return (
+            <BarChart {...commonProps}>
+              <CartesianGrid strokeDasharray="3 3" stroke={theme.gridStroke} />
+              <XAxis {...xAxisProps} />
+              <YAxis {...yAxisProps} />
+              <Tooltip contentStyle={tooltipStyle} />
+              <Legend />
+              {seriesKeys.map((key, i) => (
+                <Bar
+                  key={key}
+                  dataKey={key}
+                  fill={theme.colors[i % theme.colors.length]}
+                  stackId="stack"
+                  radius={
+                    i === seriesKeys.length - 1 ? [4, 4, 0, 0] : undefined
+                  }
+                />
+              ))}
+              {brushComponent}
+            </BarChart>
+          );
+        case "line":
+          return (
+            <LineChart {...commonProps}>
+              <CartesianGrid strokeDasharray="3 3" stroke={theme.gridStroke} />
+              <XAxis {...xAxisProps} />
+              <YAxis {...yAxisProps} />
+              <Tooltip contentStyle={tooltipStyle} />
+              <Legend />
+              {seriesKeys.map((key, i) => (
+                <Line
+                  key={key}
+                  type="monotone"
+                  dataKey={key}
+                  stroke={theme.colors[i % theme.colors.length]}
+                  strokeWidth={2}
+                  dot={{ fill: theme.colors[i % theme.colors.length] }}
+                />
+              ))}
+              {brushComponent}
+            </LineChart>
+          );
+        case "area":
+          return (
+            <AreaChart {...commonProps}>
+              <defs>
+                {seriesKeys.map((key, i) => (
+                  <linearGradient
+                    key={key}
+                    id={`grad-${chart.id}-${i}`}
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1"
+                  >
+                    <stop
+                      offset="5%"
+                      stopColor={theme.colors[i % theme.colors.length]}
+                      stopOpacity={0.6}
+                    />
+                    <stop
+                      offset="95%"
+                      stopColor={theme.colors[i % theme.colors.length]}
+                      stopOpacity={0}
+                    />
+                  </linearGradient>
+                ))}
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke={theme.gridStroke} />
+              <XAxis {...xAxisProps} />
+              <YAxis {...yAxisProps} />
+              <Tooltip contentStyle={tooltipStyle} />
+              <Legend />
+              {seriesKeys.map((key, i) => (
+                <Area
+                  key={key}
+                  type="monotone"
+                  dataKey={key}
+                  stroke={theme.colors[i % theme.colors.length]}
+                  fillOpacity={1}
+                  fill={`url(#grad-${chart.id}-${i})`}
+                  stackId="stack"
+                />
+              ))}
+              {brushComponent}
+            </AreaChart>
+          );
+        default:
+          return null;
+      }
+    }
+
+    // Single-series rendering
     switch (type) {
       case "bar":
         return (
           <BarChart {...commonProps}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-            <XAxis
-              dataKey={xKey}
-              stroke="#9ca3af"
-              fontSize={11}
-              angle={-45}
-              textAnchor="end"
-              height={80}
-              interval={0}
-              tick={{ fill: "#9ca3af" }}
-            />
-            <YAxis stroke="#9ca3af" fontSize={12} tick={{ fill: "#9ca3af" }} />
-            <Tooltip
-              contentStyle={{
-                backgroundColor: "#1f2937",
-                border: "1px solid #374151",
-                borderRadius: "8px",
-              }}
-            />
+            <CartesianGrid strokeDasharray="3 3" stroke={theme.gridStroke} />
+            <XAxis {...xAxisProps} />
+            <YAxis {...yAxisProps} />
+            <Tooltip contentStyle={tooltipStyle} />
             <Legend />
             {trendlineComponent}
-            <Bar dataKey={yKey} fill="#8b5cf6" radius={[4, 4, 0, 0]}>
+            <Bar dataKey={yKey} fill={theme.accentPrimary} radius={[4, 4, 0, 0]}>
               {chartData.map((_, index) => (
                 <Cell
                   key={`cell-${index}`}
-                  fill={COLORS[index % COLORS.length]}
+                  fill={theme.colors[index % theme.colors.length]}
                 />
               ))}
             </Bar>
@@ -188,112 +354,79 @@ export function SingleChart({ data, chart, onRegenerate }: SingleChartProps) {
       case "line":
         return (
           <LineChart {...commonProps}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-            <XAxis
-              dataKey={xKey}
-              stroke="#9ca3af"
-              fontSize={11}
-              angle={-45}
-              textAnchor="end"
-              height={80}
-              interval={0}
-              tick={{ fill: "#9ca3af" }}
-            />
-            <YAxis stroke="#9ca3af" fontSize={12} tick={{ fill: "#9ca3af" }} />
-            <Tooltip
-              contentStyle={{
-                backgroundColor: "#1f2937",
-                border: "1px solid #374151",
-                borderRadius: "8px",
-              }}
-            />
+            <CartesianGrid strokeDasharray="3 3" stroke={theme.gridStroke} />
+            <XAxis {...xAxisProps} />
+            <YAxis {...yAxisProps} />
+            <Tooltip contentStyle={tooltipStyle} />
             <Legend />
             {trendlineComponent}
             <Line
               type="monotone"
               dataKey={yKey}
-              stroke="#8b5cf6"
+              stroke={theme.accentPrimary}
               strokeWidth={3}
-              dot={{ fill: "#8b5cf6" }}
+              dot={{ fill: theme.accentPrimary }}
               activeDot={{ r: 8 }}
             />
             {brushComponent}
           </LineChart>
         );
 
-      case "area":
+      case "area": {
+        const gradientId = `colorY-${chart.id}`;
         return (
           <AreaChart {...commonProps}>
             <defs>
-              <linearGradient id="colorY" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.8} />
-                <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
+              <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+                <stop
+                  offset="5%"
+                  stopColor={theme.accentPrimary}
+                  stopOpacity={0.8}
+                />
+                <stop
+                  offset="95%"
+                  stopColor={theme.accentPrimary}
+                  stopOpacity={0}
+                />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-            <XAxis
-              dataKey={xKey}
-              stroke="#9ca3af"
-              fontSize={11}
-              angle={-45}
-              textAnchor="end"
-              height={80}
-              interval={0}
-              tick={{ fill: "#9ca3af" }}
-            />
-            <YAxis stroke="#9ca3af" fontSize={12} tick={{ fill: "#9ca3af" }} />
-            <Tooltip
-              contentStyle={{
-                backgroundColor: "#1f2937",
-                border: "1px solid #374151",
-                borderRadius: "8px",
-              }}
-            />
+            <CartesianGrid strokeDasharray="3 3" stroke={theme.gridStroke} />
+            <XAxis {...xAxisProps} />
+            <YAxis {...yAxisProps} />
+            <Tooltip contentStyle={tooltipStyle} />
             <Legend />
             {trendlineComponent}
             <Area
               type="monotone"
               dataKey={yKey}
-              stroke="#8b5cf6"
+              stroke={theme.accentPrimary}
               fillOpacity={1}
-              fill="url(#colorY)"
+              fill={`url(#${gradientId})`}
             />
             {brushComponent}
           </AreaChart>
         );
+      }
 
       case "scatter":
         return (
           <ScatterChart {...commonProps}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+            <CartesianGrid strokeDasharray="3 3" stroke={theme.gridStroke} />
             <XAxis
               type="category"
-              dataKey={xKey}
-              stroke="#9ca3af"
-              fontSize={11}
-              angle={-45}
-              textAnchor="end"
-              height={80}
-              interval={0}
-              tick={{ fill: "#9ca3af" }}
+              {...xAxisProps}
             />
             <YAxis
               type="number"
               dataKey={yKey}
-              stroke="#9ca3af"
-              fontSize={12}
-              tick={{ fill: "#9ca3af" }}
+              {...yAxisProps}
             />
             <Tooltip
               cursor={{ strokeDasharray: "3 3" }}
-              contentStyle={{
-                backgroundColor: "#1f2937",
-                border: "1px solid #374151",
-                borderRadius: "8px",
-              }}
+              contentStyle={tooltipStyle}
             />
             <Legend />
-            <Scatter name={yKey} data={chartData} fill="#8b5cf6" />
+            <Scatter name={yKey} data={chartData} fill={theme.accentPrimary} />
           </ScatterChart>
         );
 
@@ -310,22 +443,16 @@ export function SingleChart({ data, chart, onRegenerate }: SingleChartProps) {
               label={({ name, percent }) =>
                 `${name}: ${((percent ?? 0) * 100).toFixed(0)}%`
               }
-              labelLine={{ stroke: "#9ca3af" }}
+              labelLine={{ stroke: theme.textMuted }}
             >
               {chartData.map((_, index) => (
                 <Cell
                   key={`cell-${index}`}
-                  fill={COLORS[index % COLORS.length]}
+                  fill={theme.colors[index % theme.colors.length]}
                 />
               ))}
             </Pie>
-            <Tooltip
-              contentStyle={{
-                backgroundColor: "#1f2937",
-                border: "1px solid #374151",
-                borderRadius: "8px",
-              }}
-            />
+            <Tooltip contentStyle={tooltipStyle} />
             <Legend />
           </PieChart>
         );
@@ -377,11 +504,12 @@ export function SingleChart({ data, chart, onRegenerate }: SingleChartProps) {
         onToggleBrush={() => setShowBrush(!showBrush)}
         onToggleTrendline={() => setShowTrendline(!showTrendline)}
         onExportCSV={handleExportCSV}
+        onExportPNG={handleExportPNG}
         onRegenerate={handleRegenerate}
       />
 
       {/* Chart */}
-      <div className="h-[450px] w-full">
+      <div className="h-[450px] w-full" ref={chartContainerRef}>
         <ResponsiveContainer
           key={`chart-${chart.id}-${showBrush ? "brush" : "no-brush"}`}
           width="100%"
@@ -391,7 +519,7 @@ export function SingleChart({ data, chart, onRegenerate }: SingleChartProps) {
             chart.type,
             processedData,
             xColName,
-            yColName,
+            isMultiSeries ? "" : yColName,
             showBrush,
             showTrendline,
             average,
@@ -400,13 +528,18 @@ export function SingleChart({ data, chart, onRegenerate }: SingleChartProps) {
       </div>
 
       {/* Metadata Tags */}
-      <div className="mt-4 flex gap-2">
+      <div className="mt-4 flex flex-wrap gap-2">
         <span className="rounded bg-white/10 px-2 py-0.5 text-xs text-gray-400">
           X: {chart.xAxis}
         </span>
         <span className="rounded bg-white/10 px-2 py-0.5 text-xs text-gray-400">
           Y: {chart.yAxis}
         </span>
+        {chart.groupBy && (
+          <span className="rounded bg-cyan-500/20 px-2 py-0.5 text-xs text-cyan-300">
+            Group: {chart.groupBy}
+          </span>
+        )}
         {chart.aggregation && chart.aggregation !== "none" && (
           <span className="rounded bg-violet-500/20 px-2 py-0.5 text-xs text-violet-300">
             {chart.aggregation}
@@ -415,6 +548,11 @@ export function SingleChart({ data, chart, onRegenerate }: SingleChartProps) {
         <span className="rounded bg-white/10 px-2 py-0.5 text-xs text-gray-400">
           {processedData.length} items
         </span>
+        {isMultiSeries && (
+          <span className="rounded bg-emerald-500/20 px-2 py-0.5 text-xs text-emerald-300">
+            {seriesKeys.length} series
+          </span>
+        )}
       </div>
     </div>
   );

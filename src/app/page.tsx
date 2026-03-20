@@ -9,6 +9,8 @@ import { ChartDisplay } from "~/app/_components/ChartDisplay";
 import { APIKeyButton } from "~/app/_components/APIKeySettings";
 import { CSVSettingsButton } from "~/app/_components/CSVSettings";
 import { AIAnalysis } from "~/app/_components/AIAnalysis";
+import { CSVCompare } from "~/app/_components/CSVCompare";
+import { DataTransform } from "~/app/_components/DataTransform";
 import { ClientOnly } from "./_components/ClientOnly";
 import { LandingPage } from "./_components/landing/LandingPage";
 import {
@@ -39,6 +41,7 @@ export default function HomePage() {
     useState<CSVSettings>(DEFAULT_CSV_SETTINGS);
   const [apiSettings, setApiSettings] = useState<StoredSettings | null>(null);
   const [generatedCharts, setGeneratedCharts] = useState<ChartSuggestion[]>([]);
+  const [workingData, setWorkingData] = useState<CSVData | null>(null);
 
   // Parallel Analysis State
   const [isAnalyzingAll, setIsAnalyzingAll] = useState(false);
@@ -64,10 +67,14 @@ export default function HomePage() {
     }
   }, []);
 
+  // Data used for analysis — transformed data if available, otherwise raw
+  const effectiveData = workingData ?? csvData;
+
   const handleFileLoaded = (content: string, fileName: string) => {
     const data = parseCSV(content, csvSettings);
     setCsvData(data);
     setCurrentFileName(fileName);
+    setWorkingData(null);
     setGeneratedCharts([]);
     setAnalysisResults({ summary: null, anomalies: null, charts: null });
     setChartGenerationError(null);
@@ -81,6 +88,7 @@ export default function HomePage() {
   const handleClearFile = () => {
     setCsvData(null);
     setCurrentFileName(undefined);
+    setWorkingData(null);
     setGeneratedCharts([]);
     setAnalysisResults({ summary: null, anomalies: null, charts: null });
     setChartGenerationError(null);
@@ -94,6 +102,7 @@ export default function HomePage() {
   const handleDataLoaded = (data: CSVData, fileName: string) => {
     setCsvData(data);
     setCurrentFileName(fileName);
+    setWorkingData(null);
     setGeneratedCharts([]);
     setAnalysisResults({ summary: null, anomalies: null, charts: null });
     setChartGenerationError(null);
@@ -109,7 +118,8 @@ export default function HomePage() {
     const hasValidConfig = apiSettings?.customEndpoint
       ? !!apiSettings.customModel
       : !!apiSettings?.apiKey;
-    if (!csvData || !hasValidConfig) return;
+    const analysisData = effectiveData ?? csvData;
+    if (!analysisData || !hasValidConfig) return;
 
     setIsAnalyzingAll(true);
     // Reset results and errors before starting
@@ -134,11 +144,11 @@ export default function HomePage() {
       customModel: apiSettings!.customModel,
     };
 
-    const csvSummary = generateCSVSummary(csvData);
+    const csvSummary = generateCSVSummary(analysisData);
 
     // Prepare anomaly detection sample
-    const headers = csvData.headers.join(",");
-    const rows = csvData.rows
+    const headers = analysisData.headers.join(",");
+    const rows = analysisData.rows
       .slice(0, 50)
       .map((row) => row.join(","))
       .join("\n");
@@ -200,7 +210,7 @@ export default function HomePage() {
     const chartsPromise = generateChartSuggestions(
       config,
       csvSummary,
-      csvData.headers,
+      analysisData.headers,
     )
       .then((charts) => {
         setChartGenerationError(null);
@@ -208,8 +218,8 @@ export default function HomePage() {
         // Auto-generate all suggested charts
         if (charts && charts.length > 0) {
           const validCharts = charts.filter((chart) => {
-            const hasValidX = csvData.headers.includes(chart.xAxis);
-            const hasValidY = csvData.headers.includes(chart.yAxis);
+            const hasValidX = analysisData.headers.includes(chart.xAxis);
+            const hasValidY = analysisData.headers.includes(chart.yAxis);
             return hasValidX && hasValidY;
           });
           setGeneratedCharts(validCharts);
@@ -408,10 +418,13 @@ export default function HomePage() {
                   <DataTable data={csvData} />
                 </FullscreenCard>
 
+                {/* Data Transforms */}
+                <DataTransform data={csvData} onTransformed={setWorkingData} />
+
                 {/* AI Analysis - Full Width */}
                 <FullscreenCard className="overflow-hidden rounded-2xl border border-white/10 bg-slate-900/50">
                   <AIAnalysis
-                    data={csvData}
+                    data={effectiveData ?? csvData}
                     apiSettings={apiSettings}
                     externalSummary={analysisResults.summary}
                     externalAnomalies={analysisResults.anomalies}
@@ -424,7 +437,7 @@ export default function HomePage() {
                 {/* Chart Suggestions - Full Width */}
                 <FullscreenCard className="overflow-hidden rounded-2xl border border-white/10 bg-slate-900/50">
                   <ChartSuggestions
-                    data={csvData}
+                    data={effectiveData ?? csvData}
                     apiSettings={apiSettings}
                     onChartsGenerated={setGeneratedCharts}
                     externalSuggestions={analysisResults.charts}
@@ -436,12 +449,18 @@ export default function HomePage() {
                 {generatedCharts && generatedCharts.length > 0 && (
                   <FullscreenCard className="overflow-hidden rounded-2xl border border-white/10 bg-slate-900/50">
                     <ChartDisplay
-                      data={csvData}
+                      data={effectiveData ?? csvData}
                       charts={generatedCharts}
                       onRegenerate={handleRegenerateChart}
                     />
                   </FullscreenCard>
                 )}
+
+                {/* CSV Compare */}
+                <CSVCompare
+                  primaryData={effectiveData ?? csvData}
+                  csvSettings={csvSettings}
+                />
               </div>
             </div>
           </div>

@@ -6,7 +6,10 @@ export type { SingleChartProps } from "./SingleChart";
 
 export { ChartToolbar } from "./ChartToolbar";
 
-export { processChartData } from "./processChartData";
+export { processChartData, processChartDataMultiSeries } from "./processChartData";
+export type { ProcessedChartResult } from "./processChartData";
+
+export { ChartThemeProvider, useChartTheme } from "./ThemeContext";
 
 export { COLORS } from "./constants";
 
@@ -17,4 +20,7 @@ export type {
   AggregationType,
   SortOrder,
   ChartDataPoint,
+  ChartTheme,
 } from "./types";
+
+export { defaultDarkTheme, defaultLightTheme } from "./types";

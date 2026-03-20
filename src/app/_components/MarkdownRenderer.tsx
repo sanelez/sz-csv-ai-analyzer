@@ -5,6 +5,9 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
 
+const remarkPlugins = [remarkGfm];
+const rehypePlugins = [rehypeHighlight];
+
 interface MarkdownRendererProps {
   content: string;
   className?: string;
@@ -21,8 +24,8 @@ export function MarkdownRenderer({
   return (
     <div className={`markdown-body ${className}`}>
       <ReactMarkdown
-        remarkPlugins={[remarkGfm]}
-        rehypePlugins={[rehypeHighlight]}
+        remarkPlugins={remarkPlugins}
+        rehypePlugins={rehypePlugins}
         components={{
           h1: (props: ComponentPropsWithoutRef<"h1">) => (
             <h1

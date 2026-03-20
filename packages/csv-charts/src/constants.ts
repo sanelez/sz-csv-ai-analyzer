@@ -1,3 +1,6 @@
+// Re-export from defaultDarkTheme for backwards compatibility
+export { defaultDarkTheme as COLORS_THEME } from "./types";
+
 export const COLORS = [
   "#8b5cf6", // Violet 500
   "#06b6d4", // Cyan 500

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { toast } from "sonner";
 import {
   Brain,
@@ -14,6 +14,11 @@ import {
   FileText,
   CheckCircle2,
   RefreshCw,
+  Copy,
+  Check,
+  Trash2,
+  Download,
+  BarChart3,
 } from "lucide-react";
 import {
   type CSVData,
@@ -24,12 +29,14 @@ import {
   generateDataSummary,
   detectAnomalies,
   streamCustomAnalysis,
+  generateCustomChart,
   type DataSummaryResult,
   type AnomalyResult,
   type AIServiceConfig,
 } from "~/lib/ai-service";
 import type { StoredSettings } from "~/lib/storage";
 import { useChatStore } from "~/lib/chat-store";
+import { ChartDisplay } from "./ChartDisplay";
 
 interface AIAnalysisProps {
   data: CSVData;
@@ -89,13 +96,16 @@ export function AIAnalysis({
     isLoading: isLoadingCustom,
     pendingPrompt,
     addMessage,
+    updateMessageAt,
     setStreaming,
     appendStreaming,
     setPrompt: setCustomPrompt,
     setActiveTab,
     setLoading: setLoadingCustom,
+    clearChat,
   } = useChatStore();
   const chatContainerRef = useRef<HTMLDivElement>(null);
+  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
   const [expandedSections, setExpandedSections] = useState<
     Record<string, boolean>
@@ -133,6 +143,66 @@ export function AIAnalysis({
   const toggleSection = (section: string) => {
     setExpandedSections((prev) => ({ ...prev, [section]: !prev[section] }));
   };
+
+  const handleCopy = useCallback(async (text: string, index: number) => {
+    await navigator.clipboard.writeText(text);
+    setCopiedIndex(index);
+    toast.success("Copied to clipboard");
+    setTimeout(() => setCopiedIndex(null), 2000);
+  }, []);
+
+  const handleExportReport = useCallback(() => {
+    const sections: string[] = [];
+    sections.push("# AI Analysis Report\n");
+
+    if (summaryResult) {
+      sections.push("## Dataset Description\n");
+      sections.push(summaryResult.summary + "\n");
+
+      if (summaryResult.keyInsights?.length) {
+        sections.push("## Key Insights\n");
+        summaryResult.keyInsights.forEach((insight) => {
+          sections.push(`- ${insight}`);
+        });
+        sections.push("");
+      }
+
+      if (summaryResult.dataQuality) {
+        sections.push("## Data Quality\n");
+        sections.push(summaryResult.dataQuality + "\n");
+      }
+    }
+
+    if (anomaliesResult && anomaliesResult.length > 0) {
+      sections.push("## Anomalies Detected\n");
+      sections.push(`| Row | Column | Value | Issue | Severity |`);
+      sections.push(`|-----|--------|-------|-------|----------|`);
+      anomaliesResult.forEach((a) => {
+        sections.push(
+          `| ${a.row} | ${a.column} | ${a.value} | ${a.issue} | ${a.severity} |`,
+        );
+      });
+      sections.push("");
+    }
+
+    if (customHistory.length > 0) {
+      sections.push("## Chat History\n");
+      customHistory.forEach((item) => {
+        sections.push(`### Q: ${item.prompt}\n`);
+        sections.push(item.response + "\n");
+      });
+    }
+
+    const markdown = sections.join("\n");
+    const blob = new Blob([markdown], { type: "text/markdown" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "ai-analysis-report.md";
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success("Report exported as Markdown");
+  }, [summaryResult, anomaliesResult, customHistory]);
 
   const getConfig = (): AIServiceConfig | null => {
     // Allow custom endpoint without API key
@@ -278,13 +348,36 @@ export function AIAnalysis({
         },
         // onComplete - called when streaming is done
         (fullText) => {
+          // Add message immediately
           addMessage({ prompt: currentPrompt, response: fullText });
+          // Capture the index of the message we just added (it's the last one right now)
+          const messageIndex = customHistory.length; // history before addMessage had this length, so new msg is at this index
           setStreaming("");
           setLoadingCustom(false);
           toast.success("Query Complete", {
             description: "AI has finished analyzing your request",
             id: "custom-query-toast",
           });
+
+          // Try to generate a chart if the query seems chart-related (async, non-blocking)
+          const chartKeywords =
+            /chart|graph|plot|visuali[sz]e|trend|distribution|histogram|pie|bar|scatter|compare/i;
+          if (chartKeywords.test(currentPrompt)) {
+            void generateCustomChart(
+              config,
+              csvSummary,
+              currentPrompt,
+              data.headers,
+            )
+              .then((result) => {
+                if (result) {
+                  updateMessageAt(messageIndex, { chart: result });
+                }
+              })
+              .catch(() => {
+                // Chart generation is optional — silently ignore
+              });
+          }
         },
         customHistory, // Pass current history
       );
@@ -324,12 +417,23 @@ export function AIAnalysis({
         <div className="rounded-xl border border-emerald-500/30 bg-linear-to-br from-emerald-500/20 to-teal-500/20 p-3">
           <Brain className="h-6 w-6 text-emerald-400" />
         </div>
-        <div>
+        <div className="flex-1">
           <h3 className="font-semibold text-white">AI Analysis</h3>
           <p className="text-sm text-gray-400">
             Get intelligent insights about your data
           </p>
         </div>
+        {(summaryResult || anomaliesResult || customHistory.length > 0) && (
+          <button
+            type="button"
+            onClick={handleExportReport}
+            className="flex items-center gap-2 rounded-lg bg-white/5 px-3 py-2 text-sm text-gray-400 transition-colors hover:bg-white/10 hover:text-white"
+            title="Export report as Markdown"
+          >
+            <Download className="h-4 w-4" />
+            Export
+          </button>
+        )}
       </div>
 
       {/* Tabs */}
@@ -653,6 +757,21 @@ export function AIAnalysis({
         {/* Custom Analysis Tab */}
         {activeTab === "custom" && (
           <div className="space-y-4">
+            {/* Clear chat button */}
+            {customHistory.length > 0 && !isLoadingCustom && (
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={clearChat}
+                  className="flex items-center gap-1.5 rounded-lg bg-white/5 px-3 py-1.5 text-sm text-gray-400 transition-colors hover:bg-red-500/10 hover:text-red-400"
+                  title="Clear chat history"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                  Clear
+                </button>
+              </div>
+            )}
+
             {/* History */}
             {(customHistory.length > 0 || isLoadingCustom) && (
               <div
@@ -682,12 +801,26 @@ export function AIAnalysis({
                           )}
                         </div>
                         <div
-                          className={`flex-1 rounded-xl p-3 ${
+                          className={`group/msg relative flex-1 rounded-xl p-3 ${
                             isError
                               ? "border border-red-500/30 bg-red-500/10"
                               : "border border-white/10 bg-white/5"
                           }`}
                         >
+                          {!isError && (
+                            <button
+                              type="button"
+                              onClick={() => void handleCopy(item.response, i)}
+                              className="absolute top-2 right-2 rounded-md bg-white/5 p-1.5 text-gray-500 opacity-0 transition-opacity group-hover/msg:opacity-100 hover:bg-white/10 hover:text-white"
+                              title="Copy to clipboard"
+                            >
+                              {copiedIndex === i ? (
+                                <Check className="h-3.5 w-3.5 text-emerald-400" />
+                              ) : (
+                                <Copy className="h-3.5 w-3.5" />
+                              )}
+                            </button>
+                          )}
                           {isError ? (
                             <p className="text-sm whitespace-pre-wrap text-red-300">
                               {item.response}
@@ -697,6 +830,15 @@ export function AIAnalysis({
                               content={item.response}
                               className="text-sm"
                             />
+                          )}
+                          {item.chart && (
+                            <div className="mt-3 border-t border-white/10 pt-3">
+                              <div className="mb-2 flex items-center gap-1.5 text-xs text-violet-400">
+                                <BarChart3 className="h-3.5 w-3.5" />
+                                Generated chart
+                              </div>
+                              <ChartDisplay data={data} charts={[item.chart]} />
+                            </div>
                           )}
                         </div>
                       </div>

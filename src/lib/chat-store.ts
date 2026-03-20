@@ -2,10 +2,12 @@
 // Uses immutable updates and proper React 18 external store pattern
 
 import { useSyncExternalStore, useCallback, useRef, useEffect } from "react";
+import type { ChartSuggestion } from "./ai-service";
 
 type ChatMessage = {
   prompt: string;
   response: string;
+  chart?: ChartSuggestion;
 };
 
 type AnalysisTab = "summary" | "anomalies" | "custom";
@@ -109,6 +111,16 @@ export function setLoadingState(isLoading: boolean, pendingPrompt = "") {
   );
 }
 
+export function updateChatMessageByIndex(
+  index: number,
+  updates: Partial<Pick<ChatMessage, "chart">>,
+) {
+  if (index < 0 || index >= store.history.length) return;
+  const updated = [...store.history];
+  updated[index] = { ...updated[index]!, ...updates };
+  updateStore({ history: updated });
+}
+
 export function clearChatStore() {
   store = { ...initialState, version: store.version + 1 };
   notifySubscribers();
@@ -161,6 +173,13 @@ export function useChatStore() {
     setCurrentPrompt(prompt);
   }, []);
 
+  const updateMessageAt = useCallback(
+    (index: number, updates: Partial<Pick<ChatMessage, "chart">>) => {
+      updateChatMessageByIndex(index, updates);
+    },
+    [],
+  );
+
   const clearChat = useCallback(() => {
     clearChatStore();
   }, []);
@@ -181,6 +200,7 @@ export function useChatStore() {
     isLoading: storeState.isLoading,
     pendingPrompt: storeState.pendingPrompt,
     addMessage,
+    updateMessageAt,
     setStreaming,
     appendStreaming,
     setPrompt,

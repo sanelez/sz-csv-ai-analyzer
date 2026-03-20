@@ -6,6 +6,7 @@ import {
   RotateCcw,
   TrendingUp,
   Filter,
+  Image,
 } from "lucide-react";
 import type { ChartType, SortOrder } from "./types";
 
@@ -22,6 +23,7 @@ interface ChartToolbarProps {
   onToggleBrush: () => void;
   onToggleTrendline: () => void;
   onExportCSV: () => void;
+  onExportPNG: () => void;
   onRegenerate: () => void;
 }
 
@@ -38,6 +40,7 @@ export function ChartToolbar({
   onToggleBrush,
   onToggleTrendline,
   onExportCSV,
+  onExportPNG,
   onRegenerate,
 }: ChartToolbarProps) {
   const supportsBrush =
@@ -117,14 +120,24 @@ export function ChartToolbar({
 
       <div className="flex-1" />
 
-      {/* Export Button */}
+      {/* Export PNG Button */}
+      <button
+        onClick={onExportPNG}
+        className="flex items-center gap-1.5 rounded-lg bg-white/5 px-3 py-1.5 text-sm text-gray-400 transition-colors hover:bg-white/10 hover:text-white"
+        title="Export chart as PNG image"
+      >
+        <Image className="h-4 w-4" />
+        PNG
+      </button>
+
+      {/* Export CSV Button */}
       <button
         onClick={onExportCSV}
         className="flex items-center gap-1.5 rounded-lg bg-white/5 px-3 py-1.5 text-sm text-gray-400 transition-colors hover:bg-white/10 hover:text-white"
         title="Export chart data as CSV"
       >
         <Download className="h-4 w-4" />
-        Export
+        CSV
       </button>
 
       {/* Regenerate Button */}
