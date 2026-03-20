@@ -50,6 +50,7 @@
     "node_modules",
     "generated",
     "out",
-    ".next"
+    ".next",
+    "packages"
   ]
 }

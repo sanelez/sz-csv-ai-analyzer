@@ -19,6 +19,7 @@ import {
   type CSVData,
   generateDataSummary as generateCSVSummary,
 } from "~/lib/csv-parser";
+import { MarkdownRenderer } from "./MarkdownRenderer";
 import {
   generateDataSummary,
   detectAnomalies,
@@ -433,9 +434,7 @@ export function AIAnalysis({
                     <FileText className="h-4 w-4 text-emerald-400" />
                     Dataset Description
                   </h4>
-                  <p className="leading-relaxed text-gray-300">
-                    {summaryResult.summary}
-                  </p>
+                  <MarkdownRenderer content={summaryResult.summary} />
                 </div>
 
                 {/* Key Insights */}
@@ -465,7 +464,7 @@ export function AIAnalysis({
                               className="flex items-start gap-2 text-gray-300"
                             >
                               <span className="mt-1 text-emerald-400">•</span>
-                              {insight}
+                              <MarkdownRenderer content={insight} />
                             </li>
                           ))}
                         </ul>
@@ -492,9 +491,7 @@ export function AIAnalysis({
                       )}
                     </button>
                     {expandedSections.quality && (
-                      <p className="text-gray-300">
-                        {summaryResult.dataQuality}
-                      </p>
+                      <MarkdownRenderer content={summaryResult.dataQuality} />
                     )}
                   </div>
                 )}
@@ -691,13 +688,16 @@ export function AIAnalysis({
                               : "border border-white/10 bg-white/5"
                           }`}
                         >
-                          <p
-                            className={`text-sm whitespace-pre-wrap ${
-                              isError ? "text-red-300" : "text-gray-300"
-                            }`}
-                          >
-                            {item.response}
-                          </p>
+                          {isError ? (
+                            <p className="text-sm whitespace-pre-wrap text-red-300">
+                              {item.response}
+                            </p>
+                          ) : (
+                            <MarkdownRenderer
+                              content={item.response}
+                              className="text-sm"
+                            />
+                          )}
                         </div>
                       </div>
                     </div>
@@ -738,19 +738,19 @@ export function AIAnalysis({
                             : "border border-emerald-500/30 bg-white/5"
                         }`}
                       >
-                        <p
-                          className={`text-sm whitespace-pre-wrap ${
-                            streamingResponse.startsWith("[ERROR]")
-                              ? "text-red-300"
-                              : "text-gray-300"
-                          }`}
-                        >
-                          {streamingResponse || "Analyzing..."}
-                          {!streamingResponse.startsWith("[ERROR]") &&
-                            streamingResponse && (
-                              <span className="ml-1 inline-block h-4 w-2 animate-pulse bg-emerald-400" />
-                            )}
-                        </p>
+                        {streamingResponse.startsWith("[ERROR]") ? (
+                          <p className="text-sm whitespace-pre-wrap text-red-300">
+                            {streamingResponse}
+                          </p>
+                        ) : streamingResponse ? (
+                          <MarkdownRenderer
+                            content={streamingResponse}
+                            className="text-sm"
+                            isStreaming
+                          />
+                        ) : (
+                          <p className="text-sm text-gray-300">Analyzing...</p>
+                        )}
                       </div>
                     </div>
                   </div>

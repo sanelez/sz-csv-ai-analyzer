@@ -4,6 +4,7 @@
 [![Next.js](https://img.shields.io/badge/Next.js-black.svg)](https://nextjs.org/)
 [![TailwindCSS](https://img.shields.io/badge/TailwindCSS-38bdf8.svg)](https://tailwindcss.com/)
 [![Docker](https://img.shields.io/badge/Docker-ready-2496ED.svg)](https://www.docker.com/)
+[![npm](https://img.shields.io/npm/v/@maxgfr/csv-charts.svg)](https://www.npmjs.com/package/@maxgfr/csv-charts)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 > 🚀 **[Try it live →](https://maxgfr.github.io/csv-ai-analyzer)**
@@ -31,6 +32,8 @@ A modern, elegant application to analyze your CSV files with Artificial Intellig
 - **Multiple AI providers**: OpenAI, Anthropic Claude, Google Gemini, Mistral, and more
 - **Custom endpoint support**: Connect to Ollama, LM Studio, vLLM, or any OpenAI-compatible API
 - **Intelligent analysis** of your data with AI-generated insights
+- **Markdown rendering**: AI responses rendered with full Markdown support (headings, lists, tables, syntax-highlighted code blocks)
+- **Streaming with Markdown**: Real-time streaming responses are rendered progressively as formatted Markdown
 - **Smart chart suggestions** tailored to your dataset
 - **Chart types**: Bar, Line, Pie, Scatter, Area
 
@@ -152,6 +155,60 @@ Click the ⚙️ icon to configure your AI provider:
 
 Click "Run Complete Analysis" and the AI will analyze your data, detect anomalies, and suggest relevant visualizations.
 
+## 📦 `@maxgfr/csv-charts` — Reusable Chart Package
+
+The chart components are extracted into a standalone npm package [`@maxgfr/csv-charts`](https://www.npmjs.com/package/@maxgfr/csv-charts), available for use in any React project.
+
+### Installation
+
+```bash
+pnpm add @maxgfr/csv-charts
+```
+
+Peer dependencies: `react`, `recharts`, `lucide-react`.
+
+### Quick Example
+
+```tsx
+import { ChartDisplay } from "@maxgfr/csv-charts";
+
+const data = {
+  headers: ["Category", "Sales"],
+  rows: [["Electronics", "1200"], ["Clothing", "800"]],
+  columns: [
+    { name: "Category", type: "string", index: 0 },
+    { name: "Sales", type: "number", index: 1 },
+  ],
+  rowCount: 2,
+};
+
+const charts = [{
+  id: "1",
+  type: "bar",
+  title: "Sales by Category",
+  description: "Compare sales across categories",
+  xAxis: "Category",
+  yAxis: "Sales",
+  aggregation: "sum",
+}];
+
+<ChartDisplay data={data} charts={charts} />
+```
+
+### Exported API
+
+| Export | Description |
+|--------|-------------|
+| `ChartDisplay` | Multi-chart container with optional card wrapper |
+| `SingleChart` | Individual chart with toolbar (sort, zoom, trendline, export) |
+| `ChartToolbar` | Standalone toolbar component |
+| `processChartData` | Data processing utility with aggregation |
+| `COLORS` | Default color palette |
+
+Chart types: `bar`, `line`, `area`, `scatter`, `pie`. Aggregations: `sum`, `avg`, `count`, `min`, `max`, `none`.
+
+See the full documentation in [`packages/csv-charts/README.md`](packages/csv-charts/README.md).
+
 ## 🛠️ Tech Stack
 
 | Technology | Usage |
@@ -160,8 +217,29 @@ Click "Run Complete Analysis" and the AI will analyze your data, detect anomalie
 | **TailwindCSS** | Styling and design system |
 | **PapaParse** | Client-side CSV parsing |
 | **Recharts** | React charting library |
+| **react-markdown** | Markdown rendering for AI responses |
+| **rehype-highlight** | Syntax highlighting in code blocks |
 | **Lucide React** | Modern icons |
 | **js-cookie** | Secure local persistence |
+| **tsup** | Package bundling for `@maxgfr/csv-charts` |
+| **semantic-release** | Automated npm publishing via CI |
+
+## 📁 Project Structure
+
+```
+csv-ai-analyzer/
+├── src/                          # Next.js application
+│   ├── app/_components/          # React components
+│   ├── lib/                      # Services, parsers, stores
+│   └── styles/                   # Global CSS
+├── packages/
+│   └── csv-charts/               # @maxgfr/csv-charts npm package
+│       ├── src/                   # Package source (ChartDisplay, SingleChart, etc.)
+│       ├── dist/                  # Built output (ESM + .d.ts)
+│       └── package.json
+├── pnpm-workspace.yaml           # Monorepo workspace config
+└── package.json                  # Root app
+```
 
 ## 📝 License
 
