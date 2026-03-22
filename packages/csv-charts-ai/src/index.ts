@@ -1,3 +1,6 @@
+// Version
+export { VERSION } from "./version";
+
 // React components
 export { ChartDisplay } from "./ChartDisplay";
 export type { ChartDisplayProps } from "./ChartDisplay";

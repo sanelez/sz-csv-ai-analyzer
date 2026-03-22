@@ -347,6 +347,9 @@ export default function HomePage() {
                   <div>
                     <h1 className="bg-linear-to-r from-white to-gray-400 bg-clip-text text-3xl font-bold text-transparent">
                       CSV AI Analyzer
+                      <span className="ml-2 align-middle text-xs font-normal text-gray-600">
+                        v{process.env.NEXT_PUBLIC_APP_VERSION}
+                      </span>
                     </h1>
                     <p className="text-gray-400">
                       Analyzing:{" "}
