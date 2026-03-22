@@ -1,3 +1,16 @@
+# [1.2.0](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.1.0...v1.2.0) (2026-03-22)
+
+
+### Bug Fixes
+
+* **ci:** add --allow-same-version to npm version in release prepare ([57a3cb2](https://github.com/maxgfr/csv-ai-analyzer/commit/57a3cb25a4945adce51e3cdc1c747e6d2195dd9a))
+* **ci:** rename release.yml to publish.yml to match npm trusted publisher config ([09316af](https://github.com/maxgfr/csv-ai-analyzer/commit/09316af915e11d3dbc4e66965dd1160872d9ecfc))
+
+
+### Features
+
+* unify versioning — single semantic-release for app and package ([3b4d822](https://github.com/maxgfr/csv-ai-analyzer/commit/3b4d822daca19a5eccd1ba15c91d992036b0ad77))
+
 # [1.1.0](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.0.1...v1.1.0) (2026-03-22)
 
 
