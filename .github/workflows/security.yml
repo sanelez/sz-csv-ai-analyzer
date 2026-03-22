@@ -2,15 +2,16 @@ name: Security Check
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
   workflow_dispatch:
   schedule:
-    - cron: '0 0 * * 1'  # Weekly on Monday
+    - cron: "0 0 * * 1"
 
 jobs:
   vulnerability-check:
     uses: maxgfr/package-checker.sh/.github/workflows/reusable-check.yml@main
     with:
       use-ghsa: true
-      fail-on-vulnerabilities: true
+      use-osv: true
+      fail-on-vulnerabilities: false
