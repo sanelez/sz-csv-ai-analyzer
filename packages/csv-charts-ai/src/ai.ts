@@ -43,7 +43,11 @@ export type ModelInput = AIConfig | LanguageModel;
 const ChartSuggestionSchema = z.object({
   type: z.enum(["bar", "line", "pie", "scatter", "area"]),
   title: z.string(),
-  description: z.string(),
+  description: z
+    .string()
+    .optional()
+    .default("")
+    .describe("Short description of what the chart shows"),
   xColumn: z
     .string()
     .describe("The EXACT column name to use for X axis (categories/labels)"),
@@ -56,9 +60,13 @@ const ChartSuggestionSchema = z.object({
     .describe("Optional column to group/segment the data"),
   aggregation: z
     .enum(["sum", "avg", "count", "min", "max", "none"])
+    .optional()
+    .default("none")
     .describe("How to aggregate Y values when there are duplicates in X"),
   reasoning: z
     .string()
+    .optional()
+    .default("")
     .describe("Brief explanation of why this chart is useful for this data"),
 });
 
