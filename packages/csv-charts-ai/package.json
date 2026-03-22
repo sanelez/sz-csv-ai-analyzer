@@ -20,8 +20,7 @@
   ],
   "scripts": {
     "build": "tsup",
-    "dev": "tsup --watch",
-    "release": "semantic-release"
+    "dev": "tsup --watch"
   },
   "peerDependencies": {
     "ai": "^5.0.0 || ^6.0.0",
@@ -42,18 +41,11 @@
     }
   },
   "devDependencies": {
-    "@semantic-release/changelog": "^6.0.3",
-    "@semantic-release/commit-analyzer": "^13.0.1",
-    "@semantic-release/git": "^10.0.1",
-    "@semantic-release/github": "^12.0.6",
-    "@semantic-release/npm": "^13.1.5",
-    "@semantic-release/release-notes-generator": "^14.1.0",
     "@types/react": "^19.2.7",
     "ai": "^6.0.134",
     "lucide-react": "^0.556.0",
     "react": "^19.2.4",
     "recharts": "^3.5.1",
-    "semantic-release": "^25.0.3",
     "tsup": "^8.5.0",
     "typescript": "^5.9.3",
     "zod": "^4.1.13"

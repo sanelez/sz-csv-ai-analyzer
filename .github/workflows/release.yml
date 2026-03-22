@@ -27,6 +27,7 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version-file: .node-version
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -42,3 +43,5 @@ jobs:
 
       - name: Release
         run: pnpm release
+        env:
+          NPM_CONFIG_PROVENANCE: true

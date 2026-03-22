@@ -18,9 +18,25 @@
       }
     ],
     [
+      "@semantic-release/exec",
+      {
+        "prepareCmd": "npm version ${nextRelease.version} --no-git-tag-version --prefix packages/csv-charts-ai && pnpm --filter csv-charts-ai build"
+      }
+    ],
+    [
+      "@semantic-release/npm",
+      {
+        "pkgRoot": "packages/csv-charts-ai"
+      }
+    ],
+    [
       "@semantic-release/git",
       {
-        "assets": ["package.json", "CHANGELOG.md"],
+        "assets": [
+          "package.json",
+          "CHANGELOG.md",
+          "packages/csv-charts-ai/package.json"
+        ],
         "message": "chore(release): v${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
       }
     ],
