@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.0.0...v1.0.1) (2026-03-22)
+
+
+### Bug Fixes
+
+* **csv-charts-ai:** accept ai SDK v6 in peer dependencies ([b50fa35](https://github.com/maxgfr/csv-ai-analyzer/commit/b50fa355a863b1bff737bb62f5a6384ca1bef163))
+
 # 1.0.0 (2026-03-22)
 
 
