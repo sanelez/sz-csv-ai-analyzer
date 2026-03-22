@@ -1,4 +1,4 @@
-name: Publish @maxgfr/csv-charts to npm
+name: Publish csv-charts-ai to npm
 
 on:
   workflow_dispatch:
@@ -6,7 +6,7 @@ on:
     branches:
       - 'main'
     paths:
-      - 'packages/csv-charts/**'
+      - 'packages/csv-charts-ai/**'
 
 permissions:
   contents: write
@@ -50,8 +50,8 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build package
-        run: pnpm --filter @maxgfr/csv-charts build
+        run: pnpm --filter csv-charts-ai build
 
       - name: Release
-        working-directory: packages/csv-charts
+        working-directory: packages/csv-charts-ai
         run: pnpm release

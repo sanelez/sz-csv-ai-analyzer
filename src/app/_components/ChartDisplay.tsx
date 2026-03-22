@@ -3,7 +3,7 @@
 import {
   ChartDisplay as BaseChartDisplay,
   type ChartConfig,
-} from "@maxgfr/csv-charts";
+} from "csv-charts-ai";
 import type { CSVData } from "~/lib/csv-parser";
 import type { ChartSuggestion } from "~/lib/ai-service";
 import { FullscreenCard } from "./FullscreenCard";

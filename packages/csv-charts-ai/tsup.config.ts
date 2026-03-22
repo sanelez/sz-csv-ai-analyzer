@@ -7,5 +7,5 @@ export default defineConfig({
   splitting: false,
   sourcemap: true,
   clean: true,
-  external: ["react", "react-dom", "recharts", "lucide-react"],
+  external: ["react", "react-dom", "recharts", "lucide-react", "ai", "zod"],
 });

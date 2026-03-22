@@ -20,15 +20,15 @@ importers:
       '@ai-sdk/openai':
         specifier: ^2.0.79
         version: 2.0.79(zod@4.1.13)
-      '@maxgfr/csv-charts':
-        specifier: workspace:*
-        version: link:packages/csv-charts
       '@t3-oss/env-nextjs':
         specifier: ^0.13.8
         version: 0.13.8(typescript@5.9.3)(zod@4.1.13)
       ai:
         specifier: ^5.0.108
         version: 5.0.108(zod@4.1.13)
+      csv-charts-ai:
+        specifier: workspace:*
+        version: link:packages/csv-charts-ai
       highlight.js:
         specifier: ^11.11.1
         version: 11.11.1
@@ -130,7 +130,7 @@ importers:
         specifier: ^8.48.1
         version: 8.48.1(eslint@9.39.1(jiti@2.6.1))(typescript@5.9.3)
 
-  packages/csv-charts:
+  packages/csv-charts-ai:
     devDependencies:
       '@semantic-release/changelog':
         specifier: ^6.0.3
@@ -153,6 +153,9 @@ importers:
       '@types/react':
         specifier: ^19.2.7
         version: 19.2.7
+      ai:
+        specifier: ^5.0.108
+        version: 5.0.108(zod@4.1.13)
       lucide-react:
         specifier: ^0.556.0
         version: 0.556.0(react@19.2.1)
@@ -171,6 +174,9 @@ importers:
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
+      zod:
+        specifier: ^4.1.13
+        version: 4.1.13
 
 packages:
 

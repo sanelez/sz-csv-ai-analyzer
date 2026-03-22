@@ -15,11 +15,11 @@
     [
       "@semantic-release/git",
       {
-        "assets": ["packages/csv-charts/package.json", "packages/csv-charts/CHANGELOG.md"],
-        "message": "chore(release): @maxgfr/csv-charts v${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+        "assets": ["packages/csv-charts-ai/package.json", "packages/csv-charts-ai/CHANGELOG.md"],
+        "message": "chore(release): csv-charts-ai v${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
       }
     ],
     "@semantic-release/github"
   ],
-  "tagFormat": "csv-charts-v${version}"
+  "tagFormat": "csv-charts-ai-v${version}"
 }

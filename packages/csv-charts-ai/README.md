@@ -1,13 +1,13 @@
-# @maxgfr/csv-charts
+# csv-charts-ai
 
 Reusable chart components for CSV/tabular data visualization, powered by [Recharts](https://recharts.org/).
 
 ## Installation
 
 ```bash
-npm install @maxgfr/csv-charts
+npm install csv-charts-ai
 # or
-pnpm add @maxgfr/csv-charts
+pnpm add csv-charts-ai
 ```
 
 ### Peer Dependencies
@@ -19,7 +19,7 @@ npm install react recharts lucide-react
 ## Usage
 
 ```tsx
-import { ChartDisplay, type TabularData, type ChartConfig } from "@maxgfr/csv-charts";
+import { ChartDisplay, type TabularData, type ChartConfig } from "csv-charts-ai";
 
 const data: TabularData = {
   headers: ["Category", "Sales"],

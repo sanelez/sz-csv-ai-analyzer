@@ -24,3 +24,6 @@ export type {
 } from "./types";
 
 export { defaultDarkTheme, defaultLightTheme } from "./types";
+
+export { suggestCharts, suggestCustomChart, repairChart } from "./ai";
+export type { AIChartOptions } from "./ai";

@@ -4,7 +4,7 @@
 [![Next.js](https://img.shields.io/badge/Next.js-black.svg)](https://nextjs.org/)
 [![TailwindCSS](https://img.shields.io/badge/TailwindCSS-38bdf8.svg)](https://tailwindcss.com/)
 [![Docker](https://img.shields.io/badge/Docker-ready-2496ED.svg)](https://www.docker.com/)
-[![npm](https://img.shields.io/npm/v/@maxgfr/csv-charts.svg)](https://www.npmjs.com/package/@maxgfr/csv-charts)
+[![npm](https://img.shields.io/npm/v/csv-charts-ai.svg)](https://www.npmjs.com/package/csv-charts-ai)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 > 🚀 **[Try it live →](https://maxgfr.github.io/csv-ai-analyzer)**
@@ -155,14 +155,14 @@ Click the ⚙️ icon to configure your AI provider:
 
 Click "Run Complete Analysis" and the AI will analyze your data, detect anomalies, and suggest relevant visualizations.
 
-## 📦 `@maxgfr/csv-charts` — Reusable Chart Package
+## 📦 `csv-charts-ai` — Reusable Chart Package
 
-The chart components are extracted into a standalone npm package [`@maxgfr/csv-charts`](https://www.npmjs.com/package/@maxgfr/csv-charts), available for use in any React project.
+The chart components are extracted into a standalone npm package [`csv-charts-ai`](https://www.npmjs.com/package/csv-charts-ai), available for use in any React project.
 
 ### Installation
 
 ```bash
-pnpm add @maxgfr/csv-charts
+pnpm add csv-charts-ai
 ```
 
 Peer dependencies: `react`, `recharts`, `lucide-react`.
@@ -170,7 +170,7 @@ Peer dependencies: `react`, `recharts`, `lucide-react`.
 ### Quick Example
 
 ```tsx
-import { ChartDisplay } from "@maxgfr/csv-charts";
+import { ChartDisplay } from "csv-charts-ai";
 
 const data = {
   headers: ["Category", "Sales"],
@@ -207,7 +207,7 @@ const charts = [{
 
 Chart types: `bar`, `line`, `area`, `scatter`, `pie`. Aggregations: `sum`, `avg`, `count`, `min`, `max`, `none`.
 
-See the full documentation in [`packages/csv-charts/README.md`](packages/csv-charts/README.md).
+See the full documentation in [`packages/csv-charts-ai/README.md`](packages/csv-charts-ai/README.md).
 
 ## 🛠️ Tech Stack
 
@@ -221,7 +221,7 @@ See the full documentation in [`packages/csv-charts/README.md`](packages/csv-cha
 | **rehype-highlight** | Syntax highlighting in code blocks |
 | **Lucide React** | Modern icons |
 | **js-cookie** | Secure local persistence |
-| **tsup** | Package bundling for `@maxgfr/csv-charts` |
+| **tsup** | Package bundling for `csv-charts-ai` |
 | **semantic-release** | Automated npm publishing via CI |
 
 ## 📁 Project Structure
@@ -233,7 +233,7 @@ csv-ai-analyzer/
 │   ├── lib/                      # Services, parsers, stores
 │   └── styles/                   # Global CSS
 ├── packages/
-│   └── csv-charts/               # @maxgfr/csv-charts npm package
+│   └── csv-charts-ai/            # csv-charts-ai npm package
 │       ├── src/                   # Package source (ChartDisplay, SingleChart, etc.)
 │       ├── dist/                  # Built output (ESM + .d.ts)
 │       └── package.json

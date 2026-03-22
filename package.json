@@ -23,7 +23,7 @@
     "@ai-sdk/google": "^2.0.44",
     "@ai-sdk/mistral": "^2.0.25",
     "@ai-sdk/openai": "^2.0.79",
-    "@maxgfr/csv-charts": "workspace:*",
+    "csv-charts-ai": "workspace:*",
     "@t3-oss/env-nextjs": "^0.13.8",
     "ai": "^5.0.108",
     "highlight.js": "^11.11.1",

@@ -39,7 +39,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build csv-charts package
-        run: pnpm --filter @maxgfr/csv-charts build
+        run: pnpm --filter csv-charts-ai build
 
       - name: Type check
         run: pnpm run typecheck

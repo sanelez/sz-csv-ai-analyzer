@@ -4,6 +4,12 @@ import { createAnthropic } from "@ai-sdk/anthropic";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { createMistral } from "@ai-sdk/mistral";
 import { z } from "zod";
+import {
+  suggestCharts,
+  suggestCustomChart,
+  repairChart,
+  type ChartConfig,
+} from "csv-charts-ai";
 import { DEFAULT_MODEL, type ModelId, type LanguageCode } from "./ai-models";
 
 export type ChartType = "bar" | "line" | "pie" | "scatter" | "area";
@@ -56,36 +62,6 @@ export interface CustomAnalysisResult {
 }
 
 // ============ Zod Schemas ============
-
-const ChartSuggestionSchema = z.object({
-  type: z.enum(["bar", "line", "pie", "scatter", "area"]),
-  title: z.string(),
-  description: z.string(),
-  xColumn: z
-    .string()
-    .describe("The EXACT column name to use for X axis (categories/labels)"),
-  yColumn: z
-    .string()
-    .describe("The EXACT column name to use for Y axis (values)"),
-  groupColumn: z
-    .string()
-    .optional()
-    .describe("Optional column to group/segment the data"),
-  aggregation: z
-    .enum(["sum", "avg", "count", "min", "max", "none"])
-    .describe("How to aggregate Y values when there are duplicates in X"),
-  reasoning: z
-    .string()
-    .describe("Brief explanation of why this chart is useful for this data"),
-});
-
-const ChartSuggestionsResponseSchema = z.object({
-  charts: z.array(ChartSuggestionSchema),
-});
-
-const SingleChartResponseSchema = z.object({
-  chart: ChartSuggestionSchema,
-});
 
 const DataSummarySchema = z.object({
   summary: z.string(),
@@ -188,35 +164,6 @@ const LANGUAGE_INSTRUCTION: Record<LanguageCode, string> = {
 
 // ============ Prompts ============
 
-const getChartSystemPrompt = (
-  language: LanguageCode,
-  columns: string[],
-) => `You are a data visualization expert. ${LANGUAGE_INSTRUCTION[language]}
-
-You will analyze CSV data and suggest the best charts to visualize it.
-
-AVAILABLE COLUMNS (use these EXACT names):
-${columns.map((c) => `- "${c}"`).join("\n")}
-
-CRITICAL RULES:
-1. xColumn and yColumn MUST be exact column names from the list above
-2. For numeric analysis, yColumn should be a numeric column
-3. For categorical comparisons, xColumn should be a categorical column
-4. Only suggest charts that make sense for the data types
-5. Use aggregation when there are multiple rows per category:
-   - "sum" for totals (sales, revenue)
-   - "avg" for averages (ratings, scores)
-   - "count" for frequencies
-   - "none" for unique values or time series
-6. Suggest 2-4 charts maximum, focusing on the most insightful ones
-
-CHART TYPE GUIDELINES:
-- bar: Compare categories (xColumn=category, yColumn=numeric)
-- line: Show trends over time (xColumn=date/time, yColumn=numeric)
-- pie: Show proportions (xColumn=category, yColumn=numeric with sum/count)
-- scatter: Show correlations (xColumn=numeric, yColumn=numeric, aggregation=none)
-- area: Show cumulative trends (xColumn=date/time, yColumn=numeric)`;
-
 const getDataSummaryPrompt = (
   language: LanguageCode,
 ) => `You are a data analyst. ${LANGUAGE_INSTRUCTION[language]}
@@ -253,18 +200,6 @@ const getCustomAnalysisPrompt = (
 ) => `You are a data analysis expert. ${LANGUAGE_INSTRUCTION[language]}
 
 The user will ask questions about a CSV dataset. Respond clearly and precisely.`;
-
-const getCustomChartPrompt = (
-  language: LanguageCode,
-  columns: string[],
-) => `You are a data visualization expert. ${LANGUAGE_INSTRUCTION[language]}
-
-Create a chart configuration based on the user's request.
-
-AVAILABLE COLUMNS (use these EXACT names):
-${columns.map((c) => `- "${c}"`).join("\n")}
-
-IMPORTANT: Column names MUST exactly match the list above.`;
 
 // ============ Provider Helper ============
 
@@ -307,7 +242,19 @@ function getModel(config: AIServiceConfig): LanguageModel {
   }
 }
 
-// ============ Chart Suggestions ============
+// ============ Chart Suggestions (delegated to csv-charts-ai) ============
+
+const LANGUAGE_NAMES: Record<LanguageCode, string> = {
+  en: "English",
+  fr: "French",
+  de: "German",
+  es: "Spanish",
+  it: "Italian",
+  pt: "Portuguese",
+  nl: "Dutch",
+  ja: "Japanese",
+  zh: "Chinese",
+};
 
 export const generateChartSuggestions = async (
   config: AIServiceConfig,
@@ -318,35 +265,17 @@ export const generateChartSuggestions = async (
   const language = config.language ?? "en";
 
   try {
-    const { object } = await generateObject({
+    const results = await suggestCharts(
       model,
-      schema: ChartSuggestionsResponseSchema,
-      system: getChartSystemPrompt(language, columns),
-      prompt: `Analyze this CSV data and suggest the best charts:\n\n${dataSummary}`,
-      temperature: 0.5,
-    });
-
-    return object.charts.map((s, i) => ({
-      id: `chart-${i}-${Date.now()}`,
-      type: s.type,
-      title: s.title,
-      description: s.description,
-      xAxis: s.xColumn,
-      yAxis: s.yColumn,
-      groupBy: s.groupColumn,
-      aggregation: s.aggregation,
-      dataConfig: {
-        xColumn: s.xColumn,
-        yColumn: s.yColumn,
-        groupColumn: s.groupColumn,
-      },
-    }));
+      { headers: columns, rows: [], columns: [], rowCount: 0 },
+      dataSummary,
+      { language: LANGUAGE_NAMES[language] },
+    );
+    return results as unknown as ChartSuggestion[];
   } catch (error) {
     throw new Error(getErrorMessage(error));
   }
 };
-
-// ============ Custom Chart ============
 
 export const generateCustomChart = async (
   config: AIServiceConfig,
@@ -357,38 +286,15 @@ export const generateCustomChart = async (
   const model = getModel(config);
   const language = config.language ?? "en";
 
-  try {
-    const { object } = await generateObject({
-      model,
-      schema: SingleChartResponseSchema,
-      system: getCustomChartPrompt(language, columns),
-      prompt: `Data summary:\n${dataSummary}\n\nUser request: ${userPrompt}`,
-      temperature: 0.5,
-    });
-
-    return {
-      id: `chart-custom-${Date.now()}`,
-      type: object.chart.type,
-      title: object.chart.title,
-      description: object.chart.description,
-      xAxis: object.chart.xColumn,
-      yAxis: object.chart.yColumn,
-      groupBy: object.chart.groupColumn,
-      aggregation: object.chart.aggregation,
-      dataConfig: {
-        xColumn: object.chart.xColumn,
-        yColumn: object.chart.yColumn,
-        groupColumn: object.chart.groupColumn,
-      },
-    };
-  } catch (error) {
-    // For custom charts, we still return null but log the error for debugging
-    console.error("Custom chart generation failed:", getErrorMessage(error));
-    return null;
-  }
+  const result = await suggestCustomChart(
+    model,
+    { headers: columns, rows: [], columns: [], rowCount: 0 },
+    dataSummary,
+    userPrompt,
+    { language: LANGUAGE_NAMES[language] },
+  );
+  return result as unknown as ChartSuggestion | null;
 };
-
-// ============ Chart Repair ============
 
 export const repairChartSuggestion = async (
   config: AIServiceConfig,
@@ -399,33 +305,14 @@ export const repairChartSuggestion = async (
   const model = getModel(config);
   const language = config.language ?? "en";
 
-  try {
-    const { object } = await generateObject({
-      model,
-      schema: SingleChartResponseSchema,
-      system: getCustomChartPrompt(language, columns),
-      prompt: `The following chart configuration failed to render:\n${JSON.stringify(failedChart, null, 2)}\n\nError context: ${errorContext}\n\nPlease fix the configuration to use valid columns and aggregation. Available columns: ${columns.join(", ")}`,
-      temperature: 0.3, // Lower temperature for more deterministic repair
-    });
-
-    return {
-      id: failedChart.id, // Keep same ID to replace in place
-      type: object.chart.type,
-      title: object.chart.title,
-      description: object.chart.description,
-      xAxis: object.chart.xColumn,
-      yAxis: object.chart.yColumn,
-      groupBy: object.chart.groupColumn,
-      aggregation: object.chart.aggregation,
-      dataConfig: {
-        xColumn: object.chart.xColumn,
-        yColumn: object.chart.yColumn,
-        groupColumn: object.chart.groupColumn,
-      },
-    };
-  } catch {
-    return null;
-  }
+  const result = await repairChart(
+    model,
+    failedChart as unknown as ChartConfig,
+    columns,
+    errorContext,
+    { language: LANGUAGE_NAMES[language] },
+  );
+  return result as unknown as ChartSuggestion | null;
 };
 
 // ============ Data Summary ============
