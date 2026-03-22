@@ -283,15 +283,8 @@ export function AIAnalysis({
 
     try {
       const csvSummary = generateCSVSummary(data);
-      // Get sample rows as CSV string (first 50 rows)
-      const headers = data.headers.join(",");
-      const rows = data.rows
-        .slice(0, 50)
-        .map((row) => row.join(","))
-        .join("\n");
-      const sampleCSV = `${headers}\n${rows}`;
 
-      const result = await detectAnomalies(config, csvSummary, sampleCSV);
+      const result = await detectAnomalies(config, csvSummary, data);
       setAnomaliesResult(result);
       setAnomaliesError(null);
       toast.success("Anomalies Detected", {

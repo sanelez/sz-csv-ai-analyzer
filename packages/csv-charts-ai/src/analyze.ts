@@ -2,7 +2,7 @@ import { generateObject, generateText, streamText } from "ai";
 import { z } from "zod";
 import type { TabularData, ChartConfig } from "./types";
 import type { ModelInput } from "./ai";
-import { summarizeTabularData, getAIErrorMessage } from "./ai";
+import { summarizeTabularData, getAIErrorMessage, resolveModel } from "./ai";
 import { suggestCharts } from "./ai";
 
 // ============ Schemas ============
@@ -96,17 +96,6 @@ function buildSampleCSV(data: TabularData, maxRows = 50): string {
   return `${header}\n${rows}`;
 }
 
-// We need resolveModel but it's not exported from ai.ts
-// Use a lazy approach: accept ModelInput and resolve internally
-async function resolve(input: ModelInput) {
-  // Dynamic import to avoid circular dependency
-  const { createModel } = await import("./ai");
-  if (typeof input === "object" && "doGenerate" in input && typeof (input as Record<string, unknown>).doGenerate === "function") {
-    return input;
-  }
-  return createModel(input as import("./ai").AIConfig);
-}
-
 // ============ Individual Functions ============
 
 export interface SummarizeDataOptions {
@@ -138,7 +127,7 @@ export async function summarizeData(
   const dataSummary = options.dataSummary ?? summarizeTabularData(data);
 
   try {
-    const model = await resolve(options.model);
+    const model = await resolveModel(options.model);
 
     const { object } = await generateObject({
       model,
@@ -188,7 +177,7 @@ export async function detectAnomalies(
   const sampleCSV = buildSampleCSV(data, maxRows);
 
   try {
-    const model = await resolve(options.model);
+    const model = await resolveModel(options.model);
 
     const { object } = await generateObject({
       model,
@@ -235,7 +224,7 @@ export async function askAboutData(
   const dataSummary = options.dataSummary ?? summarizeTabularData(data);
 
   try {
-    const model = await resolve(options.model);
+    const model = await resolveModel(options.model);
 
     const historyText = history
       .map((item) => `User: ${item.prompt}\nAI: ${item.response}`)
@@ -291,7 +280,7 @@ export async function streamAskAboutData(
   const dataSummary = options.dataSummary ?? summarizeTabularData(data);
 
   try {
-    const model = await resolve(options.model);
+    const model = await resolveModel(options.model);
 
     const historyText = history
       .map((item) => `User: ${item.prompt}\nAI: ${item.response}`)

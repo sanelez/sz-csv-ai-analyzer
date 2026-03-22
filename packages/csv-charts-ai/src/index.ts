@@ -28,7 +28,7 @@ export { defaultDarkTheme, defaultLightTheme } from "./types";
 
 // AI — chart generation
 export { suggestCharts, suggestCustomChart, repairChart } from "./ai";
-export { createModel, summarizeTabularData, getAIErrorMessage } from "./ai";
+export { createModel, resolveModel, summarizeTabularData, getAIErrorMessage } from "./ai";
 export { AIConfigSchema, TabularDataSchema } from "./ai";
 export type {
   AIConfig,

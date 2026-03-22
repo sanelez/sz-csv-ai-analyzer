@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { GitCompareArrows, Upload, X, ArrowRight } from "lucide-react";
+import { toast } from "sonner";
 import {
   type CSVData,
   type CSVSettings,
@@ -25,10 +26,16 @@ export function CSVCompare({
   const handleFile = (file: File) => {
     const reader = new FileReader();
     reader.onload = (e) => {
-      const content = e.target?.result as string;
-      const data = parseCSV(content, csvSettings);
-      setCompareData(data);
-      setCompareFileName(file.name);
+      try {
+        const content = e.target?.result as string;
+        const data = parseCSV(content, csvSettings);
+        setCompareData(data);
+        setCompareFileName(file.name);
+      } catch {
+        toast.error("Failed to parse CSV", {
+          description: "Please check that the file is a valid CSV.",
+        });
+      }
     };
     reader.readAsText(file);
   };
@@ -37,7 +44,13 @@ export function CSVCompare({
     e.preventDefault();
     setIsDragging(false);
     const file = e.dataTransfer.files[0];
-    if (file?.name.endsWith(".csv")) handleFile(file);
+    if (file?.name.toLowerCase().endsWith(".csv")) {
+      handleFile(file);
+    } else if (file) {
+      toast.error("Invalid file type", {
+        description: "Please upload a .csv file.",
+      });
+    }
   };
 
   const comparison = useMemo(() => {
@@ -261,6 +274,8 @@ export function CSVCompare({
                   <tbody>
                     {comparison.stats.map((stat) => {
                       if (stat.type === "categorical") {
+                        const distinctDelta =
+                          stat.compare.distinct - stat.primary.distinct;
                         return (
                           <tr
                             key={stat.column}
@@ -268,6 +283,9 @@ export function CSVCompare({
                           >
                             <td className="px-4 py-2 font-medium text-gray-300">
                               {stat.column}
+                              <span className="ml-1 text-xs text-gray-600">
+                                text
+                              </span>
                             </td>
                             <td className="px-4 py-2 text-right text-gray-400">
                               {stat.primary.distinct} distinct
@@ -278,8 +296,17 @@ export function CSVCompare({
                             <td className="px-4 py-2 text-right text-gray-400">
                               {stat.compare.distinct} distinct
                             </td>
-                            <td className="px-4 py-2 text-right text-gray-500">
-                              —
+                            <td
+                              className={`px-4 py-2 text-right font-mono ${
+                                distinctDelta > 0
+                                  ? "text-emerald-400"
+                                  : distinctDelta < 0
+                                    ? "text-red-400"
+                                    : "text-gray-400"
+                              }`}
+                            >
+                              {distinctDelta > 0 ? "+" : ""}
+                              {distinctDelta}
                             </td>
                           </tr>
                         );
@@ -313,8 +340,8 @@ export function CSVCompare({
                             className={`px-4 py-2 text-right font-mono ${diffColor(stat.compare.avg, stat.primary.avg)}`}
                           >
                             {delta >= 0 ? "+" : ""}
-                            {fmt(delta)}{" "}
-                            <span className="text-xs opacity-60">
+                            {fmt(delta)}
+                            <span className="ml-1 text-xs">
                               ({pct >= 0 ? "+" : ""}
                               {pct.toFixed(1)}%)
                             </span>

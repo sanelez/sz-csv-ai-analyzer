@@ -54,7 +54,7 @@ const inferColumnType = (
 
   // Check for number
   const isNumber = sample.every((v) => {
-    const cleaned = v.replace(/[\s,]/g, "").replace(",", ".");
+    const cleaned = v.replace(/[\s,]/g, "");
     return !isNaN(parseFloat(cleaned)) && isFinite(Number(cleaned));
   });
   if (isNumber) return "number";

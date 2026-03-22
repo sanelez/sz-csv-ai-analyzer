@@ -236,7 +236,7 @@ export async function createModel(config: AIConfig): Promise<LanguageModel> {
   }
 }
 
-async function resolveModel(input: ModelInput): Promise<LanguageModel> {
+export async function resolveModel(input: ModelInput): Promise<LanguageModel> {
   if (isLanguageModel(input)) return input;
   return createModel(input as AIConfig);
 }
@@ -442,8 +442,7 @@ export async function suggestCustomChart(
 
     return mapChartResult(object.chart, `chart-custom-${Date.now()}`);
   } catch (error) {
-    console.error("Custom chart generation failed:", getAIErrorMessage(error));
-    return null;
+    throw new Error(getAIErrorMessage(error));
   }
 }
 
@@ -483,7 +482,7 @@ export async function repairChart(
     });
 
     return mapChartResult(object.chart, failedChart.id);
-  } catch {
-    return null;
+  } catch (error) {
+    throw new Error(getAIErrorMessage(error));
   }
 }

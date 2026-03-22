@@ -20,6 +20,7 @@ import {
 } from "csv-charts-ai";
 import type {
   ChartConfig,
+  TabularData,
   DataSummaryResult,
   AnomalyResult,
 } from "csv-charts-ai";
@@ -170,16 +171,12 @@ export const generateDataSummary = async (
 export const detectAnomalies = async (
   config: AIServiceConfig,
   dataSummary: string,
-  sampleRows: string,
+  data: TabularData,
 ): Promise<AnomalyResult[]> => {
   const model = getModel(config);
-  // Build a minimal TabularData from the CSV string
-  const lines = sampleRows.split("\n");
-  const headers = lines[0]?.split(",") ?? [];
-  const rows = lines.slice(1).map((l) => l.split(","));
   return pkgDetectAnomalies({
     model,
-    data: { headers, rows, columns: [], rowCount: rows.length },
+    data,
     dataSummary,
     language: LANGUAGE_NAMES[config.language ?? "en"],
   });

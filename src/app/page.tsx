@@ -146,14 +146,6 @@ export default function HomePage() {
 
     const csvSummary = generateCSVSummary(analysisData);
 
-    // Prepare anomaly detection sample
-    const headers = analysisData.headers.join(",");
-    const rows = analysisData.rows
-      .slice(0, 50)
-      .map((row) => row.join(","))
-      .join("\n");
-    const sampleCSV = `${headers}\n${rows}`;
-
     // Run all in parallel but update UI as each completes
     const summaryPromise = generateDataSummary(config, csvSummary)
       .then((summary) => {
@@ -181,7 +173,7 @@ export default function HomePage() {
         return null;
       });
 
-    const anomaliesPromise = detectAnomalies(config, csvSummary, sampleCSV)
+    const anomaliesPromise = detectAnomalies(config, csvSummary, analysisData)
       .then((anomalies) => {
         setAnomaliesError(null);
         setAnalysisResults((prev) => ({ ...prev, anomalies }));
@@ -301,9 +293,10 @@ export default function HomePage() {
         });
       }
     } catch (error) {
-      console.error("Failed to regenerate chart", error);
+      const message =
+        error instanceof Error ? error.message : "Failed to regenerate chart";
       toast.error("Regeneration Error", {
-        description: "Failed to regenerate chart",
+        description: message,
         id: "regenerate-chart-toast",
       });
     }

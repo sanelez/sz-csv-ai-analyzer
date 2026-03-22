@@ -187,6 +187,18 @@ export function APIKeySettings({
       };
 
   const handleSave = () => {
+    if (useCustomEndpoint && customEndpoint.trim()) {
+      try {
+        new URL(customEndpoint.trim());
+      } catch {
+        toast.error("Invalid endpoint URL", {
+          description:
+            "Please enter a valid URL (e.g., http://localhost:11434/v1).",
+        });
+        return;
+      }
+    }
+
     const settings: StoredSettings = {
       apiKey,
       model,

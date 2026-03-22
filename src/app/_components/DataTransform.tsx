@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import {
   Filter,
   Columns3,
@@ -9,12 +9,13 @@ import {
   ArrowDownUp,
   Download,
   Undo2,
+  AlertTriangle,
 } from "lucide-react";
 import type { CSVData } from "~/lib/csv-parser";
 
 interface DataTransformProps {
   data: CSVData;
-  onTransformed?: (data: CSVData) => void;
+  onTransformed?: (data: CSVData | null) => void;
 }
 
 interface ColumnFilter {
@@ -150,9 +151,14 @@ export function DataTransform({ data, onTransformed }: DataTransformProps) {
     };
   }, [data, filters, excludedColumns, sortConfig]);
 
-  const handleApply = useCallback(() => {
-    onTransformed?.(transformedData);
-  }, [onTransformed, transformedData]);
+  const hasTransforms =
+    filters.length > 0 || excludedColumns.size > 0 || sortConfig !== null;
+
+  // Auto-apply transforms to downstream analysis
+  useEffect(() => {
+    if (!onTransformed) return;
+    onTransformed(hasTransforms ? transformedData : null);
+  }, [transformedData, hasTransforms, onTransformed]);
 
   const handleExport = useCallback(() => {
     const csv = [
@@ -170,9 +176,6 @@ export function DataTransform({ data, onTransformed }: DataTransformProps) {
     URL.revokeObjectURL(url);
   }, [transformedData]);
 
-  const hasTransforms =
-    filters.length > 0 || excludedColumns.size > 0 || sortConfig !== null;
-
   return (
     <div className="glass-card animate-fade-in p-6">
       <div className="mb-6 flex items-center gap-4">
@@ -180,16 +183,32 @@ export function DataTransform({ data, onTransformed }: DataTransformProps) {
           <Filter className="h-6 w-6 text-fuchsia-400" />
         </div>
         <div className="flex-1">
-          <h3 className="font-semibold text-white">Data Transforms</h3>
+          <div className="flex items-center gap-2">
+            <h3 className="font-semibold text-white">Data Transforms</h3>
+            {hasTransforms && (
+              <span className="rounded-full bg-fuchsia-500/20 px-2 py-0.5 text-xs font-medium text-fuchsia-400">
+                Active
+              </span>
+            )}
+          </div>
           <p className="text-sm text-gray-400">
-            Filter, sort, and reshape before analysis
+            Filter, sort, and reshape your data
           </p>
         </div>
-        <div className="flex items-center gap-2 text-sm text-gray-400">
-          <span className="font-mono">{transformedData.rowCount}</span>
-          <span>/</span>
-          <span className="font-mono">{data.rowCount}</span>
-          <span>rows</span>
+        <div className="text-sm text-gray-400">
+          {hasTransforms ? (
+            <span>
+              Showing{" "}
+              <span className="font-mono text-fuchsia-400">
+                {transformedData.rowCount}
+              </span>{" "}
+              of <span className="font-mono">{data.rowCount}</span> rows
+            </span>
+          ) : (
+            <span>
+              <span className="font-mono">{data.rowCount}</span> rows
+            </span>
+          )}
         </div>
       </div>
 
@@ -268,6 +287,11 @@ export function DataTransform({ data, onTransformed }: DataTransformProps) {
           <div className="mb-2 flex items-center gap-2 text-sm font-medium text-gray-300">
             <Filter className="h-4 w-4" />
             Filters
+            {filters.length > 1 && (
+              <span className="text-xs font-normal text-gray-500">
+                — all conditions must match
+              </span>
+            )}
           </div>
           <div className="space-y-2">
             {filters.map((filter, i) => (
@@ -308,7 +332,11 @@ export function DataTransform({ data, onTransformed }: DataTransformProps) {
                       onChange={(e) =>
                         updateFilter(i, { value: e.target.value })
                       }
-                      placeholder="Value..."
+                      placeholder={
+                        filter.operator === "gt" || filter.operator === "lt"
+                          ? "Number..."
+                          : "Value..."
+                      }
                       className="flex-1 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-white placeholder-gray-500 focus:border-violet-500/50 focus:outline-none"
                     />
                   )}
@@ -330,17 +358,16 @@ export function DataTransform({ data, onTransformed }: DataTransformProps) {
           </div>
         </div>
 
+        {/* Empty rows warning */}
+        {hasTransforms && transformedData.rowCount === 0 && (
+          <div className="flex items-center gap-2 rounded-lg border border-amber-500/20 bg-amber-500/10 px-4 py-3 text-sm text-amber-400">
+            <AlertTriangle className="h-4 w-4 shrink-0" />
+            No rows match your current filters. Try adjusting your conditions.
+          </div>
+        )}
+
         {/* Actions */}
         <div className="flex items-center gap-2 border-t border-white/10 pt-4">
-          {onTransformed && (
-            <button
-              onClick={handleApply}
-              disabled={!hasTransforms}
-              className="btn-primary inline-flex items-center gap-2 text-sm disabled:opacity-50"
-            >
-              Apply to analysis
-            </button>
-          )}
           <button
             onClick={handleExport}
             className="flex items-center gap-1.5 rounded-lg bg-white/5 px-3 py-2 text-sm text-gray-400 transition-colors hover:bg-white/10 hover:text-white"
