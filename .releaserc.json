@@ -20,7 +20,7 @@
     [
       "@semantic-release/exec",
       {
-        "prepareCmd": "npm version ${nextRelease.version} --no-git-tag-version --prefix packages/csv-charts-ai && pnpm --filter csv-charts-ai build"
+        "prepareCmd": "npm version ${nextRelease.version} --no-git-tag-version --allow-same-version --prefix packages/csv-charts-ai && pnpm --filter csv-charts-ai build"
       }
     ],
     [
