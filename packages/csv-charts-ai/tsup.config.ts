@@ -7,5 +7,16 @@ export default defineConfig({
   splitting: false,
   sourcemap: true,
   clean: true,
-  external: ["react", "react-dom", "recharts", "lucide-react", "ai", "zod"],
+  external: [
+    "react",
+    "react-dom",
+    "recharts",
+    "lucide-react",
+    "ai",
+    "zod",
+    "@ai-sdk/openai",
+    "@ai-sdk/anthropic",
+    "@ai-sdk/google",
+    "@ai-sdk/mistral",
+  ],
 });

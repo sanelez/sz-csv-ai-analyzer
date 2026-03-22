@@ -25,6 +25,11 @@
     "recharts": "^3.0.0",
     "zod": "^4.0.0"
   },
+  "peerDependenciesMeta": {
+    "react": { "optional": true },
+    "recharts": { "optional": true },
+    "lucide-react": { "optional": true }
+  },
   "devDependencies": {
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/commit-analyzer": "^13.0.1",
@@ -44,5 +49,8 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "dependencies": {
+    "@ai-sdk/openai": "^2.0.79"
   }
 }

@@ -2,7 +2,43 @@ import { generateObject, type LanguageModel } from "ai";
 import { z } from "zod";
 import type { ChartConfig, TabularData } from "./types";
 
-// ============ Schemas ============
+// ============ Input Validation Schemas ============
+
+/** Zod schema for simple API config (OpenAI-compatible endpoints) */
+export const AIConfigSchema = z.object({
+  /** API key for authentication */
+  apiKey: z.string(),
+  /** Model identifier (e.g. "gpt-4o", "llama3", "mistral-large") */
+  model: z.string(),
+  /** Custom base URL for non-OpenAI providers (Ollama, vLLM, Mistral, etc.) */
+  baseURL: z.string().optional(),
+  /** Provider hint — used to dynamically load the right SDK. Defaults to "openai". */
+  provider: z
+    .enum(["openai", "anthropic", "google", "mistral"])
+    .optional()
+    .default("openai"),
+});
+
+export type AIConfig = z.infer<typeof AIConfigSchema>;
+
+/** Zod schema for TabularData validation */
+export const TabularDataSchema = z.object({
+  headers: z.array(z.string()).min(1, "Data must have at least one column"),
+  rows: z.array(z.array(z.string())),
+  columns: z.array(
+    z.object({
+      name: z.string(),
+      type: z.enum(["string", "number", "date", "boolean"]),
+      index: z.number(),
+    }),
+  ),
+  rowCount: z.number(),
+});
+
+/** Model input: either a simple config object or a pre-built LanguageModel */
+export type ModelInput = AIConfig | LanguageModel;
+
+// ============ Chart Output Schemas ============
 
 const ChartSuggestionSchema = z.object({
   type: z.enum(["bar", "line", "pie", "scatter", "area"]),
@@ -33,6 +69,177 @@ const ChartSuggestionsResponseSchema = z.object({
 const SingleChartResponseSchema = z.object({
   chart: ChartSuggestionSchema,
 });
+
+// ============ Error Handling ============
+
+/**
+ * Extracts a user-friendly error message from AI provider errors.
+ * Exported so consumers can use it in their own error handling.
+ */
+export function getAIErrorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    const message = error.message.toLowerCase();
+
+    if (message.includes("rate limit") || message.includes("429")) {
+      return "Rate limit exceeded. Please wait a moment and try again.";
+    }
+    if (
+      message.includes("unauthorized") ||
+      message.includes("401") ||
+      message.includes("invalid api key") ||
+      message.includes("invalid_api_key")
+    ) {
+      return "Invalid API key. Please check your API key configuration.";
+    }
+    if (
+      message.includes("quota") ||
+      message.includes("insufficient_quota") ||
+      message.includes("billing")
+    ) {
+      return "API quota exceeded or billing issue. Please check your account status.";
+    }
+    if (
+      message.includes("network") ||
+      message.includes("timeout") ||
+      message.includes("econnrefused") ||
+      message.includes("fetch failed")
+    ) {
+      return "Network error. Please check your internet connection and try again.";
+    }
+    if (
+      message.includes("model") &&
+      (message.includes("not found") || message.includes("does not exist"))
+    ) {
+      return "Model not available. Please select a different model.";
+    }
+
+    return error.message;
+  }
+
+  return "An unexpected error occurred. Please try again.";
+}
+
+// ============ Data Summary Generation ============
+
+/**
+ * Generate a text summary of tabular data for AI consumption.
+ * If the consumer doesn't provide a `dataSummary`, this is used automatically.
+ */
+export function summarizeTabularData(data: TabularData): string {
+  const lines: string[] = [];
+  lines.push(`Dataset: ${data.rowCount} rows, ${data.headers.length} columns`);
+  lines.push(`Columns: ${data.headers.join(", ")}`);
+  lines.push("");
+
+  for (const col of data.columns) {
+    const idx = col.index;
+    const values = data.rows.map((r) => r[idx] ?? "").filter((v) => v !== "");
+
+    if (col.type === "number") {
+      const nums = values.map(Number).filter((n) => !isNaN(n));
+      if (nums.length > 0) {
+        const min = Math.min(...nums);
+        const max = Math.max(...nums);
+        const avg = nums.reduce((a, b) => a + b, 0) / nums.length;
+        lines.push(
+          `- ${col.name} (${col.type}): min=${min}, max=${max}, avg=${avg.toFixed(2)}, ${nums.length} values`,
+        );
+      } else {
+        lines.push(`- ${col.name} (${col.type}): no valid numeric values`);
+      }
+    } else {
+      const distinct = new Set(values).size;
+      const sample = values.slice(0, 5).join(", ");
+      lines.push(
+        `- ${col.name} (${col.type}): ${distinct} distinct values, sample: [${sample}]`,
+      );
+    }
+  }
+
+  return lines.join("\n");
+}
+
+// ============ Model Resolution ============
+
+function isLanguageModel(input: unknown): input is LanguageModel {
+  return (
+    typeof input === "object" &&
+    input !== null &&
+    "doGenerate" in input &&
+    typeof (input as Record<string, unknown>).doGenerate === "function"
+  );
+}
+
+/**
+ * Create a LanguageModel from an AIConfig.
+ * Exported so consumers can create a model once and reuse it.
+ *
+ * @example
+ * ```ts
+ * const model = await createModel({ apiKey: "sk-...", model: "gpt-4o" });
+ * const charts1 = await suggestCharts({ model, data, dataSummary });
+ * const charts2 = await suggestCustomChart({ model, data, dataSummary, prompt: "..." });
+ * ```
+ */
+export async function createModel(config: AIConfig): Promise<LanguageModel> {
+  const parsed = AIConfigSchema.parse(config);
+
+  if (parsed.baseURL || parsed.provider === "openai") {
+    const { createOpenAI } = await import("@ai-sdk/openai");
+    const openai = createOpenAI({
+      apiKey: parsed.apiKey,
+      ...(parsed.baseURL && { baseURL: parsed.baseURL }),
+    }) as unknown as (model: string) => LanguageModel;
+    return openai(parsed.model);
+  }
+
+  switch (parsed.provider) {
+    case "anthropic": {
+      try {
+        const { createAnthropic } = await import("@ai-sdk/anthropic");
+        return createAnthropic({ apiKey: parsed.apiKey })(parsed.model);
+      } catch {
+        throw new Error(
+          'Provider "anthropic" requires @ai-sdk/anthropic. Install it: pnpm add @ai-sdk/anthropic',
+        );
+      }
+    }
+    case "google": {
+      try {
+        const { createGoogleGenerativeAI } = await import("@ai-sdk/google");
+        return createGoogleGenerativeAI({ apiKey: parsed.apiKey })(
+          parsed.model,
+        );
+      } catch {
+        throw new Error(
+          'Provider "google" requires @ai-sdk/google. Install it: pnpm add @ai-sdk/google',
+        );
+      }
+    }
+    case "mistral": {
+      try {
+        const { createMistral } = await import("@ai-sdk/mistral");
+        return createMistral({ apiKey: parsed.apiKey })(parsed.model);
+      } catch {
+        throw new Error(
+          'Provider "mistral" requires @ai-sdk/mistral. Install it: pnpm add @ai-sdk/mistral',
+        );
+      }
+    }
+    default: {
+      const { createOpenAI } = await import("@ai-sdk/openai");
+      const openai = createOpenAI({
+        apiKey: parsed.apiKey,
+      }) as unknown as (model: string) => LanguageModel;
+      return openai(parsed.model);
+    }
+  }
+}
+
+async function resolveModel(input: ModelInput): Promise<LanguageModel> {
+  if (isLanguageModel(input)) return input;
+  return createModel(input as AIConfig);
+}
 
 // ============ Prompts ============
 
@@ -77,16 +284,7 @@ ${columns.map((c) => `- "${c}"`).join("\n")}
 
 IMPORTANT: Column names MUST exactly match the list above.`;
 
-// ============ Options ============
-
-export interface AIChartOptions {
-  /** Language for AI responses (e.g. "English", "French") */
-  language?: string;
-  /** Temperature for AI generation (default: 0.5) */
-  temperature?: number;
-}
-
-// ============ Helper ============
+// ============ Helpers ============
 
 function mapChartResult(
   raw: z.infer<typeof ChartSuggestionSchema>,
@@ -109,81 +307,142 @@ function mapChartResult(
   };
 }
 
+// ============ Options ============
+
+export interface SuggestChartsOptions {
+  /** The AI model — either a simple config or a LanguageModel instance */
+  model: ModelInput;
+  /** The tabular data to analyze */
+  data: TabularData;
+  /** A text summary of the data. If omitted, auto-generated from `data`. */
+  dataSummary?: string;
+  /** Language for AI responses (e.g. "English", "French") */
+  language?: string;
+  /** Temperature for AI generation (default: 0.5) */
+  temperature?: number;
+}
+
+export interface SuggestCustomChartOptions {
+  /** The AI model — either a simple config or a LanguageModel instance */
+  model: ModelInput;
+  /** The tabular data */
+  data: TabularData;
+  /** A text summary of the data. If omitted, auto-generated from `data`. */
+  dataSummary?: string;
+  /** The user's chart request (e.g. "show sales by month") */
+  prompt: string;
+  /** Language for AI responses */
+  language?: string;
+  /** Temperature (default: 0.5) */
+  temperature?: number;
+}
+
+export interface RepairChartOptions {
+  /** The AI model — either a simple config or a LanguageModel instance */
+  model: ModelInput;
+  /** The chart configuration that failed */
+  failedChart: ChartConfig;
+  /** Available column names */
+  columns: string[];
+  /** Description of why the chart failed */
+  errorContext: string;
+  /** Language for AI responses */
+  language?: string;
+  /** Temperature (default: 0.3) */
+  temperature?: number;
+}
+
 // ============ Public API ============
 
 /**
  * Generate chart suggestions from tabular data using AI.
  *
- * @param model - A LanguageModel from the `ai` SDK (any provider)
- * @param data - The tabular data to analyze
- * @param dataSummary - A text summary of the data (column stats, row counts, etc.)
- * @param options - Optional language and temperature settings
- * @returns An array of ChartConfig suggestions
- *
  * @example
  * ```ts
  * import { suggestCharts } from "csv-charts-ai";
- * import { openai } from "@ai-sdk/openai";
  *
- * const charts = await suggestCharts(
- *   openai("gpt-4o"),
- *   myData,
- *   myDataSummary,
- * );
+ * // Minimal — auto-generates dataSummary from the data
+ * const charts = await suggestCharts({
+ *   model: { apiKey: "sk-...", model: "gpt-4o" },
+ *   data: myData,
+ * });
+ *
+ * // Custom endpoint — Ollama
+ * const charts = await suggestCharts({
+ *   model: { apiKey: "", model: "llama3", baseURL: "http://localhost:11434/v1" },
+ *   data: myData,
+ * });
+ *
+ * // Advanced — any LanguageModel from the ai SDK
+ * import { anthropic } from "@ai-sdk/anthropic";
+ * const charts = await suggestCharts({
+ *   model: anthropic("claude-sonnet-4-20250514"),
+ *   data: myData,
+ *   language: "French",
+ * });
  * ```
  */
 export async function suggestCharts(
-  model: LanguageModel,
-  data: TabularData,
-  dataSummary: string,
-  options: AIChartOptions = {},
+  options: SuggestChartsOptions,
 ): Promise<ChartConfig[]> {
-  const { language, temperature = 0.5 } = options;
+  const { data, language, temperature = 0.5 } = options;
+  const dataSummary = options.dataSummary ?? summarizeTabularData(data);
 
-  const { object } = await generateObject({
-    model,
-    schema: ChartSuggestionsResponseSchema,
-    system: getChartSystemPrompt(data.headers, language),
-    prompt: `Analyze this CSV data and suggest the best charts:\n\n${dataSummary}`,
-    temperature,
-  });
+  TabularDataSchema.parse(data);
 
-  return object.charts.map((s, i) =>
-    mapChartResult(s, `chart-${i}-${Date.now()}`),
-  );
+  try {
+    const model = await resolveModel(options.model);
+
+    const { object } = await generateObject({
+      model,
+      schema: ChartSuggestionsResponseSchema,
+      system: getChartSystemPrompt(data.headers, language),
+      prompt: `Analyze this CSV data and suggest the best charts:\n\n${dataSummary}`,
+      temperature,
+    });
+
+    return object.charts.map((s, i) =>
+      mapChartResult(s, `chart-${i}-${Date.now()}`),
+    );
+  } catch (error) {
+    throw new Error(getAIErrorMessage(error));
+  }
 }
 
 /**
  * Generate a single chart from a user's text prompt.
  *
- * @param model - A LanguageModel from the `ai` SDK
- * @param data - The tabular data
- * @param dataSummary - A text summary of the data
- * @param userPrompt - The user's chart request (e.g. "show sales by month")
- * @param options - Optional language and temperature settings
- * @returns A ChartConfig or null if generation fails
+ * @example
+ * ```ts
+ * const chart = await suggestCustomChart({
+ *   model: { apiKey: "sk-...", model: "gpt-4o" },
+ *   data: myData,
+ *   prompt: "Show me a bar chart of sales by category",
+ * });
+ * ```
  */
 export async function suggestCustomChart(
-  model: LanguageModel,
-  data: TabularData,
-  dataSummary: string,
-  userPrompt: string,
-  options: AIChartOptions = {},
+  options: SuggestCustomChartOptions,
 ): Promise<ChartConfig | null> {
-  const { language, temperature = 0.5 } = options;
+  const { data, prompt, language, temperature = 0.5 } = options;
+  const dataSummary = options.dataSummary ?? summarizeTabularData(data);
+
+  TabularDataSchema.parse(data);
 
   try {
+    const model = await resolveModel(options.model);
+
     const { object } = await generateObject({
       model,
       schema: SingleChartResponseSchema,
       system: getCustomChartPrompt(data.headers, language),
-      prompt: `Data summary:\n${dataSummary}\n\nUser request: ${userPrompt}`,
+      prompt: `Data summary:\n${dataSummary}\n\nUser request: ${prompt}`,
       temperature,
     });
 
     return mapChartResult(object.chart, `chart-custom-${Date.now()}`);
   } catch (error) {
-    console.error("Custom chart generation failed:", error);
+    console.error("Custom chart generation failed:", getAIErrorMessage(error));
     return null;
   }
 }
@@ -191,23 +450,30 @@ export async function suggestCustomChart(
 /**
  * Repair a chart configuration that failed to render.
  *
- * @param model - A LanguageModel from the `ai` SDK
- * @param failedChart - The chart that failed
- * @param columns - Available column names
- * @param errorContext - Description of why it failed
- * @param options - Optional language and temperature settings
- * @returns A repaired ChartConfig or null
+ * @example
+ * ```ts
+ * const fixed = await repairChart({
+ *   model: { apiKey: "sk-...", model: "gpt-4o" },
+ *   failedChart: brokenChart,
+ *   columns: ["name", "sales", "date"],
+ *   errorContext: "Column 'revenue' does not exist",
+ * });
+ * ```
  */
 export async function repairChart(
-  model: LanguageModel,
-  failedChart: ChartConfig,
-  columns: string[],
-  errorContext: string,
-  options: AIChartOptions = {},
+  options: RepairChartOptions,
 ): Promise<ChartConfig | null> {
-  const { language, temperature = 0.3 } = options;
+  const {
+    failedChart,
+    columns,
+    errorContext,
+    language,
+    temperature = 0.3,
+  } = options;
 
   try {
+    const model = await resolveModel(options.model);
+
     const { object } = await generateObject({
       model,
       schema: SingleChartResponseSchema,

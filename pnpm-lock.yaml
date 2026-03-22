@@ -131,6 +131,10 @@ importers:
         version: 8.48.1(eslint@9.39.1(jiti@2.6.1))(typescript@5.9.3)
 
   packages/csv-charts-ai:
+    dependencies:
+      '@ai-sdk/openai':
+        specifier: ^2.0.79
+        version: 2.0.79(zod@4.1.13)
     devDependencies:
       '@semantic-release/changelog':
         specifier: ^6.0.3

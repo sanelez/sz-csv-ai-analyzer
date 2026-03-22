@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  ChartDisplay as BaseChartDisplay,
-  type ChartConfig,
-} from "csv-charts-ai";
+import { ChartDisplay as BaseChartDisplay } from "csv-charts-ai";
 import type { CSVData } from "~/lib/csv-parser";
 import type { ChartSuggestion } from "~/lib/ai-service";
 import { FullscreenCard } from "./FullscreenCard";
@@ -19,17 +16,11 @@ export function ChartDisplay({
   charts,
   onRegenerate,
 }: ChartDisplayProps) {
-  const handleRegenerate = onRegenerate
-    ? async (chart: ChartConfig) => {
-        await onRegenerate(chart as unknown as ChartSuggestion);
-      }
-    : undefined;
-
   return (
     <BaseChartDisplay
       data={data}
       charts={charts}
-      onRegenerate={handleRegenerate}
+      onRegenerate={onRegenerate}
       cardWrapper={FullscreenCard}
     />
   );
