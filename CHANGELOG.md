@@ -1,3 +1,10 @@
+## [1.3.1](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.3.0...v1.3.1) (2026-03-22)
+
+
+### Bug Fixes
+
+* improve UX for DataTransform and CSVCompare, fix error handling across app and package ([85e0fdf](https://github.com/maxgfr/csv-ai-analyzer/commit/85e0fdfeea644fd9424a120678e69a84a6109f47))
+
 # [1.2.0](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.1.0...v1.2.0) (2026-03-22)
 
 
