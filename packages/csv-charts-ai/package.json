@@ -2,6 +2,11 @@
   "name": "csv-charts-ai",
   "version": "0.1.0",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/maxgfr/csv-ai-analyzer",
+    "directory": "packages/csv-charts-ai"
+  },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {

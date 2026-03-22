@@ -5,20 +5,22 @@ WORKDIR /app
 
 # ---- Dependencies ----
 FROM base AS deps
-COPY package.json pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY packages/csv-charts-ai/package.json ./packages/csv-charts-ai/
 RUN pnpm install --frozen-lockfile
 
 # ---- Builder ----
 FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/packages/csv-charts-ai/node_modules ./packages/csv-charts-ai/node_modules
 COPY . .
 
-# Build for standalone mode (self-hosting)
+# Build workspace package first, then the app
 ENV SKIP_ENV_VALIDATION=1
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NEXT_OUTPUT_MODE=standalone
 
-RUN pnpm build
+RUN pnpm --filter csv-charts-ai build && pnpm build
 
 # ---- Runner ----
 FROM base AS runner

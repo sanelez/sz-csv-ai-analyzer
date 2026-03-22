@@ -29,6 +29,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -55,3 +56,5 @@ jobs:
       - name: Release
         working-directory: packages/csv-charts-ai
         run: pnpm release
+        env:
+          NPM_CONFIG_PROVENANCE: true
