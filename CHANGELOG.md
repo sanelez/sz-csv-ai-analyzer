@@ -1,3 +1,10 @@
+## [1.3.2](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.3.1...v1.3.2) (2026-03-22)
+
+
+### Bug Fixes
+
+* make chart suggestion schema more resilient to model variations ([b340a0f](https://github.com/maxgfr/csv-ai-analyzer/commit/b340a0f84abd3f51ccf7aeaa7d60811cdae9715d))
+
 ## [1.3.1](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.3.0...v1.3.1) (2026-03-22)
 
 
