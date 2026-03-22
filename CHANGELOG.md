@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.0.1...v1.1.0) (2026-03-22)
+
+
+### Features
+
+* display app and package versions in UI ([2b62702](https://github.com/maxgfr/csv-ai-analyzer/commit/2b627022516f60829d70914d036fa71322e4175f))
+
 ## [1.0.1](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.0.0...v1.0.1) (2026-03-22)
 
 
