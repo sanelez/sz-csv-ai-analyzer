@@ -1,3 +1,10 @@
+# [1.6.0](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.5.2...v1.6.0) (2026-03-23)
+
+
+### Features
+
+* add content-based matching mode to CSVCompare ([7941d8e](https://github.com/maxgfr/csv-ai-analyzer/commit/7941d8e021ac6cd83b8415f71db517fcf001a4df))
+
 ## [1.5.2](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.5.1...v1.5.2) (2026-03-23)
 
 
