@@ -1,3 +1,10 @@
+# [1.5.0](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.4.1...v1.5.0) (2026-03-23)
+
+
+### Features
+
+* add Excel (.xlsx) file support with XLSX parser ([7779b7d](https://github.com/maxgfr/csv-ai-analyzer/commit/7779b7d30968f696e2765f23ba1647690fd87c51))
+
 ## [1.4.1](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.4.0...v1.4.1) (2026-03-23)
 
 
