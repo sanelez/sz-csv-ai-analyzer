@@ -1,3 +1,15 @@
+# [1.7.0](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.6.0...v1.7.0) (2026-03-23)
+
+
+### Bug Fixes
+
+* include updated pnpm-lock.yaml for vitest dependency ([9ac93f8](https://github.com/maxgfr/csv-ai-analyzer/commit/9ac93f89c670947858e2a647eb50b7151d8015ea))
+
+
+### Features
+
+* extract diff logic into testable module, add 141 tests, show version in footer ([3cee107](https://github.com/maxgfr/csv-ai-analyzer/commit/3cee107077a923d498a578f1271dc86388163af9))
+
 # [1.6.0](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.5.2...v1.6.0) (2026-03-23)
 
 
