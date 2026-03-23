@@ -1,3 +1,10 @@
+# [1.8.0](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.7.0...v1.8.0) (2026-03-23)
+
+
+### Features
+
+* **csv-charts-ai:** add XLSX parsing support to npm package ([7d7c28d](https://github.com/maxgfr/csv-ai-analyzer/commit/7d7c28d8a08746e2c655e00ac56edce27d871149))
+
 # [1.7.0](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.6.0...v1.7.0) (2026-03-23)
 
 
