@@ -117,7 +117,12 @@ export const generateChartSuggestions = async (
   const model = getModel(config);
   return suggestCharts({
     model,
-    data: { headers: columns, rows: [], columns: [], rowCount: 0 },
+    data: {
+      headers: columns,
+      rows: [],
+      columns: columns.map((name, index) => ({ name, type: "string" as const, index })),
+      rowCount: 0,
+    },
     dataSummary,
     language: LANGUAGE_NAMES[config.language ?? "en"],
   });
@@ -132,7 +137,12 @@ export const generateCustomChart = async (
   const model = getModel(config);
   return suggestCustomChart({
     model,
-    data: { headers: columns, rows: [], columns: [], rowCount: 0 },
+    data: {
+      headers: columns,
+      rows: [],
+      columns: columns.map((name, index) => ({ name, type: "string" as const, index })),
+      rowCount: 0,
+    },
     dataSummary,
     prompt: userPrompt,
     language: LANGUAGE_NAMES[config.language ?? "en"],
@@ -162,7 +172,7 @@ export const generateDataSummary = async (
   const model = getModel(config);
   return summarizeData({
     model,
-    data: { headers: [], rows: [], columns: [], rowCount: 0 },
+    data: { headers: ["_"], rows: [], columns: [{ name: "_", type: "string", index: 0 }], rowCount: 0 },
     dataSummary,
     language: LANGUAGE_NAMES[config.language ?? "en"],
   });
@@ -193,7 +203,7 @@ export const streamCustomAnalysis = async (
   const model = getModel(config);
   return streamAskAboutData({
     model,
-    data: { headers: [], rows: [], columns: [], rowCount: 0 },
+    data: { headers: ["_"], rows: [], columns: [{ name: "_", type: "string", index: 0 }], rowCount: 0 },
     question: customPrompt,
     dataSummary,
     history: conversationHistory,

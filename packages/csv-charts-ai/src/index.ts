@@ -1,6 +1,10 @@
 // Version
 export { VERSION } from "./version";
 
+// CSV parsing
+export { parseCSV } from "./csv-parser";
+export type { ParseCSVOptions } from "./csv-parser";
+
 // React components
 export { ChartDisplay } from "./ChartDisplay";
 export type { ChartDisplayProps } from "./ChartDisplay";
@@ -45,14 +49,17 @@ export {
   askAboutData,
   streamAskAboutData,
   analyzeData,
+  suggestQuestions,
 } from "./analyze";
 export type {
   DataSummaryResult,
   AnomalyResult,
   AnalysisResult,
+  SuggestedQuestion,
   SummarizeDataOptions,
   DetectAnomaliesOptions,
   AskAboutDataOptions,
   StreamAskAboutDataOptions,
   AnalyzeOptions,
+  SuggestQuestionsOptions,
 } from "./analyze";

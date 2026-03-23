@@ -36,9 +36,13 @@ export interface SingleChartProps {
   data: TabularData;
   chart: ChartConfig;
   onRegenerate?: (chart: ChartConfig) => Promise<void>;
+  /** Additional CSS class for the chart container */
+  className?: string;
+  /** When true, removes all built-in Tailwind classes from toolbar and metadata tags */
+  unstyled?: boolean;
 }
 
-export function SingleChart({ data, chart, onRegenerate }: SingleChartProps) {
+export function SingleChart({ data, chart, onRegenerate, className, unstyled = false }: SingleChartProps) {
   const theme = useChartTheme();
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const [isRegenerating, setIsRegenerating] = useState(false);
@@ -464,19 +468,19 @@ export function SingleChart({ data, chart, onRegenerate }: SingleChartProps) {
 
   if (processedData.length === 0) {
     return (
-      <div className="flex h-[300px] flex-col items-center justify-center gap-4 text-gray-400">
-        <div className="text-center">
-          <p className="mb-1 font-medium text-red-400">
+      <div className={unstyled ? (className ?? "") : `flex h-[300px] flex-col items-center justify-center gap-4 text-gray-400 ${className ?? ""}`.trim()}>
+        <div className={unstyled ? "" : "text-center"}>
+          <p className={unstyled ? "" : "mb-1 font-medium text-red-400"}>
             Unable to generate this chart
           </p>
-          <p className="mb-4 text-sm text-gray-500">
+          <p className={unstyled ? "" : "mb-4 text-sm text-gray-500"}>
             Columns: {chart.xAxis}, {chart.yAxis}
           </p>
           {onRegenerate && (
             <button
               onClick={handleRegenerate}
               disabled={isRegenerating}
-              className="flex items-center gap-2 rounded-lg bg-violet-600 px-4 py-2 text-sm text-white transition-colors hover:bg-violet-500 disabled:opacity-50"
+              className={unstyled ? "" : "flex items-center gap-2 rounded-lg bg-violet-600 px-4 py-2 text-sm text-white transition-colors hover:bg-violet-500 disabled:opacity-50"}
             >
               <RefreshCw
                 className={`h-4 w-4 ${isRegenerating ? "animate-spin" : ""}`}
@@ -490,7 +494,7 @@ export function SingleChart({ data, chart, onRegenerate }: SingleChartProps) {
   }
 
   return (
-    <div>
+    <div className={className}>
       <ChartToolbar
         chartType={chart.type}
         sortOrder={sortOrder}
@@ -506,10 +510,11 @@ export function SingleChart({ data, chart, onRegenerate }: SingleChartProps) {
         onExportCSV={handleExportCSV}
         onExportPNG={handleExportPNG}
         onRegenerate={handleRegenerate}
+        unstyled={unstyled}
       />
 
       {/* Chart */}
-      <div className="h-[450px] w-full" ref={chartContainerRef}>
+      <div className={unstyled ? "" : "h-[450px] w-full"} style={unstyled ? { height: 450, width: "100%" } : undefined} ref={chartContainerRef}>
         <ResponsiveContainer
           key={`chart-${chart.id}-${showBrush ? "brush" : "no-brush"}`}
           width="100%"
@@ -528,28 +533,28 @@ export function SingleChart({ data, chart, onRegenerate }: SingleChartProps) {
       </div>
 
       {/* Metadata Tags */}
-      <div className="mt-4 flex flex-wrap gap-2">
-        <span className="rounded bg-white/10 px-2 py-0.5 text-xs text-gray-400">
+      <div className={unstyled ? "" : "mt-4 flex flex-wrap gap-2"}>
+        <span className={unstyled ? "" : "rounded bg-white/10 px-2 py-0.5 text-xs text-gray-400"}>
           X: {chart.xAxis}
         </span>
-        <span className="rounded bg-white/10 px-2 py-0.5 text-xs text-gray-400">
+        <span className={unstyled ? "" : "rounded bg-white/10 px-2 py-0.5 text-xs text-gray-400"}>
           Y: {chart.yAxis}
         </span>
         {chart.groupBy && (
-          <span className="rounded bg-cyan-500/20 px-2 py-0.5 text-xs text-cyan-300">
+          <span className={unstyled ? "" : "rounded bg-cyan-500/20 px-2 py-0.5 text-xs text-cyan-300"}>
             Group: {chart.groupBy}
           </span>
         )}
         {chart.aggregation && chart.aggregation !== "none" && (
-          <span className="rounded bg-violet-500/20 px-2 py-0.5 text-xs text-violet-300">
+          <span className={unstyled ? "" : "rounded bg-violet-500/20 px-2 py-0.5 text-xs text-violet-300"}>
             {chart.aggregation}
           </span>
         )}
-        <span className="rounded bg-white/10 px-2 py-0.5 text-xs text-gray-400">
+        <span className={unstyled ? "" : "rounded bg-white/10 px-2 py-0.5 text-xs text-gray-400"}>
           {processedData.length} items
         </span>
         {isMultiSeries && (
-          <span className="rounded bg-emerald-500/20 px-2 py-0.5 text-xs text-emerald-300">
+          <span className={unstyled ? "" : "rounded bg-emerald-500/20 px-2 py-0.5 text-xs text-emerald-300"}>
             {seriesKeys.length} series
           </span>
         )}

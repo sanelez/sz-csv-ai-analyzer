@@ -1,12 +1,33 @@
 {
   "name": "csv-charts-ai",
   "version": "1.3.2",
+  "description": "AI-powered CSV analysis, chart generation, and interactive visualization. Parse CSV, detect anomalies, suggest charts, and ask questions about your data using any LLM provider.",
   "type": "module",
+  "license": "MIT",
+  "author": "maxgfr",
+  "homepage": "https://github.com/maxgfr/csv-ai-analyzer/tree/main/packages/csv-charts-ai#readme",
+  "bugs": {
+    "url": "https://github.com/maxgfr/csv-ai-analyzer/issues"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/maxgfr/csv-ai-analyzer",
     "directory": "packages/csv-charts-ai"
   },
+  "keywords": [
+    "csv",
+    "ai",
+    "charts",
+    "data-analysis",
+    "visualization",
+    "llm",
+    "openai",
+    "anthropic",
+    "recharts",
+    "tabular-data",
+    "anomaly-detection",
+    "chart-generation"
+  ],
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
@@ -20,7 +41,10 @@
   ],
   "scripts": {
     "build": "tsup",
-    "dev": "tsup --watch"
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "peerDependencies": {
     "ai": "^5.0.0 || ^6.0.0",
@@ -42,12 +66,14 @@
   },
   "devDependencies": {
     "@types/react": "^19.2.7",
+    "@vitest/coverage-v8": "^4.1.0",
     "ai": "^6.0.134",
     "lucide-react": "^0.556.0",
     "react": "^19.2.4",
     "recharts": "^3.5.1",
     "tsup": "^8.5.0",
     "typescript": "^5.9.3",
+    "vitest": "^4.1.0",
     "zod": "^4.1.13"
   },
   "publishConfig": {

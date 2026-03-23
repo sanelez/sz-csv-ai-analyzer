@@ -85,6 +85,16 @@ const SingleChartResponseSchema = z.object({
  * Exported so consumers can use it in their own error handling.
  */
 export function getAIErrorMessage(error: unknown): string {
+  // Handle Zod validation errors
+  if (
+    error instanceof Error &&
+    error.name === "ZodError" &&
+    "issues" in error
+  ) {
+    const issues = (error as { issues: Array<{ message: string }> }).issues;
+    return `Invalid data: ${issues.map((i) => i.message).join(", ")}`;
+  }
+
   if (error instanceof Error) {
     const message = error.message.toLowerCase();
 
@@ -146,8 +156,8 @@ export function summarizeTabularData(data: TabularData): string {
     if (col.type === "number") {
       const nums = values.map(Number).filter((n) => !isNaN(n));
       if (nums.length > 0) {
-        const min = Math.min(...nums);
-        const max = Math.max(...nums);
+        const min = nums.reduce((a, b) => (b < a ? b : a), nums[0]!);
+        const max = nums.reduce((a, b) => (b > a ? b : a), nums[0]!);
         const avg = nums.reduce((a, b) => a + b, 0) / nums.length;
         lines.push(
           `- ${col.name} (${col.type}): min=${min}, max=${max}, avg=${avg.toFixed(2)}, ${nums.length} values`,
@@ -328,6 +338,8 @@ export interface SuggestChartsOptions {
   language?: string;
   /** Temperature for AI generation (default: 0.5) */
   temperature?: number;
+  /** AbortSignal to cancel the request */
+  signal?: AbortSignal;
 }
 
 export interface SuggestCustomChartOptions {
@@ -343,6 +355,8 @@ export interface SuggestCustomChartOptions {
   language?: string;
   /** Temperature (default: 0.5) */
   temperature?: number;
+  /** AbortSignal to cancel the request */
+  signal?: AbortSignal;
 }
 
 export interface RepairChartOptions {
@@ -358,6 +372,8 @@ export interface RepairChartOptions {
   language?: string;
   /** Temperature (default: 0.3) */
   temperature?: number;
+  /** AbortSignal to cancel the request */
+  signal?: AbortSignal;
 }
 
 // ============ Public API ============
@@ -393,12 +409,11 @@ export interface RepairChartOptions {
 export async function suggestCharts(
   options: SuggestChartsOptions,
 ): Promise<ChartConfig[]> {
-  const { data, language, temperature = 0.5 } = options;
+  const { data, language, temperature = 0.5, signal } = options;
   const dataSummary = options.dataSummary ?? summarizeTabularData(data);
 
-  TabularDataSchema.parse(data);
-
   try {
+    TabularDataSchema.parse(data);
     const model = await resolveModel(options.model);
 
     const { object } = await generateObject({
@@ -407,6 +422,7 @@ export async function suggestCharts(
       system: getChartSystemPrompt(data.headers, language),
       prompt: `Analyze this CSV data and suggest the best charts:\n\n${dataSummary}`,
       temperature,
+      ...(signal && { abortSignal: signal }),
     });
 
     return object.charts.map((s, i) =>
@@ -432,12 +448,11 @@ export async function suggestCharts(
 export async function suggestCustomChart(
   options: SuggestCustomChartOptions,
 ): Promise<ChartConfig | null> {
-  const { data, prompt, language, temperature = 0.5 } = options;
+  const { data, prompt, language, temperature = 0.5, signal } = options;
   const dataSummary = options.dataSummary ?? summarizeTabularData(data);
 
-  TabularDataSchema.parse(data);
-
   try {
+    TabularDataSchema.parse(data);
     const model = await resolveModel(options.model);
 
     const { object } = await generateObject({
@@ -446,6 +461,7 @@ export async function suggestCustomChart(
       system: getCustomChartPrompt(data.headers, language),
       prompt: `Data summary:\n${dataSummary}\n\nUser request: ${prompt}`,
       temperature,
+      ...(signal && { abortSignal: signal }),
     });
 
     return mapChartResult(object.chart, `chart-custom-${Date.now()}`);
@@ -476,6 +492,7 @@ export async function repairChart(
     errorContext,
     language,
     temperature = 0.3,
+    signal,
   } = options;
 
   try {
@@ -487,6 +504,7 @@ export async function repairChart(
       system: getCustomChartPrompt(columns, language),
       prompt: `The following chart configuration failed to render:\n${JSON.stringify(failedChart, null, 2)}\n\nError context: ${errorContext}\n\nPlease fix the configuration to use valid columns and aggregation. Available columns: ${columns.join(", ")}`,
       temperature,
+      ...(signal && { abortSignal: signal }),
     });
 
     return mapChartResult(object.chart, failedChart.id);
