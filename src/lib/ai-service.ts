@@ -120,7 +120,11 @@ export const generateChartSuggestions = async (
     data: {
       headers: columns,
       rows: [],
-      columns: columns.map((name, index) => ({ name, type: "string" as const, index })),
+      columns: columns.map((name, index) => ({
+        name,
+        type: "string" as const,
+        index,
+      })),
       rowCount: 0,
     },
     dataSummary,
@@ -140,7 +144,11 @@ export const generateCustomChart = async (
     data: {
       headers: columns,
       rows: [],
-      columns: columns.map((name, index) => ({ name, type: "string" as const, index })),
+      columns: columns.map((name, index) => ({
+        name,
+        type: "string" as const,
+        index,
+      })),
       rowCount: 0,
     },
     dataSummary,
@@ -172,7 +180,12 @@ export const generateDataSummary = async (
   const model = getModel(config);
   return summarizeData({
     model,
-    data: { headers: ["_"], rows: [], columns: [{ name: "_", type: "string", index: 0 }], rowCount: 0 },
+    data: {
+      headers: ["_"],
+      rows: [],
+      columns: [{ name: "_", type: "string", index: 0 }],
+      rowCount: 0,
+    },
     dataSummary,
     language: LANGUAGE_NAMES[config.language ?? "en"],
   });
@@ -203,7 +216,12 @@ export const streamCustomAnalysis = async (
   const model = getModel(config);
   return streamAskAboutData({
     model,
-    data: { headers: ["_"], rows: [], columns: [{ name: "_", type: "string", index: 0 }], rowCount: 0 },
+    data: {
+      headers: ["_"],
+      rows: [],
+      columns: [{ name: "_", type: "string", index: 0 }],
+      rowCount: 0,
+    },
     question: customPrompt,
     dataSummary,
     history: conversationHistory,
