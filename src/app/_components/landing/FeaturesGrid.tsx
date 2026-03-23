@@ -13,11 +13,11 @@ export function FeaturesGrid() {
             <Upload className="h-6 w-6 text-white" />
           </div>
           <h4 className="mb-2 text-lg font-semibold text-white">
-            Smart CSV Parsing
+            Smart File Parsing
           </h4>
           <p className="text-sm text-gray-400">
-            Drag & drop upload with automatic delimiter detection (comma,
-            semicolon, tab). Configure encoding and headers as needed.
+            Drag & drop CSV or Excel (.xlsx) files with automatic delimiter
+            detection. Configure encoding and headers as needed.
           </p>
         </div>
 

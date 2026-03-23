@@ -2,15 +2,22 @@
 
 import { useCallback, useState } from "react";
 import { Upload, File, X, AlertCircle } from "lucide-react";
+import type { CSVData, CSVSettings } from "~/lib/csv-parser";
+import { isXLSXFile, isSupportedFile, SPREADSHEET_ACCEPT } from "~/lib/xlsx-parser";
+import { parseXLSX } from "~/lib/xlsx-parser";
 
 interface FileUploadProps {
   onFileLoaded: (content: string, fileName: string) => void;
+  onDataLoaded: (data: CSVData, fileName: string) => void;
+  csvSettings?: CSVSettings;
   currentFileName?: string;
   onClear: () => void;
 }
 
 export function FileUpload({
   onFileLoaded,
+  onDataLoaded,
+  csvSettings,
   currentFileName,
   onClear,
 }: FileUploadProps) {
@@ -18,24 +25,30 @@ export function FileUpload({
   const [error, setError] = useState<string | null>(null);
 
   const handleFile = useCallback(
-    (file: File) => {
-      if (!file.name.endsWith(".csv")) {
-        setError("Please upload a CSV file");
+    async (file: File) => {
+      if (!isSupportedFile(file.name)) {
+        setError("Please upload a CSV or Excel (.xlsx) file");
         return;
       }
 
       setError(null);
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const content = e.target?.result as string;
-        onFileLoaded(content, file.name);
-      };
-      reader.onerror = () => {
-        setError("Error reading file");
-      };
-      reader.readAsText(file);
+
+      try {
+        if (isXLSXFile(file.name)) {
+          const data = await parseXLSX(file, {
+            hasHeader: csvSettings?.hasHeader ?? true,
+            skipEmptyLines: csvSettings?.skipEmptyLines ?? true,
+          });
+          onDataLoaded(data, file.name);
+        } else {
+          const content = await file.text();
+          onFileLoaded(content, file.name);
+        }
+      } catch {
+        setError("Error reading file. Please check the file format.");
+      }
     },
-    [onFileLoaded],
+    [onFileLoaded, onDataLoaded, csvSettings],
   );
 
   const handleDrop = useCallback(
@@ -45,7 +58,7 @@ export function FileUpload({
 
       const file = e.dataTransfer.files[0];
       if (file) {
-        handleFile(file);
+        void handleFile(file);
       }
     },
     [handleFile],
@@ -65,7 +78,7 @@ export function FileUpload({
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
       if (file) {
-        handleFile(file);
+        void handleFile(file);
       }
     },
     [handleFile],
@@ -110,7 +123,7 @@ export function FileUpload({
       >
         <input
           type="file"
-          accept=".csv"
+          accept={SPREADSHEET_ACCEPT}
           onChange={handleInputChange}
           className="hidden"
         />
@@ -128,9 +141,13 @@ export function FileUpload({
           </div>
           <div>
             <p className="mb-1 text-lg font-medium text-white">
-              {isDragging ? "Drop your file here" : "Drag & drop your CSV file"}
+              {isDragging
+                ? "Drop your file here"
+                : "Drag & drop your CSV or Excel file"}
             </p>
-            <p className="text-sm text-gray-400">or click to browse files</p>
+            <p className="text-sm text-gray-400">
+              Supports .csv and .xlsx files
+            </p>
           </div>
         </div>
       </label>

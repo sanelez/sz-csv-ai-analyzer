@@ -13,13 +13,13 @@ App preview:
 
 ![CSV AI Analyzer preview](.github/assets/app.gif)
 
-A modern, elegant application to analyze your CSV files with Artificial Intelligence using multiple AI providers (OpenAI, Anthropic, Google, Mistral, and more). **Privacy-first**: the app does not store your data. Use a self-hosted/custom endpoint to keep processing entirely local; otherwise API calls go to the selected provider. **Self-hostable** with Docker.
+A modern, elegant application to analyze your CSV and Excel (.xlsx) files with Artificial Intelligence using multiple AI providers (OpenAI, Anthropic, Google, Mistral, and more). **Privacy-first**: the app does not store your data. Use a self-hosted/custom endpoint to keep processing entirely local; otherwise API calls go to the selected provider. **Self-hostable** with Docker.
 
 ## ✨ Features
 
-### 📁 CSV Upload & Parsing
-- **Drag & Drop** or file selection
-- **Automatic detection** of delimiters (comma, semicolon, tab)
+### 📁 File Upload & Parsing
+- **Drag & Drop** or file selection — supports **CSV** and **Excel (.xlsx)** files
+- **Automatic detection** of delimiters (comma, semicolon, tab) for CSV files
 - **Configurable settings**: delimiter, header row, encoding
 - **Type inference** for columns (text, number, date)
 
@@ -115,9 +115,9 @@ Or use the **[live version](https://maxgfr.github.io/csv-ai-analyzer)** directly
 
 ## 🎮 Usage
 
-### 1. Upload a CSV
+### 1. Upload a File
 
-Drag and drop your CSV file or click to select a file.
+Drag and drop your CSV or Excel (.xlsx) file, or click to select a file.
 
 ### 2. Configure Parsing (Optional)
 
@@ -155,59 +155,107 @@ Click the ⚙️ icon to configure your AI provider:
 
 Click "Run Complete Analysis" and the AI will analyze your data, detect anomalies, and suggest relevant visualizations.
 
-## 📦 `csv-charts-ai` — Reusable Chart Package
+## 📦 `csv-charts-ai` — Standalone Library
 
-The chart components are extracted into a standalone npm package [`csv-charts-ai`](https://www.npmjs.com/package/csv-charts-ai), available for use in any React project.
+The core of this project is published as a standalone npm package [`csv-charts-ai`](https://www.npmjs.com/package/csv-charts-ai) — a full-featured library for AI-powered CSV analysis, chart generation, and interactive visualization. It works with **any LLM provider** (OpenAI, Anthropic, Google, Mistral, Ollama, or any OpenAI-compatible endpoint).
+
+Use it in React apps, Node.js scripts, APIs, or CLI tools.
 
 ### Installation
 
 ```bash
-pnpm add csv-charts-ai
+pnpm add csv-charts-ai ai zod
 ```
 
-Peer dependencies: `react`, `recharts`, `lucide-react`.
+**Peer dependencies:** `ai`, `zod` (required). `react`, `recharts`, `lucide-react` (optional — only needed for React chart components).
 
-### Quick Example
+### Quick Start — Full AI Analysis
+
+```ts
+import { parseCSV, analyzeData } from "csv-charts-ai";
+
+// 1. Parse any CSV string (auto-detects delimiter, infers types)
+const data = parseCSV(csvString);
+
+// 2. Run full analysis: summary + anomalies + charts in parallel
+const result = await analyzeData({
+  model: { apiKey: "sk-...", model: "gpt-4o" },
+  data,
+});
+
+console.log(result.summary.keyInsights);
+console.log(`Found ${result.anomalies.length} anomalies`);
+console.log(`Generated ${result.charts.length} chart suggestions`);
+```
+
+### React Components
 
 ```tsx
-import { ChartDisplay } from "csv-charts-ai";
+import { ChartDisplay, defaultDarkTheme } from "csv-charts-ai";
 
-const data = {
-  headers: ["Category", "Sales"],
-  rows: [["Electronics", "1200"], ["Clothing", "800"]],
-  columns: [
-    { name: "Category", type: "string", index: 0 },
-    { name: "Sales", type: "number", index: 1 },
-  ],
-  rowCount: 2,
-};
+// Display AI-generated charts with interactive toolbar (zoom, sort, trendline, export)
+<ChartDisplay data={data} charts={charts} theme={defaultDarkTheme} />
 
-const charts = [{
-  id: "1",
-  type: "bar",
-  title: "Sales by Category",
-  description: "Compare sales across categories",
-  xAxis: "Category",
-  yAxis: "Sales",
-  aggregation: "sum",
-}];
-
-<ChartDisplay data={data} charts={charts} />
+// Unstyled mode — strip all Tailwind classes and style it yourself
+<ChartDisplay data={data} charts={charts} unstyled className="my-charts" />
 ```
 
-### Exported API
+### Multi-Provider Support
 
-| Export | Description |
-|--------|-------------|
-| `ChartDisplay` | Multi-chart container with optional card wrapper |
-| `SingleChart` | Individual chart with toolbar (sort, zoom, trendline, export) |
+```ts
+// OpenAI (default)
+{ apiKey: "sk-...", model: "gpt-4o" }
+
+// Anthropic
+{ apiKey: "sk-ant-...", model: "claude-sonnet-4-20250514", provider: "anthropic" }
+
+// Google Gemini
+{ apiKey: "...", model: "gemini-2.5-flash", provider: "google" }
+
+// Ollama / vLLM / LM Studio (local)
+{ apiKey: "", model: "llama3", baseURL: "http://localhost:11434/v1" }
+
+// Any Vercel AI SDK LanguageModel instance
+import { anthropic } from "@ai-sdk/anthropic";
+suggestCharts({ model: anthropic("claude-sonnet-4-20250514"), data });
+```
+
+### AI Functions Reference
+
+| Function | Description |
+|----------|-------------|
+| `analyzeData()` | Full pipeline: summary + anomalies + charts in parallel |
+| `suggestCharts()` | Generate 2–4 chart suggestions from data |
+| `suggestCustomChart()` | Generate a single chart from a text prompt |
+| `repairChart()` | Fix a chart config that failed to render |
+| `summarizeData()` | AI-generated data summary with key insights |
+| `detectAnomalies()` | Find outliers, missing values, type mismatches |
+| `askAboutData()` | Ask natural-language questions about data |
+| `streamAskAboutData()` | Streaming version with `onChunk` callback |
+| `suggestQuestions()` | Suggest interesting questions to ask about the data |
+
+### React Components Reference
+
+| Component | Description |
+|-----------|-------------|
+| `ChartDisplay` | Multi-chart container with optional card wrapper and theme |
+| `SingleChart` | Individual chart with toolbar (sort, zoom, trendline, CSV/PNG export) |
 | `ChartToolbar` | Standalone toolbar component |
-| `processChartData` | Data processing utility with aggregation |
-| `COLORS` | Default color palette |
+| `ChartThemeProvider` | React context for chart theming |
+| `defaultDarkTheme` / `defaultLightTheme` | Built-in themes |
 
-Chart types: `bar`, `line`, `area`, `scatter`, `pie`. Aggregations: `sum`, `avg`, `count`, `min`, `max`, `none`.
+### Utilities Reference
 
-See the full documentation in [`packages/csv-charts-ai/README.md`](packages/csv-charts-ai/README.md).
+| Utility | Description |
+|---------|-------------|
+| `parseCSV(csv, options?)` | Parse CSV string into `TabularData` with auto-delimiter detection |
+| `processChartData()` | Process and aggregate chart data |
+| `createModel()` / `resolveModel()` | Create or resolve a `LanguageModel` from config |
+| `COLORS` | Default 8-color palette |
+
+Chart types: `bar`, `line`, `area`, `scatter`, `pie`. Aggregations: `sum`, `avg`, `count`, `min`, `max`, `none`. Multi-series supported via `groupBy`.
+
+See the full documentation with all options and examples in [`packages/csv-charts-ai/README.md`](packages/csv-charts-ai/README.md).
 
 ## 🛠️ Tech Stack
 
@@ -216,6 +264,7 @@ See the full documentation in [`packages/csv-charts-ai/README.md`](packages/csv-
 | **Next.js** | React Framework with App Router |
 | **TailwindCSS** | Styling and design system |
 | **PapaParse** | Client-side CSV parsing |
+| **read-excel-file** | Lightweight XLSX parsing (~35 KB) |
 | **Recharts** | React charting library |
 | **react-markdown** | Markdown rendering for AI responses |
 | **rehype-highlight** | Syntax highlighting in code blocks |

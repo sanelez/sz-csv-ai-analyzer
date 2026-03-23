@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   GitCompareArrows,
   Upload,
@@ -10,6 +10,12 @@ import {
   Minus,
   FileSpreadsheet,
   Columns3,
+  Key,
+  Hash,
+  ChevronLeft,
+  ChevronRight,
+  ChevronDown,
+  ArrowRight,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -18,6 +24,61 @@ import {
   DEFAULT_CSV_SETTINGS,
   parseCSV,
 } from "~/lib/csv-parser";
+import {
+  isXLSXFile,
+  isSupportedFile,
+  SPREADSHEET_ACCEPT,
+  parseXLSX,
+} from "~/lib/xlsx-parser";
+
+/* ── Types ── */
+
+type MatchMode = "index" | "key";
+type DiffStatus = "same" | "changed" | "added" | "removed";
+type DiffFilter = "all" | "changes" | "added" | "removed";
+
+interface DiffRow {
+  indexA: number | null;
+  indexB: number | null;
+  status: DiffStatus;
+  rowA: (string | number)[] | null;
+  rowB: (string | number)[] | null;
+  changedCols: Set<string>;
+}
+
+interface ColumnStat {
+  column: string;
+  type: "numeric" | "categorical";
+  primary: {
+    count?: number;
+    avg?: number;
+    min?: number;
+    max?: number;
+    distinct?: number;
+  };
+  compare: {
+    count?: number;
+    avg?: number;
+    min?: number;
+    max?: number;
+    distinct?: number;
+  };
+}
+
+interface DiffResult {
+  commonHeaders: string[];
+  onlyInA: string[];
+  onlyInB: string[];
+  rows: DiffRow[];
+  counts: { same: number; changed: number; added: number; removed: number };
+  stats: ColumnStat[];
+}
+
+/* ── Constants ── */
+
+const PAGE_SIZE = 50;
+
+/* ── Component ── */
 
 interface CSVCompareProps {
   primaryData: CSVData;
@@ -31,60 +92,233 @@ export function CSVCompare({
   csvSettings = DEFAULT_CSV_SETTINGS,
 }: CSVCompareProps) {
   const [compareData, setCompareData] = useState<CSVData | null>(null);
-  const [compareFileName, setCompareFileName] = useState<string>("");
+  const [compareFileName, setCompareFileName] = useState("");
   const [isDragging, setIsDragging] = useState(false);
+  const [matchMode, setMatchMode] = useState<MatchMode>("index");
+  const [keyColumn, setKeyColumn] = useState("");
+  const [diffFilter, setDiffFilter] = useState<DiffFilter>("changes");
+  const [currentPage, setCurrentPage] = useState(0);
+  const [showStats, setShowStats] = useState(false);
 
-  const handleFile = (file: File) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      try {
-        const content = e.target?.result as string;
-        const data = parseCSV(content, csvSettings);
-        setCompareData(data);
-        setCompareFileName(file.name);
-      } catch {
-        toast.error("Failed to parse CSV", {
-          description: "Please check that the file is a valid CSV.",
+  // Auto-select a valid key column when compare data or primary headers change
+  useEffect(() => {
+    if (!compareData) return;
+    const common = primaryData.headers.filter((h) =>
+      compareData.headers.includes(h),
+    );
+    if (!common.includes(keyColumn) && common.length > 0) {
+      setKeyColumn(common[0]!);
+    }
+  }, [primaryData.headers, compareData, keyColumn]);
+
+  /* ── File handling ── */
+
+  const handleFile = async (file: File) => {
+    if (!isSupportedFile(file.name)) {
+      toast.error("Invalid file type", {
+        description: "Please upload a .csv or .xlsx file.",
+      });
+      return;
+    }
+
+    try {
+      let data: CSVData;
+      if (isXLSXFile(file.name)) {
+        data = await parseXLSX(file, {
+          hasHeader: csvSettings.hasHeader,
+          skipEmptyLines: csvSettings.skipEmptyLines,
         });
+      } else {
+        const content = await file.text();
+        data = parseCSV(content, csvSettings);
       }
-    };
-    reader.readAsText(file);
+      setCompareData(data);
+      setCompareFileName(file.name);
+      setCurrentPage(0);
+      setDiffFilter("changes");
+      toast.success("Comparison file loaded", {
+        description: `${file.name} — ${data.rowCount} rows, ${data.headers.length} columns`,
+      });
+    } catch {
+      toast.error("Failed to parse file", {
+        description: "Please check that the file is a valid CSV or Excel file.",
+      });
+    }
   };
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
     const file = e.dataTransfer.files[0];
-    if (file?.name.toLowerCase().endsWith(".csv")) {
-      handleFile(file);
+    if (file && isSupportedFile(file.name)) {
+      void handleFile(file);
     } else if (file) {
       toast.error("Invalid file type", {
-        description: "Please upload a .csv file.",
+        description: "Please upload a .csv or .xlsx file.",
       });
     }
   };
 
-  const comparison = useMemo(() => {
+  const handleRemove = () => {
+    setCompareData(null);
+    setCompareFileName("");
+    setCurrentPage(0);
+    setDiffFilter("changes");
+    setShowStats(false);
+  };
+
+  /* ── Diff computation ── */
+
+  const diff = useMemo((): DiffResult | null => {
     if (!compareData) return null;
 
     const commonHeaders = primaryData.headers.filter((h) =>
       compareData.headers.includes(h),
     );
-    const onlyInPrimary = primaryData.headers.filter(
+    const onlyInA = primaryData.headers.filter(
       (h) => !compareData.headers.includes(h),
     );
-    const onlyInCompare = compareData.headers.filter(
+    const onlyInB = compareData.headers.filter(
       (h) => !primaryData.headers.includes(h),
     );
 
-    // Compare numeric stats for common columns
-    const stats = commonHeaders.map((header) => {
+    const rows: DiffRow[] = [];
+
+    const getChangedCols = (
+      a: (string | number)[],
+      b: (string | number)[],
+    ) => {
+      const changed = new Set<string>();
+      for (const h of commonHeaders) {
+        const aIdx = primaryData.headers.indexOf(h);
+        const bIdx = compareData.headers.indexOf(h);
+        if (String(a[aIdx] ?? "") !== String(b[bIdx] ?? "")) {
+          changed.add(h);
+        }
+      }
+      return changed;
+    };
+
+    // Determine effective match mode — fall back to index if key is invalid
+    const effectiveMode =
+      matchMode === "key" && keyColumn && commonHeaders.includes(keyColumn)
+        ? "key"
+        : "index";
+
+    if (effectiveMode === "index") {
+      const maxLen = Math.max(primaryData.rows.length, compareData.rows.length);
+      for (let i = 0; i < maxLen; i++) {
+        const a = i < primaryData.rows.length ? primaryData.rows[i]! : null;
+        const b = i < compareData.rows.length ? compareData.rows[i]! : null;
+
+        if (!a) {
+          rows.push({
+            indexA: null,
+            indexB: i,
+            status: "added",
+            rowA: null,
+            rowB: b,
+            changedCols: new Set(),
+          });
+        } else if (!b) {
+          rows.push({
+            indexA: i,
+            indexB: null,
+            status: "removed",
+            rowA: a,
+            rowB: null,
+            changedCols: new Set(),
+          });
+        } else {
+          const changedCols = getChangedCols(a, b);
+          rows.push({
+            indexA: i,
+            indexB: i,
+            status: changedCols.size > 0 ? "changed" : "same",
+            rowA: a,
+            rowB: b,
+            changedCols,
+          });
+        }
+      }
+    } else {
+      // Key-based matching
+      const keyIdxA = primaryData.headers.indexOf(keyColumn);
+      const keyIdxB = compareData.headers.indexOf(keyColumn);
+
+      const aMap = new Map<
+        string,
+        { row: (string | number)[]; idx: number }
+      >();
+      const bMap = new Map<
+        string,
+        { row: (string | number)[]; idx: number }
+      >();
+
+      for (let i = 0; i < primaryData.rows.length; i++) {
+        const key = String(primaryData.rows[i]![keyIdxA] ?? "");
+        if (!aMap.has(key)) aMap.set(key, { row: primaryData.rows[i]!, idx: i });
+      }
+      for (let i = 0; i < compareData.rows.length; i++) {
+        const key = String(compareData.rows[i]![keyIdxB] ?? "");
+        if (!bMap.has(key)) bMap.set(key, { row: compareData.rows[i]!, idx: i });
+      }
+
+      const processedBKeys = new Set<string>();
+
+      for (const [key, aEntry] of aMap) {
+        const bEntry = bMap.get(key);
+        if (bEntry) {
+          processedBKeys.add(key);
+          const changedCols = getChangedCols(aEntry.row, bEntry.row);
+          rows.push({
+            indexA: aEntry.idx,
+            indexB: bEntry.idx,
+            status: changedCols.size > 0 ? "changed" : "same",
+            rowA: aEntry.row,
+            rowB: bEntry.row,
+            changedCols,
+          });
+        } else {
+          rows.push({
+            indexA: aEntry.idx,
+            indexB: null,
+            status: "removed",
+            rowA: aEntry.row,
+            rowB: null,
+            changedCols: new Set(),
+          });
+        }
+      }
+
+      for (const [key, bEntry] of bMap) {
+        if (!processedBKeys.has(key)) {
+          rows.push({
+            indexA: null,
+            indexB: bEntry.idx,
+            status: "added",
+            rowA: null,
+            rowB: bEntry.row,
+            changedCols: new Set(),
+          });
+        }
+      }
+    }
+
+    const counts = {
+      same: rows.filter((r) => r.status === "same").length,
+      changed: rows.filter((r) => r.status === "changed").length,
+      added: rows.filter((r) => r.status === "added").length,
+      removed: rows.filter((r) => r.status === "removed").length,
+    };
+
+    // Column-level stats
+    const stats: ColumnStat[] = commonHeaders.map((header) => {
       const pIdx = primaryData.headers.indexOf(header);
       const cIdx = compareData.headers.indexOf(header);
-
       const pCol = primaryData.columns.find((c) => c.name === header);
+
       if (pCol?.type !== "number") {
-        // Count distinct values for non-numeric
         const pDistinct = new Set(primaryData.rows.map((r) => r[pIdx])).size;
         const cDistinct = new Set(compareData.rows.map((r) => r[cIdx])).size;
         return {
@@ -134,13 +368,44 @@ export function CSVCompare({
       };
     });
 
-    return { commonHeaders, onlyInPrimary, onlyInCompare, stats };
-  }, [primaryData, compareData]);
+    return { commonHeaders, onlyInA, onlyInB, rows, counts, stats };
+  }, [primaryData, compareData, matchMode, keyColumn]);
+
+  /* ── Filtered & paginated rows ── */
+
+  const filteredRows = useMemo(() => {
+    if (!diff) return [];
+    switch (diffFilter) {
+      case "changes":
+        return diff.rows.filter((r) => r.status !== "same");
+      case "added":
+        return diff.rows.filter((r) => r.status === "added");
+      case "removed":
+        return diff.rows.filter((r) => r.status === "removed");
+      default:
+        return diff.rows;
+    }
+  }, [diff, diffFilter]);
+
+  const totalPages = Math.ceil(filteredRows.length / PAGE_SIZE);
+  const paginatedRows = useMemo(() => {
+    const start = currentPage * PAGE_SIZE;
+    return filteredRows.slice(start, start + PAGE_SIZE);
+  }, [filteredRows, currentPage]);
+
+  const setFilter = (f: DiffFilter) => {
+    setDiffFilter(f);
+    setCurrentPage(0);
+  };
+
+  /* ── Helpers ── */
 
   const fmt = (n: number) =>
     Math.abs(n) >= 1000
       ? n.toLocaleString(undefined, { maximumFractionDigits: 1 })
       : n.toFixed(2);
+
+  /* ── Render ── */
 
   return (
     <div className="glass-card animate-fade-in flex flex-1 flex-col p-6">
@@ -154,15 +419,12 @@ export function CSVCompare({
           <p className="text-sm text-gray-400">
             {compareData
               ? "Side-by-side comparison of your two files"
-              : "Upload a second CSV to compare with your data"}
+              : "Upload a second file to compare with your data"}
           </p>
         </div>
         {compareData && (
           <button
-            onClick={() => {
-              setCompareData(null);
-              setCompareFileName("");
-            }}
+            onClick={handleRemove}
             className="flex items-center gap-1.5 rounded-lg bg-white/5 px-2.5 py-1.5 text-xs text-gray-400 transition-colors hover:bg-white/10 hover:text-white"
           >
             <X className="h-3.5 w-3.5" />
@@ -172,7 +434,7 @@ export function CSVCompare({
       </div>
 
       {!compareData ? (
-        /* Upload zone */
+        /* ── Upload zone ── */
         <div
           onDragOver={(e) => {
             e.preventDefault();
@@ -190,26 +452,27 @@ export function CSVCompare({
             <Upload className="h-6 w-6 text-gray-500" />
           </div>
           <p className="mb-1 text-sm font-medium text-gray-300">
-            Drop a CSV file here
+            Drop a CSV or Excel file here
           </p>
           <p className="mb-4 text-xs text-gray-500">
-            or browse to select a file for comparison
+            Supports .csv and .xlsx files
           </p>
           <label className="cursor-pointer rounded-lg border border-cyan-500/30 bg-cyan-500/10 px-4 py-2 text-sm font-medium text-cyan-400 transition-colors hover:bg-cyan-500/20">
             Browse files
             <input
               type="file"
-              accept=".csv"
+              accept={SPREADSHEET_ACCEPT}
               className="hidden"
               onChange={(e) => {
                 const file = e.target.files?.[0];
-                if (file) handleFile(file);
+                if (file) void handleFile(file);
               }}
             />
           </label>
         </div>
       ) : (
-        <div className="space-y-5">
+        /* ── Comparison view ── */
+        <div className="flex flex-1 flex-col space-y-5 overflow-hidden">
           {/* File overview cards */}
           <div className="grid grid-cols-2 gap-3">
             <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
@@ -270,11 +533,111 @@ export function CSVCompare({
             </div>
           </div>
 
-          {comparison && (
+          {/* Match mode selector */}
+          <div className="flex flex-wrap items-center gap-3 rounded-xl border border-white/5 bg-white/[0.02] px-4 py-3">
+            <span className="text-xs font-medium text-gray-500">
+              Match rows by
+            </span>
+            <div className="flex gap-1 rounded-lg bg-white/5 p-0.5">
+              <button
+                onClick={() => {
+                  setMatchMode("index");
+                  setCurrentPage(0);
+                }}
+                className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+                  matchMode === "index"
+                    ? "bg-cyan-500/20 text-cyan-400"
+                    : "text-gray-400 hover:text-white"
+                }`}
+              >
+                <Hash className="h-3 w-3" />
+                Row index
+              </button>
+              <button
+                onClick={() => {
+                  setMatchMode("key");
+                  setCurrentPage(0);
+                }}
+                className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+                  matchMode === "key"
+                    ? "bg-cyan-500/20 text-cyan-400"
+                    : "text-gray-400 hover:text-white"
+                }`}
+              >
+                <Key className="h-3 w-3" />
+                Key column
+              </button>
+            </div>
+            {matchMode === "key" && diff && (
+              <select
+                value={keyColumn}
+                onChange={(e) => {
+                  setKeyColumn(e.target.value);
+                  setCurrentPage(0);
+                }}
+                className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-gray-300 focus:border-cyan-500/50 focus:outline-none"
+              >
+                {diff.commonHeaders.map((h) => (
+                  <option key={h} value={h}>
+                    {h}
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
+
+          {diff && (
             <>
+              {/* Diff summary */}
+              <div className="grid grid-cols-4 gap-2">
+                {(
+                  [
+                    {
+                      label: "Identical",
+                      count: diff.counts.same,
+                      color: "text-gray-400",
+                      bg: "bg-white/[0.03]",
+                      border: "border-white/5",
+                    },
+                    {
+                      label: "Modified",
+                      count: diff.counts.changed,
+                      color: "text-amber-400",
+                      bg: "bg-amber-500/[0.05]",
+                      border: "border-amber-500/10",
+                    },
+                    {
+                      label: "Added",
+                      count: diff.counts.added,
+                      color: "text-emerald-400",
+                      bg: "bg-emerald-500/[0.05]",
+                      border: "border-emerald-500/10",
+                    },
+                    {
+                      label: "Removed",
+                      count: diff.counts.removed,
+                      color: "text-red-400",
+                      bg: "bg-red-500/[0.05]",
+                      border: "border-red-500/10",
+                    },
+                  ] as const
+                ).map(({ label, count, color, bg, border }) => (
+                  <div
+                    key={label}
+                    className={`rounded-xl border ${border} ${bg} px-3 py-2.5 text-center`}
+                  >
+                    <div className={`font-mono text-lg font-semibold ${color}`}>
+                      {count}
+                    </div>
+                    <div className="text-[10px] font-medium text-gray-500 uppercase">
+                      {label}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
               {/* Schema differences */}
-              {(comparison.onlyInPrimary.length > 0 ||
-                comparison.onlyInCompare.length > 0) && (
+              {(diff.onlyInA.length > 0 || diff.onlyInB.length > 0) && (
                 <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
                   <div className="mb-3 flex items-center gap-2">
                     <Columns3 className="h-4 w-4 text-gray-400" />
@@ -283,13 +646,13 @@ export function CSVCompare({
                     </span>
                   </div>
                   <div className="space-y-3">
-                    {comparison.onlyInPrimary.length > 0 && (
+                    {diff.onlyInA.length > 0 && (
                       <div>
                         <p className="mb-1.5 text-xs text-amber-400/80">
                           Only in File A
                         </p>
                         <div className="flex flex-wrap gap-1.5">
-                          {comparison.onlyInPrimary.map((h) => (
+                          {diff.onlyInA.map((h) => (
                             <span
                               key={h}
                               className="rounded-md border border-amber-500/20 bg-amber-500/10 px-2 py-0.5 text-xs text-amber-300"
@@ -300,13 +663,13 @@ export function CSVCompare({
                         </div>
                       </div>
                     )}
-                    {comparison.onlyInCompare.length > 0 && (
+                    {diff.onlyInB.length > 0 && (
                       <div>
                         <p className="mb-1.5 text-xs text-blue-400/80">
                           Only in File B
                         </p>
                         <div className="flex flex-wrap gap-1.5">
-                          {comparison.onlyInCompare.map((h) => (
+                          {diff.onlyInB.map((h) => (
                             <span
                               key={h}
                               className="rounded-md border border-blue-500/20 bg-blue-500/10 px-2 py-0.5 text-xs text-blue-300"
@@ -321,109 +684,329 @@ export function CSVCompare({
                 </div>
               )}
 
-              {/* Column comparison */}
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 px-1">
-                  <span className="text-sm font-medium text-gray-300">
-                    Column comparison
-                  </span>
-                  <span className="text-xs text-gray-500">
-                    {comparison.commonHeaders.length} shared column
-                    {comparison.commonHeaders.length !== 1 ? "s" : ""}
-                  </span>
-                </div>
-
-                <div className="overflow-x-auto rounded-xl border border-white/10">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b border-white/10 bg-white/[0.03]">
-                        <th className="px-4 py-2.5 text-left text-xs font-medium text-gray-500">
-                          Column
-                        </th>
-                        <th className="px-4 py-2.5 text-right text-xs font-medium text-violet-400/60">
-                          File A
-                        </th>
-                        <th className="px-4 py-2.5 text-right text-xs font-medium text-cyan-400/60">
-                          File B
-                        </th>
-                        <th className="px-4 py-2.5 text-right text-xs font-medium text-gray-500">
-                          Change
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {comparison.stats.map((stat) => {
-                        if (stat.type === "categorical") {
-                          const delta =
-                            stat.compare.distinct - stat.primary.distinct;
-                          return (
-                            <tr
-                              key={stat.column}
-                              className="border-b border-white/5 transition-colors hover:bg-white/[0.02]"
-                            >
-                              <td className="px-4 py-2.5">
-                                <span className="font-medium text-gray-300">
-                                  {stat.column}
-                                </span>
-                                <span className="ml-2 rounded bg-white/5 px-1.5 py-0.5 text-[10px] text-gray-500">
-                                  text
-                                </span>
-                              </td>
-                              <td className="px-4 py-2.5 text-right font-mono text-gray-400">
-                                {stat.primary.distinct}
-                                <span className="ml-1 font-sans text-xs text-gray-600">
-                                  distinct
-                                </span>
-                              </td>
-                              <td className="px-4 py-2.5 text-right font-mono text-gray-400">
-                                {stat.compare.distinct}
-                                <span className="ml-1 font-sans text-xs text-gray-600">
-                                  distinct
-                                </span>
-                              </td>
-                              <td className="px-4 py-2.5 text-right">
-                                <DeltaBadge value={delta} />
-                              </td>
-                            </tr>
-                          );
-                        }
-                        const delta = stat.compare.avg - stat.primary.avg;
-                        const pct =
-                          stat.primary.avg !== 0
-                            ? (delta / stat.primary.avg) * 100
-                            : 0;
-                        return (
-                          <tr
-                            key={stat.column}
-                            className="border-b border-white/5 transition-colors hover:bg-white/[0.02]"
-                          >
-                            <td className="px-4 py-2.5">
-                              <span className="font-medium text-gray-300">
-                                {stat.column}
-                              </span>
-                              <span className="ml-2 rounded bg-white/5 px-1.5 py-0.5 text-[10px] text-gray-500">
-                                avg
-                              </span>
-                            </td>
-                            <td className="px-4 py-2.5 text-right font-mono text-gray-300">
-                              {fmt(stat.primary.avg)}
-                            </td>
-                            <td className="px-4 py-2.5 text-right font-mono text-gray-300">
-                              {fmt(stat.compare.avg)}
-                            </td>
-                            <td className="px-4 py-2.5 text-right">
-                              <DeltaBadge
-                                value={delta}
-                                label={`${pct >= 0 ? "+" : ""}${pct.toFixed(1)}%`}
-                              />
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
+              {/* Diff filter tabs + row count */}
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-sm font-medium text-gray-300">
+                  Row differences
+                </span>
+                <div className="ml-auto flex gap-1 rounded-lg bg-white/5 p-0.5">
+                  {(
+                    [
+                      {
+                        key: "all" as DiffFilter,
+                        label: "All",
+                        count: diff.rows.length,
+                      },
+                      {
+                        key: "changes" as DiffFilter,
+                        label: "Changes",
+                        count:
+                          diff.counts.changed +
+                          diff.counts.added +
+                          diff.counts.removed,
+                      },
+                      {
+                        key: "added" as DiffFilter,
+                        label: "Added",
+                        count: diff.counts.added,
+                      },
+                      {
+                        key: "removed" as DiffFilter,
+                        label: "Removed",
+                        count: diff.counts.removed,
+                      },
+                    ] as const
+                  ).map(({ key, label, count }) => (
+                    <button
+                      key={key}
+                      onClick={() => setFilter(key)}
+                      className={`rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
+                        diffFilter === key
+                          ? "bg-white/10 text-white"
+                          : "text-gray-500 hover:text-gray-300"
+                      }`}
+                    >
+                      {label}
+                      <span className="ml-1 font-mono opacity-60">
+                        {count}
+                      </span>
+                    </button>
+                  ))}
                 </div>
               </div>
+
+              {/* Diff table */}
+              {filteredRows.length > 0 ? (
+                <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-white/10">
+                  <div className="flex-1 overflow-auto">
+                    <table className="w-full text-sm">
+                      <thead className="sticky top-0 z-10">
+                        <tr className="border-b border-white/10 bg-slate-900">
+                          <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 whitespace-nowrap">
+                            #
+                          </th>
+                          <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 whitespace-nowrap">
+                            Status
+                          </th>
+                          {diff.commonHeaders.map((h) => (
+                            <th
+                              key={h}
+                              className="px-3 py-2 text-left text-xs font-medium text-gray-500 whitespace-nowrap"
+                            >
+                              {h}
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {paginatedRows.map((row, i) => {
+                          const rowBg =
+                            row.status === "added"
+                              ? "bg-emerald-500/[0.04]"
+                              : row.status === "removed"
+                                ? "bg-red-500/[0.04]"
+                                : row.status === "changed"
+                                  ? "bg-amber-500/[0.03]"
+                                  : "";
+
+                          return (
+                            <tr
+                              key={`${row.status}-${row.indexA ?? "n"}-${row.indexB ?? "n"}-${i}`}
+                              className={`border-b border-white/5 ${rowBg}`}
+                            >
+                              <td className="px-3 py-2 font-mono text-xs text-gray-600 whitespace-nowrap">
+                                {row.indexA != null ? row.indexA + 1 : "–"}
+                                {row.indexA != null &&
+                                row.indexB != null &&
+                                row.indexA === row.indexB
+                                  ? ""
+                                  : ` / ${row.indexB != null ? row.indexB + 1 : "–"}`}
+                              </td>
+                              <td className="px-3 py-2 whitespace-nowrap">
+                                <StatusBadge status={row.status} />
+                              </td>
+                              {diff.commonHeaders.map((h) => {
+                                const aIdx = primaryData.headers.indexOf(h);
+                                const bIdx = compareData.headers.indexOf(h);
+                                const aVal = row.rowA
+                                  ? String(row.rowA[aIdx] ?? "")
+                                  : "";
+                                const bVal = row.rowB
+                                  ? String(row.rowB[bIdx] ?? "")
+                                  : "";
+                                const isChanged = row.changedCols.has(h);
+
+                                return (
+                                  <td
+                                    key={h}
+                                    className={`max-w-[200px] truncate px-3 py-2 whitespace-nowrap ${
+                                      isChanged ? "bg-amber-500/10" : ""
+                                    }`}
+                                    title={
+                                      isChanged
+                                        ? `${aVal} → ${bVal}`
+                                        : row.status === "added"
+                                          ? bVal
+                                          : aVal
+                                    }
+                                  >
+                                    {row.status === "added" ? (
+                                      <span className="text-emerald-400">
+                                        {bVal || "–"}
+                                      </span>
+                                    ) : row.status === "removed" ? (
+                                      <span className="text-red-400">
+                                        {aVal || "–"}
+                                      </span>
+                                    ) : isChanged ? (
+                                      <span className="flex items-center gap-1">
+                                        <span className="text-red-400/70 line-through">
+                                          {aVal || "–"}
+                                        </span>
+                                        <ArrowRight className="h-3 w-3 shrink-0 text-gray-600" />
+                                        <span className="text-amber-300">
+                                          {bVal || "–"}
+                                        </span>
+                                      </span>
+                                    ) : (
+                                      <span className="text-gray-400">
+                                        {aVal || "–"}
+                                      </span>
+                                    )}
+                                  </td>
+                                );
+                              })}
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Pagination */}
+                  {totalPages > 1 && (
+                    <div className="flex items-center justify-between border-t border-white/5 px-4 py-2">
+                      <span className="text-xs text-gray-500">
+                        {currentPage * PAGE_SIZE + 1}–
+                        {Math.min(
+                          (currentPage + 1) * PAGE_SIZE,
+                          filteredRows.length,
+                        )}{" "}
+                        of {filteredRows.length}
+                      </span>
+                      <div className="flex items-center gap-1">
+                        <button
+                          onClick={() =>
+                            setCurrentPage((p) => Math.max(0, p - 1))
+                          }
+                          disabled={currentPage === 0}
+                          className="rounded-md p-1 text-gray-400 hover:bg-white/5 hover:text-white disabled:opacity-30"
+                        >
+                          <ChevronLeft className="h-4 w-4" />
+                        </button>
+                        <span className="px-2 text-xs text-gray-400">
+                          {currentPage + 1} / {totalPages}
+                        </span>
+                        <button
+                          onClick={() =>
+                            setCurrentPage((p) =>
+                              Math.min(totalPages - 1, p + 1),
+                            )
+                          }
+                          disabled={currentPage >= totalPages - 1}
+                          className="rounded-md p-1 text-gray-400 hover:bg-white/5 hover:text-white disabled:opacity-30"
+                        >
+                          <ChevronRight className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="flex flex-1 items-center justify-center rounded-xl border border-white/5 bg-white/[0.01] py-8 text-sm text-gray-500">
+                  {diffFilter === "changes"
+                    ? "No differences found — files are identical"
+                    : "No rows match this filter"}
+                </div>
+              )}
+
+              {/* Column statistics (collapsible) */}
+              {diff.stats.length > 0 && (
+                <div className="overflow-hidden rounded-xl border border-white/5">
+                  <button
+                    onClick={() => setShowStats(!showStats)}
+                    className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-white/5"
+                  >
+                    <span className="flex-1 text-sm font-medium text-gray-300">
+                      Column statistics
+                    </span>
+                    <span className="text-xs text-gray-500">
+                      {diff.commonHeaders.length} shared column
+                      {diff.commonHeaders.length !== 1 ? "s" : ""}
+                    </span>
+                    <ChevronDown
+                      className={`h-4 w-4 text-gray-500 transition-transform ${
+                        showStats ? "rotate-180" : ""
+                      }`}
+                    />
+                  </button>
+                  {showStats && (
+                    <div className="overflow-x-auto border-t border-white/5">
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="border-b border-white/10 bg-white/[0.03]">
+                            <th className="px-4 py-2.5 text-left text-xs font-medium text-gray-500">
+                              Column
+                            </th>
+                            <th className="px-4 py-2.5 text-right text-xs font-medium text-violet-400/60">
+                              File A
+                            </th>
+                            <th className="px-4 py-2.5 text-right text-xs font-medium text-cyan-400/60">
+                              File B
+                            </th>
+                            <th className="px-4 py-2.5 text-right text-xs font-medium text-gray-500">
+                              Change
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {diff.stats.map((stat) => {
+                            if (stat.type === "categorical") {
+                              const delta =
+                                (stat.compare.distinct ?? 0) -
+                                (stat.primary.distinct ?? 0);
+                              return (
+                                <tr
+                                  key={stat.column}
+                                  className="border-b border-white/5 transition-colors hover:bg-white/[0.02]"
+                                >
+                                  <td className="px-4 py-2.5">
+                                    <span className="font-medium text-gray-300">
+                                      {stat.column}
+                                    </span>
+                                    <span className="ml-2 rounded bg-white/5 px-1.5 py-0.5 text-[10px] text-gray-500">
+                                      text
+                                    </span>
+                                  </td>
+                                  <td className="px-4 py-2.5 text-right font-mono text-gray-400">
+                                    {stat.primary.distinct}
+                                    <span className="ml-1 font-sans text-xs text-gray-600">
+                                      distinct
+                                    </span>
+                                  </td>
+                                  <td className="px-4 py-2.5 text-right font-mono text-gray-400">
+                                    {stat.compare.distinct}
+                                    <span className="ml-1 font-sans text-xs text-gray-600">
+                                      distinct
+                                    </span>
+                                  </td>
+                                  <td className="px-4 py-2.5 text-right">
+                                    <DeltaBadge value={delta} />
+                                  </td>
+                                </tr>
+                              );
+                            }
+
+                            const pAvg = stat.primary.avg ?? 0;
+                            const cAvg = stat.compare.avg ?? 0;
+                            const delta = cAvg - pAvg;
+                            const pct =
+                              pAvg !== 0 ? (delta / pAvg) * 100 : 0;
+
+                            return (
+                              <tr
+                                key={stat.column}
+                                className="border-b border-white/5 transition-colors hover:bg-white/[0.02]"
+                              >
+                                <td className="px-4 py-2.5">
+                                  <span className="font-medium text-gray-300">
+                                    {stat.column}
+                                  </span>
+                                  <span className="ml-2 rounded bg-white/5 px-1.5 py-0.5 text-[10px] text-gray-500">
+                                    avg
+                                  </span>
+                                </td>
+                                <td className="px-4 py-2.5 text-right font-mono text-gray-300">
+                                  {fmt(pAvg)}
+                                </td>
+                                <td className="px-4 py-2.5 text-right font-mono text-gray-300">
+                                  {fmt(cAvg)}
+                                </td>
+                                <td className="px-4 py-2.5 text-right">
+                                  <DeltaBadge
+                                    value={delta}
+                                    label={`${pct >= 0 ? "+" : ""}${pct.toFixed(1)}%`}
+                                  />
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
+              )}
             </>
           )}
         </div>
@@ -432,7 +1015,25 @@ export function CSVCompare({
   );
 }
 
-/** Small inline badge showing a delta value with color + icon */
+/* ── Helper components ── */
+
+function StatusBadge({ status }: { status: DiffStatus }) {
+  const config = {
+    same: { label: "Same", cls: "text-gray-500 bg-white/5" },
+    changed: { label: "Modified", cls: "text-amber-400 bg-amber-500/10" },
+    added: { label: "Added", cls: "text-emerald-400 bg-emerald-500/10" },
+    removed: { label: "Removed", cls: "text-red-400 bg-red-500/10" },
+  }[status];
+
+  return (
+    <span
+      className={`rounded-md px-2 py-0.5 text-[10px] font-medium ${config.cls}`}
+    >
+      {config.label}
+    </span>
+  );
+}
+
 function DeltaBadge({ value, label }: { value: number; label?: string }) {
   if (value === 0) {
     return (

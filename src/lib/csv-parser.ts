@@ -37,7 +37,7 @@ const detectDelimiter = (sample: string): string => {
   return best.count > 0 ? best.delimiter : ",";
 };
 
-const inferColumnType = (
+export const inferColumnType = (
   values: string[],
 ): "string" | "number" | "date" | "boolean" => {
   const sampleSize = Math.min(values.length, 100);

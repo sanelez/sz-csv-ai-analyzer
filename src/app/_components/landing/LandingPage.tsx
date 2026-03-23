@@ -67,6 +67,7 @@ export function LandingPage({
           onSettingsChange={onSettingsChange}
           onApiSettingsChange={onApiSettingsChange}
           onFileLoaded={onFileLoaded}
+          onDataLoaded={onDataLoaded}
           onClearFile={onClearFile}
           onLoadSample={handleLoadSample}
           onToggleSampleDropdown={() =>

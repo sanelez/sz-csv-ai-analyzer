@@ -9,9 +9,9 @@ export function HowItWorks() {
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-violet-600 to-fuchsia-600 text-xl font-bold">
             1
           </div>
-          <h4 className="mb-2 font-semibold text-white">Upload CSV</h4>
+          <h4 className="mb-2 font-semibold text-white">Upload your file</h4>
           <p className="text-sm text-gray-400">
-            Drag & drop or select your CSV file
+            Drag & drop or select your CSV or Excel file
           </p>
         </div>
         <div className="text-center">

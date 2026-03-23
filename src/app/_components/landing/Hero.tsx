@@ -5,7 +5,7 @@ import { FileUpload } from "../FileUpload";
 import { APIKeyButton } from "../APIKeySettings";
 import { CSVSettingsButton } from "../CSVSettings";
 import { SAMPLE_DATASETS } from "~/lib/sample-data";
-import type { CSVSettings } from "~/lib/csv-parser";
+import type { CSVData, CSVSettings } from "~/lib/csv-parser";
 import type { StoredSettings } from "~/lib/storage";
 
 interface HeroProps {
@@ -16,6 +16,7 @@ interface HeroProps {
   onSettingsChange: (settings: CSVSettings) => void;
   onApiSettingsChange: (settings: StoredSettings | null) => void;
   onFileLoaded: (content: string, fileName: string) => void;
+  onDataLoaded: (data: CSVData, fileName: string) => void;
   onClearFile: () => void;
   onLoadSample: (datasetId: string) => void;
   onToggleSampleDropdown: () => void;
@@ -29,6 +30,7 @@ export function Hero({
   onSettingsChange,
   onApiSettingsChange,
   onFileLoaded,
+  onDataLoaded,
   onClearFile,
   onLoadSample,
   onToggleSampleDropdown,
@@ -79,7 +81,7 @@ export function Hero({
         {/* Hero Content */}
         <div className="mx-auto mb-12 max-w-4xl text-center">
           <h2 className="mb-6 bg-gradient-to-r from-white via-violet-200 to-fuchsia-200 bg-clip-text text-4xl font-bold text-transparent md:text-6xl">
-            Analyze your CSV files with AI in seconds
+            Analyze your CSV & Excel files with AI in seconds
           </h2>
           <p className="mx-auto mb-8 max-w-2xl text-xl text-gray-400">
             Upload your data, choose your AI provider (OpenAI, Anthropic,
@@ -97,6 +99,8 @@ export function Hero({
         <div id="upload-section" className="mx-auto mb-12 max-w-4xl">
           <FileUpload
             onFileLoaded={onFileLoaded}
+            onDataLoaded={onDataLoaded}
+            csvSettings={csvSettings}
             currentFileName={currentFileName}
             onClear={onClearFile}
           />
