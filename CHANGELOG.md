@@ -1,3 +1,10 @@
+## [1.5.1](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.5.0...v1.5.1) (2026-03-23)
+
+
+### Bug Fixes
+
+* fullscreen layout fills screen for all components and fix CSVCompare diff table ([851cc84](https://github.com/maxgfr/csv-ai-analyzer/commit/851cc84e4bab8edaa241e07cbbec3a7fb14b2914))
+
 # [1.5.0](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.4.1...v1.5.0) (2026-03-23)
 
 
