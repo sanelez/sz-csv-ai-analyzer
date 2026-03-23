@@ -16,6 +16,7 @@ import {
   ChevronRight,
   ChevronDown,
   ArrowRight,
+  ScanSearch,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -33,7 +34,7 @@ import {
 
 /* ── Types ── */
 
-type MatchMode = "index" | "key";
+type MatchMode = "index" | "key" | "content";
 type DiffStatus = "same" | "changed" | "added" | "removed";
 type DiffFilter = "all" | "changes" | "added" | "removed";
 
@@ -198,11 +199,88 @@ export function CSVCompare({
 
     // Determine effective match mode — fall back to index if key is invalid
     const effectiveMode =
-      matchMode === "key" && keyColumn && commonHeaders.includes(keyColumn)
-        ? "key"
-        : "index";
+      matchMode === "content"
+        ? "content"
+        : matchMode === "key" && keyColumn && commonHeaders.includes(keyColumn)
+          ? "key"
+          : "index";
 
-    if (effectiveMode === "index") {
+    if (effectiveMode === "content") {
+      // Content-based matching: build a composite key from ALL common column values
+      const makeKey = (row: (string | number)[], headers: string[]) =>
+        commonHeaders
+          .map((h) => String(row[headers.indexOf(h)] ?? ""))
+          .join("\0");
+
+      const aMap = new Map<
+        string,
+        { row: (string | number)[]; idx: number }[]
+      >();
+      for (let i = 0; i < primaryData.rows.length; i++) {
+        const key = makeKey(primaryData.rows[i]!, primaryData.headers);
+        const list = aMap.get(key) ?? [];
+        list.push({ row: primaryData.rows[i]!, idx: i });
+        aMap.set(key, list);
+      }
+
+      const matchedAIndices = new Set<number>();
+
+      for (let i = 0; i < compareData.rows.length; i++) {
+        const key = makeKey(compareData.rows[i]!, compareData.headers);
+        const candidates = aMap.get(key);
+
+        if (candidates) {
+          // Find the first unmatched candidate
+          const match = candidates.find((c) => !matchedAIndices.has(c.idx));
+          if (match) {
+            matchedAIndices.add(match.idx);
+            // Same composite key means all common columns are equal → "same"
+            rows.push({
+              indexA: match.idx,
+              indexB: i,
+              status: "same",
+              rowA: match.row,
+              rowB: compareData.rows[i]!,
+              changedCols: new Set(),
+            });
+          } else {
+            // All candidates already matched — treat as added
+            rows.push({
+              indexA: null,
+              indexB: i,
+              status: "added",
+              rowA: null,
+              rowB: compareData.rows[i]!,
+              changedCols: new Set(),
+            });
+          }
+        } else {
+          // No match in A — added in B
+          rows.push({
+            indexA: null,
+            indexB: i,
+            status: "added",
+            rowA: null,
+            rowB: compareData.rows[i]!,
+            changedCols: new Set(),
+          });
+        }
+      }
+
+      // Rows in A that were never matched → removed
+      for (let i = 0; i < primaryData.rows.length; i++) {
+        if (!matchedAIndices.has(i)) {
+          rows.push({
+            indexA: i,
+            indexB: null,
+            status: "removed",
+            rowA: primaryData.rows[i]!,
+            rowB: null,
+            changedCols: new Set(),
+          });
+        }
+      }
+    } else if (effectiveMode === "index") {
       const maxLen = Math.max(primaryData.rows.length, compareData.rows.length);
       for (let i = 0; i < maxLen; i++) {
         const a = i < primaryData.rows.length ? primaryData.rows[i]! : null;
@@ -545,6 +623,20 @@ export function CSVCompare({
               >
                 <Hash className="h-3 w-3" />
                 Row index
+              </button>
+              <button
+                onClick={() => {
+                  setMatchMode("content");
+                  setCurrentPage(0);
+                }}
+                className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+                  matchMode === "content"
+                    ? "bg-cyan-500/20 text-cyan-400"
+                    : "text-gray-400 hover:text-white"
+                }`}
+              >
+                <ScanSearch className="h-3 w-3" />
+                Content
               </button>
               <button
                 onClick={() => {
