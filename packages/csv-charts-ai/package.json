@@ -51,7 +51,8 @@
     "lucide-react": ">=0.400.0",
     "react": "^18.0.0 || ^19.0.0",
     "recharts": "^3.0.0",
-    "zod": "^4.0.0"
+    "zod": "^4.0.0",
+    "read-excel-file": ">=5.0.0"
   },
   "peerDependenciesMeta": {
     "react": {
@@ -62,6 +63,9 @@
     },
     "lucide-react": {
       "optional": true
+    },
+    "read-excel-file": {
+      "optional": true
     }
   },
   "devDependencies": {
@@ -70,6 +74,7 @@
     "ai": "^6.0.134",
     "lucide-react": "^0.556.0",
     "react": "^19.2.4",
+    "read-excel-file": "^7.0.2",
     "recharts": "^3.5.1",
     "tsup": "^8.5.0",
     "typescript": "^5.9.3",

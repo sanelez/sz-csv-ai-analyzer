@@ -18,5 +18,8 @@ export default defineConfig({
     "@ai-sdk/anthropic",
     "@ai-sdk/google",
     "@ai-sdk/mistral",
+    "read-excel-file",
+    "read-excel-file/browser",
+    "read-excel-file/node",
   ],
 });

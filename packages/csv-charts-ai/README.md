@@ -67,6 +67,37 @@ console.log(data.columns);   // [{ name: "name", type: "string", index: 0 }, ...
 
 > For very large files or exotic encodings, consider using [PapaParse](https://www.papaparse.com/) and passing the result as `TabularData` directly.
 
+## XLSX Parsing
+
+Parse Excel (.xlsx) files into the same `TabularData` format. Requires `read-excel-file` as an optional peer dependency.
+
+```bash
+pnpm add read-excel-file
+```
+
+### Browser
+
+```ts
+import { parseXLSX } from "csv-charts-ai";
+
+const data = await parseXLSX(file); // File from <input> or drag-and-drop
+console.log(data.headers, data.rowCount);
+```
+
+### Node.js / Universal
+
+Use `convertXLSXRows` with any XLSX reader — it takes raw row arrays and has zero dependencies:
+
+```ts
+import readXlsxFile from "read-excel-file/node";
+import { convertXLSXRows } from "csv-charts-ai";
+
+const rows = await readXlsxFile("data.xlsx");
+const data = convertXLSXRows(rows);
+```
+
+Options: `{ hasHeader?: boolean, skipEmpty?: boolean }` — same defaults as `parseCSV`.
+
 ## AI Functions
 
 All AI functions accept either a simple config object or a pre-built `LanguageModel` from the Vercel AI SDK. All support an optional `signal` (AbortSignal) for cancellation.
@@ -355,6 +386,8 @@ console.log(result.summary.keyInsights);
 | Export | Description |
 |--------|-------------|
 | `parseCSV(csv, options?)` | Parse CSV string into `TabularData` |
+| `parseXLSX(file, options?)` | Parse XLSX file into `TabularData` (browser, requires `read-excel-file`) |
+| `convertXLSXRows(rows, options?)` | Convert raw XLSX rows into `TabularData` (universal, zero deps) |
 | `createModel(config)` | Create a LanguageModel from an AIConfig |
 | `resolveModel(input)` | Resolve AIConfig or LanguageModel to LanguageModel |
 | `summarizeTabularData(data)` | Generate text summary for AI consumption |

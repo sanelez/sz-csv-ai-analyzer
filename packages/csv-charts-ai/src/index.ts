@@ -5,6 +5,10 @@ export { VERSION } from "./version";
 export { parseCSV } from "./csv-parser";
 export type { ParseCSVOptions } from "./csv-parser";
 
+// XLSX parsing
+export { parseXLSX, convertXLSXRows } from "./xlsx-parser";
+export type { ParseXLSXOptions } from "./xlsx-parser";
+
 // React components
 export { ChartDisplay } from "./ChartDisplay";
 export type { ChartDisplayProps } from "./ChartDisplay";

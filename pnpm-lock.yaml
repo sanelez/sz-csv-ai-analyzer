@@ -181,6 +181,9 @@ importers:
       react:
         specifier: ^19.2.4
         version: 19.2.4
+      read-excel-file:
+        specifier: ^7.0.2
+        version: 7.0.2
       recharts:
         specifier: ^3.5.1
         version: 3.5.1(@types/react@19.2.7)(react-dom@19.2.4(react@19.2.4))(react-is@16.13.1)(react@19.2.4)(redux@5.0.1)
