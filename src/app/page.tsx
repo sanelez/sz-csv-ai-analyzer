@@ -383,7 +383,7 @@ export default function HomePage() {
 
                     <FullscreenCard className="flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-slate-900/50">
                       <CSVCompare
-                        primaryData={effectiveData ?? csvData}
+                        primaryData={csvData}
                         primaryFileName={currentFileName}
                         csvSettings={csvSettings}
                       />
