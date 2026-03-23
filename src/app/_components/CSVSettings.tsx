@@ -83,7 +83,9 @@ export function CSVSettingsModal({
                 <div className="rounded-xl border border-cyan-500/40 bg-cyan-500/20 p-2.5">
                   <Settings className="h-5 w-5 text-cyan-400" />
                 </div>
-                <h2 className="text-xl font-bold text-white">Parser Settings</h2>
+                <h2 className="text-xl font-bold text-white">
+                  Parser Settings
+                </h2>
               </div>
               <button
                 type="button"
@@ -98,8 +100,8 @@ export function CSVSettingsModal({
           {/* Content */}
           <div className="space-y-5 p-6">
             <p className="text-xs text-gray-500">
-              Delimiter and encoding apply to CSV files only. Excel (.xlsx) files
-              are parsed automatically.
+              Delimiter and encoding apply to CSV files only. Excel (.xlsx)
+              files are parsed automatically.
             </p>
 
             {/* Delimiter */}

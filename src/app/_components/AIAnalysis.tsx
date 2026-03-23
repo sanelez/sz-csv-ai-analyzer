@@ -404,7 +404,7 @@ export function AIAnalysis({
   ];
 
   return (
-    <div className="glass-card animate-fade-in p-6">
+    <div className="glass-card animate-fade-in flex flex-1 flex-col p-6">
       {/* Header */}
       <div className="mb-6 flex items-center gap-4">
         <div className="rounded-xl border border-emerald-500/30 bg-linear-to-br from-emerald-500/20 to-teal-500/20 p-3">
@@ -478,7 +478,7 @@ export function AIAnalysis({
       )}
 
       {/* Tab Content */}
-      <div className="min-h-[200px]">
+      <div className="min-h-[200px] flex-1 overflow-y-auto">
         {/* Summary Tab */}
         {activeTab === "summary" && (
           <div className="space-y-4">

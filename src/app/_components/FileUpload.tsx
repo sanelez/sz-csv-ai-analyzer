@@ -3,8 +3,12 @@
 import { useCallback, useState } from "react";
 import { Upload, File, X, AlertCircle } from "lucide-react";
 import type { CSVData, CSVSettings } from "~/lib/csv-parser";
-import { isXLSXFile, isSupportedFile, SPREADSHEET_ACCEPT } from "~/lib/xlsx-parser";
-import { parseXLSX } from "~/lib/xlsx-parser";
+import {
+  isXLSXFile,
+  isSupportedFile,
+  SPREADSHEET_ACCEPT,
+  parseXLSX,
+} from "~/lib/xlsx-parser";
 
 interface FileUploadProps {
   onFileLoaded: (content: string, fileName: string) => void;

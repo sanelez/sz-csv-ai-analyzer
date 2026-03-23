@@ -184,10 +184,7 @@ export function CSVCompare({
 
     const rows: DiffRow[] = [];
 
-    const getChangedCols = (
-      a: (string | number)[],
-      b: (string | number)[],
-    ) => {
+    const getChangedCols = (a: (string | number)[], b: (string | number)[]) => {
       const changed = new Set<string>();
       for (const h of commonHeaders) {
         const aIdx = primaryData.headers.indexOf(h);
@@ -246,22 +243,18 @@ export function CSVCompare({
       const keyIdxA = primaryData.headers.indexOf(keyColumn);
       const keyIdxB = compareData.headers.indexOf(keyColumn);
 
-      const aMap = new Map<
-        string,
-        { row: (string | number)[]; idx: number }
-      >();
-      const bMap = new Map<
-        string,
-        { row: (string | number)[]; idx: number }
-      >();
+      const aMap = new Map<string, { row: (string | number)[]; idx: number }>();
+      const bMap = new Map<string, { row: (string | number)[]; idx: number }>();
 
       for (let i = 0; i < primaryData.rows.length; i++) {
         const key = String(primaryData.rows[i]![keyIdxA] ?? "");
-        if (!aMap.has(key)) aMap.set(key, { row: primaryData.rows[i]!, idx: i });
+        if (!aMap.has(key))
+          aMap.set(key, { row: primaryData.rows[i]!, idx: i });
       }
       for (let i = 0; i < compareData.rows.length; i++) {
         const key = String(compareData.rows[i]![keyIdxB] ?? "");
-        if (!bMap.has(key)) bMap.set(key, { row: compareData.rows[i]!, idx: i });
+        if (!bMap.has(key))
+          bMap.set(key, { row: compareData.rows[i]!, idx: i });
       }
 
       const processedBKeys = new Set<string>();
@@ -472,7 +465,7 @@ export function CSVCompare({
         </div>
       ) : (
         /* ── Comparison view ── */
-        <div className="flex flex-1 flex-col space-y-5 overflow-hidden">
+        <div className="flex flex-1 flex-col space-y-5 overflow-y-auto">
           {/* File overview cards */}
           <div className="grid grid-cols-2 gap-3">
             <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
@@ -727,9 +720,7 @@ export function CSVCompare({
                       }`}
                     >
                       {label}
-                      <span className="ml-1 font-mono opacity-60">
-                        {count}
-                      </span>
+                      <span className="ml-1 font-mono opacity-60">{count}</span>
                     </button>
                   ))}
                 </div>
@@ -737,21 +728,21 @@ export function CSVCompare({
 
               {/* Diff table */}
               {filteredRows.length > 0 ? (
-                <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-white/10">
-                  <div className="flex-1 overflow-auto">
+                <div className="flex flex-col overflow-hidden rounded-xl border border-white/10">
+                  <div className="max-h-[50vh] overflow-auto">
                     <table className="w-full text-sm">
                       <thead className="sticky top-0 z-10">
                         <tr className="border-b border-white/10 bg-slate-900">
-                          <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 whitespace-nowrap">
+                          <th className="px-3 py-2 text-left text-xs font-medium whitespace-nowrap text-gray-500">
                             #
                           </th>
-                          <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 whitespace-nowrap">
+                          <th className="px-3 py-2 text-left text-xs font-medium whitespace-nowrap text-gray-500">
                             Status
                           </th>
                           {diff.commonHeaders.map((h) => (
                             <th
                               key={h}
-                              className="px-3 py-2 text-left text-xs font-medium text-gray-500 whitespace-nowrap"
+                              className="px-3 py-2 text-left text-xs font-medium whitespace-nowrap text-gray-500"
                             >
                               {h}
                             </th>
@@ -774,7 +765,7 @@ export function CSVCompare({
                               key={`${row.status}-${row.indexA ?? "n"}-${row.indexB ?? "n"}-${i}`}
                               className={`border-b border-white/5 ${rowBg}`}
                             >
-                              <td className="px-3 py-2 font-mono text-xs text-gray-600 whitespace-nowrap">
+                              <td className="px-3 py-2 font-mono text-xs whitespace-nowrap text-gray-600">
                                 {row.indexA != null ? row.indexA + 1 : "–"}
                                 {row.indexA != null &&
                                 row.indexB != null &&
@@ -970,8 +961,7 @@ export function CSVCompare({
                             const pAvg = stat.primary.avg ?? 0;
                             const cAvg = stat.compare.avg ?? 0;
                             const delta = cAvg - pAvg;
-                            const pct =
-                              pAvg !== 0 ? (delta / pAvg) * 100 : 0;
+                            const pct = pAvg !== 0 ? (delta / pAvg) * 100 : 0;
 
                             return (
                               <tr

@@ -344,7 +344,7 @@ export function ChartSuggestions({
   };
 
   return (
-    <div className="glass-card animate-fade-in p-6">
+    <div className="glass-card animate-fade-in flex flex-1 flex-col p-6">
       <div className="mb-6 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <div className="rounded-xl border border-amber-500/30 bg-linear-to-br from-amber-500/20 to-orange-500/20 p-3">

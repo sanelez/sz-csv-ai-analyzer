@@ -67,7 +67,7 @@ export function DataTable({ data }: DataTableProps) {
   };
 
   return (
-    <div className="glass-card overflow-hidden">
+    <div className="glass-card flex flex-1 flex-col overflow-hidden">
       {/* Header */}
       <div className="flex items-center gap-4 px-6 pt-6 pb-4">
         <div className="rounded-xl border border-violet-500/30 bg-linear-to-br from-violet-500/20 to-indigo-500/20 p-3">
@@ -82,7 +82,7 @@ export function DataTable({ data }: DataTableProps) {
       </div>
 
       {/* Table Container */}
-      <div className="overflow-x-auto">
+      <div className="flex-1 overflow-auto">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-white/10">
