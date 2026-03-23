@@ -1,3 +1,10 @@
+## [1.4.1](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.4.0...v1.4.1) (2026-03-23)
+
+
+### Bug Fixes
+
+* improve code formatting for readability ([515c62c](https://github.com/maxgfr/csv-ai-analyzer/commit/515c62ca0dfd119d89041f43b707fe87bd0e6177))
+
 # [1.4.0](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.3.2...v1.4.0) (2026-03-23)
 
 
