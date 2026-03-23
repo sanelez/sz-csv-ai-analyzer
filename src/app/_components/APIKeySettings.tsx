@@ -700,16 +700,15 @@ export function APIKeyButton({
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className={`flex items-center gap-2 rounded-xl px-4 py-2.5 font-medium shadow-lg transition-all duration-200 ${
+        className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-sm transition-colors ${
           hasKey
-            ? "border-2 border-emerald-500 bg-emerald-600 text-white shadow-emerald-500/25 hover:bg-emerald-500"
-            : "border-2 border-violet-500 bg-violet-600 text-white shadow-violet-500/25 hover:bg-violet-500"
-        } `}
+            ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20"
+            : "border-amber-500/30 bg-amber-500/10 text-amber-400 hover:bg-amber-500/20"
+        }`}
       >
         <Key className="h-4 w-4" />
-        <span className="text-sm">
-          {hasKey ? "API Configured ✓" : "Configure API"}
-        </span>
+        <span className="hidden sm:inline">{hasKey ? "API" : "API Key"}</span>
+        {hasKey && <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />}
       </button>
       <APIKeySettings
         isOpen={isOpen}

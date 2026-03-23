@@ -56,7 +56,10 @@ export function FullscreenCard({
 
   // The content that will be rendered (same reference to preserve state)
   const content = (
-    <div ref={contentRef} className={isFullscreen ? "" : className}>
+    <div
+      ref={contentRef}
+      className={isFullscreen ? "" : `flex flex-1 flex-col ${className}`}
+    >
       {children}
     </div>
   );

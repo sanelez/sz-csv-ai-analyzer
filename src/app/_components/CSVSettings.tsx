@@ -246,10 +246,10 @@ export function CSVSettingsButton({
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="flex items-center gap-2 rounded-xl border-2 border-cyan-500 bg-cyan-600 px-4 py-2.5 font-medium text-white shadow-lg shadow-cyan-500/25 transition-all hover:bg-cyan-500"
+        className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-gray-400 transition-colors hover:bg-white/10 hover:text-white"
       >
         <Settings className="h-4 w-4" />
-        <span className="text-sm">CSV Settings</span>
+        <span className="hidden sm:inline">CSV</span>
       </button>
       <CSVSettingsModal
         isOpen={isOpen}

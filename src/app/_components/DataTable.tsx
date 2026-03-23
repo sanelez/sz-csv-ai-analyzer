@@ -6,6 +6,7 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
+  Table2,
 } from "lucide-react";
 import type { CSVData } from "~/lib/csv-parser";
 
@@ -67,6 +68,19 @@ export function DataTable({ data }: DataTableProps) {
 
   return (
     <div className="glass-card overflow-hidden">
+      {/* Header */}
+      <div className="flex items-center gap-4 px-6 pt-6 pb-4">
+        <div className="rounded-xl border border-violet-500/30 bg-linear-to-br from-violet-500/20 to-indigo-500/20 p-3">
+          <Table2 className="h-6 w-6 text-violet-400" />
+        </div>
+        <div className="flex-1">
+          <h3 className="font-semibold text-white">Data Preview</h3>
+          <p className="text-sm text-gray-400">
+            {data.rowCount} rows, {data.headers.length} columns
+          </p>
+        </div>
+      </div>
+
       {/* Table Container */}
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
