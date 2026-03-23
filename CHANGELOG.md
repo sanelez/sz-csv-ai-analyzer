@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.3.2...v1.4.0) (2026-03-23)
+
+
+### Features
+
+* add comprehensive tests, csv parser module, and enhanced component styling ([84ca77c](https://github.com/maxgfr/csv-ai-analyzer/commit/84ca77ce3eebb707cce7632e2f6278b0907b1130))
+
 ## [1.3.2](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.3.1...v1.3.2) (2026-03-22)
 
 
