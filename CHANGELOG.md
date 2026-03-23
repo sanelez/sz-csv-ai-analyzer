@@ -1,3 +1,10 @@
+## [1.5.2](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.5.1...v1.5.2) (2026-03-23)
+
+
+### Bug Fixes
+
+* CSVCompare now compares original data, not transformed data ([9b46dd2](https://github.com/maxgfr/csv-ai-analyzer/commit/9b46dd2094f5624ed7cc86ec578bc5ddc604086b))
+
 ## [1.5.1](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.5.0...v1.5.1) (2026-03-23)
 
 
