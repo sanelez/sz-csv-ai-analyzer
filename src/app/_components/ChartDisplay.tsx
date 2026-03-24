@@ -1,6 +1,6 @@
 "use client";
 
-import { ChartDisplay as BaseChartDisplay } from "csv-charts-ai";
+import { ChartDisplay as BaseChartDisplay } from "csv-charts-ai/charts";
 import type { CSVData } from "~/lib/csv-parser";
 import type { ChartSuggestion } from "~/lib/ai-service";
 import { FullscreenCard } from "./FullscreenCard";

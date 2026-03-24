@@ -34,6 +34,10 @@
     ".": {
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
+    },
+    "./charts": {
+      "import": "./dist/charts.js",
+      "types": "./dist/charts.d.ts"
     }
   },
   "files": [

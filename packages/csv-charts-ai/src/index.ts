@@ -9,14 +9,6 @@ export type { ParseCSVOptions } from "./csv-parser";
 export { parseXLSX, convertXLSXRows } from "./xlsx-parser";
 export type { ParseXLSXOptions } from "./xlsx-parser";
 
-// React components
-export { ChartDisplay } from "./ChartDisplay";
-export type { ChartDisplayProps } from "./ChartDisplay";
-export { SingleChart } from "./SingleChart";
-export type { SingleChartProps } from "./SingleChart";
-export { ChartToolbar } from "./ChartToolbar";
-export { ChartThemeProvider, useChartTheme } from "./ThemeContext";
-
 // Data processing
 export { processChartData, processChartDataMultiSeries } from "./processChartData";
 export type { ProcessedChartResult } from "./processChartData";

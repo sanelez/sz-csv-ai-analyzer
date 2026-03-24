@@ -276,14 +276,19 @@ useEffect(() => {
 }, [data]);
 ```
 
-## React Components
+## React Components (`csv-charts-ai/charts`)
 
-> **Requires** `react`, `recharts`, `lucide-react`, and **Tailwind CSS** for styling.
+Chart components are available as a **separate entry point** so projects that only need AI/parsing don't pull in React, Recharts, or Lucide.
+
+```bash
+# Optional peer dependencies — only needed if you import from csv-charts-ai/charts
+pnpm add react recharts lucide-react
+```
 
 ### Display Charts
 
 ```tsx
-import { ChartDisplay } from "csv-charts-ai";
+import { ChartDisplay } from "csv-charts-ai/charts";
 
 <ChartDisplay data={data} charts={charts} />
 ```
@@ -291,7 +296,7 @@ import { ChartDisplay } from "csv-charts-ai";
 ### With Theme
 
 ```tsx
-import { ChartDisplay, defaultLightTheme } from "csv-charts-ai";
+import { ChartDisplay, defaultLightTheme } from "csv-charts-ai/charts";
 
 <ChartDisplay data={data} charts={charts} theme={defaultLightTheme} />
 ```
@@ -299,6 +304,9 @@ import { ChartDisplay, defaultLightTheme } from "csv-charts-ai";
 ### Custom Card Wrapper
 
 ```tsx
+import { ChartDisplay } from "csv-charts-ai/charts";
+import { repairChart } from "csv-charts-ai";
+
 <ChartDisplay
   data={data}
   charts={charts}
@@ -338,7 +346,7 @@ You can also pass `className` to any component to add classes alongside the buil
 
 ### Headless Usage (No React)
 
-The AI functions and CSV parsing work without React — use them in Node.js scripts, APIs, or CLI tools:
+The core entry point (`csv-charts-ai`) works without React — use it in Node.js scripts, APIs, or CLI tools:
 
 ```ts
 import { parseCSV, analyzeData } from "csv-charts-ai";
@@ -355,7 +363,7 @@ const result = await analyzeData({
 console.log(result.summary.keyInsights);
 ```
 
-## Components Reference
+## Components Reference (`csv-charts-ai/charts`)
 
 | Export | Description |
 |--------|-------------|

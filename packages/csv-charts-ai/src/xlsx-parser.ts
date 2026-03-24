@@ -130,12 +130,12 @@ export function convertXLSXRows(
   return { headers, rows: normalizedRows, columns, rowCount: normalizedRows.length };
 }
 
-// ============ Browser convenience (requires read-excel-file) ============
+// ============ Browser convenience ============
 
 /**
  * Parse an Excel (.xlsx) file into TabularData. **Browser only.**
  *
- * Requires `read-excel-file` as a peer dependency.
+ * `read-excel-file` is bundled — no extra install needed.
  * Always reads the first sheet.
  *
  * @example
@@ -152,25 +152,8 @@ export async function parseXLSX(
   file: File,
   options: ParseXLSXOptions = {},
 ): Promise<TabularData> {
-  let rawRows: (string | number | boolean | Date | null)[][];
-
-  try {
-    // Dynamic import — won't crash if not installed
-    const mod = await import("read-excel-file/browser");
-    const result = await mod.default(file);
-    rawRows = result as (string | number | boolean | Date | null)[][];
-  } catch (err) {
-    if (
-      err instanceof Error &&
-      (err.message.includes("Cannot find module") ||
-        err.message.includes("Failed to resolve"))
-    ) {
-      throw new Error(
-        'parseXLSX requires "read-excel-file" as a peer dependency. ' +
-          "Install it with: pnpm add read-excel-file",
-      );
-    }
-    throw err;
-  }
+  const mod = await import("read-excel-file/browser");
+  const result = await mod.default(file);
+  const rawRows = result as (string | number | boolean | Date | null)[][];
   return convertXLSXRows(rawRows, options);
 }

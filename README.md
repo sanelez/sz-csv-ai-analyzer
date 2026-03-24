@@ -190,8 +190,10 @@ console.log(`Generated ${result.charts.length} chart suggestions`);
 
 ### React Components
 
+Chart components live in a separate entry point (`csv-charts-ai/charts`) so the core stays React-free:
+
 ```tsx
-import { ChartDisplay, defaultDarkTheme } from "csv-charts-ai";
+import { ChartDisplay, defaultDarkTheme } from "csv-charts-ai/charts";
 
 // Display AI-generated charts with interactive toolbar (zoom, sort, trendline, export)
 <ChartDisplay data={data} charts={charts} theme={defaultDarkTheme} />
@@ -234,7 +236,7 @@ suggestCharts({ model: anthropic("claude-sonnet-4-20250514"), data });
 | `streamAskAboutData()` | Streaming version with `onChunk` callback |
 | `suggestQuestions()` | Suggest interesting questions to ask about the data |
 
-### React Components Reference
+### React Components Reference (`csv-charts-ai/charts`)
 
 | Component | Description |
 |-----------|-------------|

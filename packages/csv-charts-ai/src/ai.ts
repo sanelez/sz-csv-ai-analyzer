@@ -366,12 +366,15 @@ export function createAppModel(config: AppModelConfig): LanguageModel {
 }
 
 function isAppModelConfig(input: unknown): input is AppModelConfig {
+  if (typeof input !== "object" || input === null) return false;
+  if ("doGenerate" in input) return false; // LanguageModel
+  // AppModelConfig is identified by its unique fields (providerNpm, providerApi, customEndpoint, customModel)
+  // This avoids misrouting AIConfig objects (which have provider/baseURL) through createAppModel
   return (
-    typeof input === "object" &&
-    input !== null &&
-    "apiKey" in input &&
-    !("provider" in input) &&
-    !("doGenerate" in input)
+    "providerNpm" in input ||
+    "providerApi" in input ||
+    "customEndpoint" in input ||
+    "customModel" in input
   );
 }
 
