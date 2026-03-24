@@ -36,15 +36,27 @@ export { defaultDarkTheme, defaultLightTheme } from "./types";
 
 // AI — chart generation
 export { suggestCharts, suggestCustomChart, repairChart } from "./ai";
-export { createModel, resolveModel, summarizeTabularData, getAIErrorMessage } from "./ai";
+export { createModel, createAppModel, resolveModel, summarizeTabularData, generateDataSummary, getAIErrorMessage } from "./ai";
 export { AIConfigSchema, TabularDataSchema } from "./ai";
 export type {
   AIConfig,
+  AppModelConfig,
   ModelInput,
   SuggestChartsOptions,
   SuggestCustomChartOptions,
   RepairChartOptions,
 } from "./ai";
+
+// CSV diff
+export { computeDiff } from "./csv-diff";
+export type {
+  MatchMode,
+  DiffStatus,
+  DiffRow,
+  DiffCounts,
+  DiffResult,
+  DiffOptions,
+} from "./csv-diff";
 
 // AI — data analysis
 export {

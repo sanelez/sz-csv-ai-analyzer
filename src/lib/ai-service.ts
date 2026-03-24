@@ -1,16 +1,12 @@
 /**
  * Bridge between the app's configuration system and the csv-charts-ai package.
  * All AI logic lives in the package — this file only handles:
- * - Converting app settings (AIServiceConfig) to a LanguageModel
+ * - Converting app settings (AIServiceConfig) to a LanguageModel via createAppModel
  * - Re-exporting types for backwards compatibility
  */
 
-import { type LanguageModel } from "ai";
-import { createOpenAI } from "@ai-sdk/openai";
-import { createAnthropic } from "@ai-sdk/anthropic";
-import { createGoogleGenerativeAI } from "@ai-sdk/google";
-import { createMistral } from "@ai-sdk/mistral";
 import {
+  createAppModel,
   suggestCharts,
   suggestCustomChart,
   repairChart,
@@ -24,7 +20,7 @@ import type {
   DataSummaryResult,
   AnomalyResult,
 } from "csv-charts-ai";
-import { DEFAULT_MODEL, type ModelId, type LanguageCode } from "./ai-models";
+import { type ModelId, type LanguageCode } from "./ai-models";
 
 // ============ Re-exports from package ============
 
@@ -67,44 +63,18 @@ const LANGUAGE_NAMES: Record<LanguageCode, string> = {
 // ============ Model Resolution ============
 
 /**
- * Converts the app's AIServiceConfig to a LanguageModel.
- * This is specific to the app — it handles the multi-provider settings UI.
+ * Converts the app's AIServiceConfig to a LanguageModel
+ * using the package's createAppModel.
  */
-export function getModel(config: AIServiceConfig): LanguageModel {
-  const modelName = config.customModel ?? config.model ?? DEFAULT_MODEL;
-
-  if (config.customEndpoint) {
-    const openai = createOpenAI({
-      apiKey: config.apiKey || "",
-      baseURL: config.customEndpoint,
-    }) as unknown as (model: string) => LanguageModel;
-    return openai(config.customModel ?? modelName);
-  }
-
-  switch (config.providerNpm) {
-    case "@ai-sdk/anthropic": {
-      const anthropic = createAnthropic({
-        apiKey: config.apiKey,
-        headers: { "anthropic-dangerous-direct-browser-access": "true" },
-      });
-      return anthropic(modelName);
-    }
-    case "@ai-sdk/google": {
-      const google = createGoogleGenerativeAI({ apiKey: config.apiKey });
-      return google(modelName);
-    }
-    case "@ai-sdk/mistral": {
-      const mistral = createMistral({ apiKey: config.apiKey });
-      return mistral(modelName);
-    }
-    default: {
-      const openai = createOpenAI({
-        apiKey: config.apiKey,
-        baseURL: config.providerApi,
-      }) as unknown as (model: string) => LanguageModel;
-      return openai(modelName);
-    }
-  }
+export function getModel(config: AIServiceConfig) {
+  return createAppModel({
+    apiKey: config.apiKey,
+    model: config.model,
+    providerNpm: config.providerNpm,
+    providerApi: config.providerApi,
+    customEndpoint: config.customEndpoint,
+    customModel: config.customModel,
+  });
 }
 
 // ============ Thin wrappers (delegate to package) ============

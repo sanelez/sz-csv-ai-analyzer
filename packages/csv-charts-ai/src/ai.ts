@@ -1,5 +1,9 @@
 import { generateObject, type LanguageModel } from "ai";
 import { z } from "zod";
+import { createOpenAI } from "@ai-sdk/openai";
+import { createAnthropic } from "@ai-sdk/anthropic";
+import { createGoogleGenerativeAI } from "@ai-sdk/google";
+import { createMistral } from "@ai-sdk/mistral";
 import type { ChartConfig, TabularData } from "./types";
 
 // ============ Input Validation Schemas ============
@@ -35,8 +39,25 @@ export const TabularDataSchema = z.object({
   rowCount: z.number(),
 });
 
-/** Model input: either a simple config object or a pre-built LanguageModel */
-export type ModelInput = AIConfig | LanguageModel;
+/**
+ * Extended config for multi-provider apps.
+ * Supports provider selection via npm package name (e.g. "@ai-sdk/anthropic").
+ */
+export interface AppModelConfig {
+  apiKey: string;
+  model?: string;
+  /** Provider npm package name (e.g. "@ai-sdk/anthropic", "@ai-sdk/google") */
+  providerNpm?: string;
+  /** Provider base API URL (for OpenAI-compatible endpoints) */
+  providerApi?: string;
+  /** Custom endpoint URL (takes priority over providerNpm) */
+  customEndpoint?: string;
+  /** Custom model name (takes priority over model) */
+  customModel?: string;
+}
+
+/** Model input: either a simple config object, an app config, or a pre-built LanguageModel */
+export type ModelInput = AIConfig | AppModelConfig | LanguageModel;
 
 // ============ Chart Output Schemas ============
 
@@ -177,6 +198,70 @@ export function summarizeTabularData(data: TabularData): string {
   return lines.join("\n");
 }
 
+/**
+ * Generate a detailed human-readable summary of tabular data,
+ * including column statistics and sample rows.
+ *
+ * @example
+ * ```ts
+ * const summary = generateDataSummary(data);
+ * // "Dataset with 150 rows and 4 columns.\n\nColumns:\n- name (text): 120 unique values..."
+ * ```
+ */
+export function generateDataSummary(data: TabularData): string {
+  const summary: string[] = [];
+
+  summary.push(
+    `Dataset with ${data.rowCount} rows and ${data.columns.length} columns.`,
+  );
+  summary.push("\nColumns:");
+
+  data.columns.forEach((col) => {
+    const values = data.rows.map((row) => row[col.index] ?? "");
+    const nonEmpty = values.filter((v) => v.trim() !== "");
+
+    if (col.type === "number") {
+      const numbers = nonEmpty
+        .map((v) => parseFloat(v.replace(/[\s,]/g, "").replace(",", ".")))
+        .filter((n) => !isNaN(n));
+
+      if (numbers.length > 0) {
+        const min = Math.min(...numbers);
+        const max = Math.max(...numbers);
+        const avg = numbers.reduce((a, b) => a + b, 0) / numbers.length;
+        summary.push(
+          `- ${col.name} (number): min=${min.toFixed(2)}, max=${max.toFixed(2)}, avg=${avg.toFixed(2)}, ${numbers.length} values`,
+        );
+      } else {
+        summary.push(`- ${col.name} (number): no valid values`);
+      }
+    } else if (col.type === "string") {
+      const uniqueValues = new Set(nonEmpty);
+      const uniqueCount = uniqueValues.size;
+      const sampleValues = Array.from(uniqueValues).slice(0, 5).join(", ");
+      summary.push(
+        `- ${col.name} (text): ${uniqueCount} unique values, examples: ${sampleValues}`,
+      );
+    } else if (col.type === "date") {
+      summary.push(`- ${col.name} (date): ${nonEmpty.length} values`);
+    } else if (col.type === "boolean") {
+      summary.push(`- ${col.name} (boolean): ${nonEmpty.length} values`);
+    }
+  });
+
+  // Add sample rows
+  summary.push("\nFirst 5 rows sample:");
+  const sampleRows = data.rows.slice(0, 5);
+  sampleRows.forEach((row, i) => {
+    const rowData = data.columns
+      .map((col) => `${col.name}: ${row[col.index] ?? "N/A"}`)
+      .join(", ");
+    summary.push(`Row ${i + 1}: ${rowData}`);
+  });
+
+  return summary.join("\n");
+}
+
 // ============ Model Resolution ============
 
 function isLanguageModel(input: unknown): input is LanguageModel {
@@ -190,20 +275,19 @@ function isLanguageModel(input: unknown): input is LanguageModel {
 
 /**
  * Create a LanguageModel from an AIConfig.
- * Exported so consumers can create a model once and reuse it.
+ * All provider SDKs are bundled — no dynamic imports needed.
  *
  * @example
  * ```ts
- * const model = await createModel({ apiKey: "sk-...", model: "gpt-4o" });
+ * const model = createModel({ apiKey: "sk-...", model: "gpt-4o" });
  * const charts1 = await suggestCharts({ model, data, dataSummary });
  * const charts2 = await suggestCustomChart({ model, data, dataSummary, prompt: "..." });
  * ```
  */
-export async function createModel(config: AIConfig): Promise<LanguageModel> {
+export function createModel(config: AIConfig): LanguageModel {
   const parsed = AIConfigSchema.parse(config);
 
   if (parsed.baseURL || parsed.provider === "openai") {
-    const { createOpenAI } = await import("@ai-sdk/openai");
     const openai = createOpenAI({
       apiKey: parsed.apiKey,
       ...(parsed.baseURL && { baseURL: parsed.baseURL }),
@@ -213,39 +297,15 @@ export async function createModel(config: AIConfig): Promise<LanguageModel> {
 
   switch (parsed.provider) {
     case "anthropic": {
-      try {
-        const { createAnthropic } = await import("@ai-sdk/anthropic");
-        return createAnthropic({ apiKey: parsed.apiKey })(parsed.model);
-      } catch {
-        throw new Error(
-          'Provider "anthropic" requires @ai-sdk/anthropic. Install it: pnpm add @ai-sdk/anthropic',
-        );
-      }
+      return createAnthropic({ apiKey: parsed.apiKey })(parsed.model);
     }
     case "google": {
-      try {
-        const { createGoogleGenerativeAI } = await import("@ai-sdk/google");
-        return createGoogleGenerativeAI({ apiKey: parsed.apiKey })(
-          parsed.model,
-        );
-      } catch {
-        throw new Error(
-          'Provider "google" requires @ai-sdk/google. Install it: pnpm add @ai-sdk/google',
-        );
-      }
+      return createGoogleGenerativeAI({ apiKey: parsed.apiKey })(parsed.model);
     }
     case "mistral": {
-      try {
-        const { createMistral } = await import("@ai-sdk/mistral");
-        return createMistral({ apiKey: parsed.apiKey })(parsed.model);
-      } catch {
-        throw new Error(
-          'Provider "mistral" requires @ai-sdk/mistral. Install it: pnpm add @ai-sdk/mistral',
-        );
-      }
+      return createMistral({ apiKey: parsed.apiKey })(parsed.model);
     }
     default: {
-      const { createOpenAI } = await import("@ai-sdk/openai");
       const openai = createOpenAI({
         apiKey: parsed.apiKey,
       }) as unknown as (model: string) => LanguageModel;
@@ -254,8 +314,70 @@ export async function createModel(config: AIConfig): Promise<LanguageModel> {
   }
 }
 
-export async function resolveModel(input: ModelInput): Promise<LanguageModel> {
+/**
+ * Create a LanguageModel from an AppModelConfig.
+ * Handles multi-provider apps with providerNpm-based routing,
+ * custom endpoints, and Anthropic browser headers.
+ *
+ * @example
+ * ```ts
+ * const model = createAppModel({
+ *   apiKey: "sk-...",
+ *   model: "claude-haiku-4-5",
+ *   providerNpm: "@ai-sdk/anthropic",
+ * });
+ * ```
+ */
+export function createAppModel(config: AppModelConfig): LanguageModel {
+  const modelName = config.customModel ?? config.model ?? "";
+
+  if (config.customEndpoint) {
+    const openai = createOpenAI({
+      apiKey: config.apiKey || "",
+      baseURL: config.customEndpoint,
+    }) as unknown as (model: string) => LanguageModel;
+    return openai(config.customModel ?? modelName);
+  }
+
+  switch (config.providerNpm) {
+    case "@ai-sdk/anthropic": {
+      const anthropic = createAnthropic({
+        apiKey: config.apiKey,
+        headers: { "anthropic-dangerous-direct-browser-access": "true" },
+      });
+      return anthropic(modelName);
+    }
+    case "@ai-sdk/google": {
+      const google = createGoogleGenerativeAI({ apiKey: config.apiKey });
+      return google(modelName);
+    }
+    case "@ai-sdk/mistral": {
+      const mistral = createMistral({ apiKey: config.apiKey });
+      return mistral(modelName);
+    }
+    default: {
+      const openai = createOpenAI({
+        apiKey: config.apiKey,
+        baseURL: config.providerApi,
+      }) as unknown as (model: string) => LanguageModel;
+      return openai(modelName);
+    }
+  }
+}
+
+function isAppModelConfig(input: unknown): input is AppModelConfig {
+  return (
+    typeof input === "object" &&
+    input !== null &&
+    "apiKey" in input &&
+    !("provider" in input) &&
+    !("doGenerate" in input)
+  );
+}
+
+export function resolveModel(input: ModelInput): LanguageModel {
   if (isLanguageModel(input)) return input;
+  if (isAppModelConfig(input)) return createAppModel(input);
   return createModel(input as AIConfig);
 }
 
@@ -414,7 +536,7 @@ export async function suggestCharts(
 
   try {
     TabularDataSchema.parse(data);
-    const model = await resolveModel(options.model);
+    const model = resolveModel(options.model);
 
     const { object } = await generateObject({
       model,
@@ -453,7 +575,7 @@ export async function suggestCustomChart(
 
   try {
     TabularDataSchema.parse(data);
-    const model = await resolveModel(options.model);
+    const model = resolveModel(options.model);
 
     const { object } = await generateObject({
       model,
@@ -496,7 +618,7 @@ export async function repairChart(
   } = options;
 
   try {
-    const model = await resolveModel(options.model);
+    const model = resolveModel(options.model);
 
     const { object } = await generateObject({
       model,

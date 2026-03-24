@@ -141,7 +141,7 @@ export async function summarizeData(
   const dataSummary = options.dataSummary ?? summarizeTabularData(data);
 
   try {
-    const model = await resolveModel(options.model);
+    const model = resolveModel(options.model);
 
     const { object } = await generateObject({
       model,
@@ -194,7 +194,7 @@ export async function detectAnomalies(
   const sampleCSV = buildSampleCSV(data, maxRows);
 
   try {
-    const model = await resolveModel(options.model);
+    const model = resolveModel(options.model);
 
     const { object } = await generateObject({
       model,
@@ -244,7 +244,7 @@ export async function askAboutData(
   const dataSummary = options.dataSummary ?? summarizeTabularData(data);
 
   try {
-    const model = await resolveModel(options.model);
+    const model = resolveModel(options.model);
 
     const historyText = history
       .map((item) => `User: ${item.prompt}\nAI: ${item.response}`)
@@ -304,7 +304,7 @@ export async function streamAskAboutData(
   const dataSummary = options.dataSummary ?? summarizeTabularData(data);
 
   try {
-    const model = await resolveModel(options.model);
+    const model = resolveModel(options.model);
 
     const historyText = history
       .map((item) => `User: ${item.prompt}\nAI: ${item.response}`)
@@ -477,7 +477,7 @@ export async function suggestQuestions(
   const dataSummary = options.dataSummary ?? summarizeTabularData(data);
 
   try {
-    const model = await resolveModel(options.model);
+    const model = resolveModel(options.model);
 
     const { object } = await generateObject({
       model,

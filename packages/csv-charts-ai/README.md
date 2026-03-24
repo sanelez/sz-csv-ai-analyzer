@@ -7,10 +7,12 @@ AI-powered CSV analysis, chart generation, and interactive visualization. Built 
 ## Installation
 
 ```bash
-pnpm add csv-charts-ai ai zod
+pnpm add csv-charts-ai
 ```
 
-**Peer dependencies:** `ai`, `zod` (required). `react`, `recharts`, `lucide-react` (optional — only needed for React chart components).
+All AI SDKs (`ai`, `zod`, `@ai-sdk/openai`, `@ai-sdk/anthropic`, `@ai-sdk/google`, `@ai-sdk/mistral`) and `read-excel-file` are bundled — no extra installs needed.
+
+**Optional peer dependencies** (only for React chart components): `react`, `recharts`, `lucide-react`.
 
 ## Quick Start
 
@@ -69,11 +71,7 @@ console.log(data.columns);   // [{ name: "name", type: "string", index: 0 }, ...
 
 ## XLSX Parsing
 
-Parse Excel (.xlsx) files into the same `TabularData` format. Requires `read-excel-file` as an optional peer dependency.
-
-```bash
-pnpm add read-excel-file
-```
+Parse Excel (.xlsx) files into the same `TabularData` format. `read-excel-file` is bundled.
 
 ### Browser
 
@@ -386,11 +384,14 @@ console.log(result.summary.keyInsights);
 | Export | Description |
 |--------|-------------|
 | `parseCSV(csv, options?)` | Parse CSV string into `TabularData` |
-| `parseXLSX(file, options?)` | Parse XLSX file into `TabularData` (browser, requires `read-excel-file`) |
-| `convertXLSXRows(rows, options?)` | Convert raw XLSX rows into `TabularData` (universal, zero deps) |
+| `parseXLSX(file, options?)` | Parse XLSX file into `TabularData` (browser) |
+| `convertXLSXRows(rows, options?)` | Convert raw XLSX rows into `TabularData` (universal) |
+| `computeDiff(dataA, dataB, options)` | Compare two datasets (index, key, or content matching) |
 | `createModel(config)` | Create a LanguageModel from an AIConfig |
-| `resolveModel(input)` | Resolve AIConfig or LanguageModel to LanguageModel |
-| `summarizeTabularData(data)` | Generate text summary for AI consumption |
+| `createAppModel(config)` | Create a LanguageModel from multi-provider app config |
+| `resolveModel(input)` | Resolve AIConfig, AppModelConfig, or LanguageModel |
+| `generateDataSummary(data)` | Detailed human-readable data summary with sample rows |
+| `summarizeTabularData(data)` | Compact data summary for AI prompt consumption |
 | `getAIErrorMessage(error)` | Extract user-friendly error messages |
 | `processChartData(data, chart)` | Process and aggregate chart data |
 | `processChartDataMultiSeries(data, chart)` | Multi-series data processing |
@@ -413,16 +414,37 @@ Multi-series supported via `groupBy` for bar, line, and area charts.
 
 `sum` | `avg` | `count` | `min` | `max` | `none`
 
+## CSV Diff
+
+Compare two datasets and detect added, removed, and changed rows:
+
+```ts
+import { computeDiff } from "csv-charts-ai";
+
+const diff = computeDiff(dataA, dataB, { matchMode: "key", keyColumn: "id" });
+
+console.log(diff.counts); // { same: 10, changed: 3, added: 2, removed: 1 }
+diff.rows.forEach(r => {
+  if (r.status === "changed") {
+    console.log(`Row ${r.indexA}: changed columns: ${[...r.changedCols].join(", ")}`);
+  }
+});
+```
+
+Match modes: `"index"` (positional), `"key"` (by column value), `"content"` (full row match).
+
 ## Provider Support
 
-| Provider | Config | Extra install |
-|----------|--------|---------------|
-| OpenAI | `{ apiKey, model }` | None (bundled) |
-| Ollama / vLLM / LM Studio | `{ apiKey: "", model, baseURL }` | None |
-| Mistral (via OpenAI compat) | `{ apiKey, model, baseURL: "https://api.mistral.ai/v1" }` | None |
-| Anthropic | `{ provider: "anthropic", apiKey, model }` | `@ai-sdk/anthropic` |
-| Google | `{ provider: "google", apiKey, model }` | `@ai-sdk/google` |
-| Any LanguageModel | Pass instance directly | Provider SDK |
+All provider SDKs are bundled — no extra installs needed.
+
+| Provider | Config |
+|----------|--------|
+| OpenAI | `{ apiKey, model }` |
+| Anthropic | `{ provider: "anthropic", apiKey, model }` |
+| Google | `{ provider: "google", apiKey, model }` |
+| Mistral | `{ provider: "mistral", apiKey, model }` |
+| Ollama / vLLM / LM Studio | `{ apiKey: "", model, baseURL }` |
+| Any LanguageModel | Pass instance directly |
 
 ## License
 

@@ -47,12 +47,9 @@
     "test:coverage": "vitest run --coverage"
   },
   "peerDependencies": {
-    "ai": "^5.0.0 || ^6.0.0",
-    "lucide-react": ">=0.400.0",
     "react": "^18.0.0 || ^19.0.0",
     "recharts": "^3.0.0",
-    "zod": "^4.0.0",
-    "read-excel-file": ">=5.0.0"
+    "lucide-react": ">=0.400.0"
   },
   "peerDependenciesMeta": {
     "react": {
@@ -63,28 +60,28 @@
     },
     "lucide-react": {
       "optional": true
-    },
-    "read-excel-file": {
-      "optional": true
     }
+  },
+  "dependencies": {
+    "ai": "^6.0.134",
+    "zod": "^4.1.13",
+    "@ai-sdk/openai": "^3.0.47",
+    "@ai-sdk/anthropic": "^3.0.63",
+    "@ai-sdk/google": "^3.0.52",
+    "@ai-sdk/mistral": "^3.0.27",
+    "read-excel-file": "^7.0.2"
   },
   "devDependencies": {
     "@types/react": "^19.2.7",
     "@vitest/coverage-v8": "^4.1.0",
-    "ai": "^6.0.134",
     "lucide-react": "^0.556.0",
     "react": "^19.2.4",
-    "read-excel-file": "^7.0.2",
     "recharts": "^3.5.1",
     "tsup": "^8.5.0",
     "typescript": "^5.9.3",
-    "vitest": "^4.1.0",
-    "zod": "^4.1.13"
+    "vitest": "^4.1.0"
   },
   "publishConfig": {
     "access": "public"
-  },
-  "dependencies": {
-    "@ai-sdk/openai": "^3.0.47"
   }
 }

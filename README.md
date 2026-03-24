@@ -164,10 +164,10 @@ Use it in React apps, Node.js scripts, APIs, or CLI tools.
 ### Installation
 
 ```bash
-pnpm add csv-charts-ai ai zod
+pnpm add csv-charts-ai
 ```
 
-**Peer dependencies:** `ai`, `zod` (required). `react`, `recharts`, `lucide-react` (optional — only needed for React chart components).
+All AI SDKs and utilities are bundled. **Optional peer dependencies** (for React chart components only): `react`, `recharts`, `lucide-react`.
 
 ### Quick Start — Full AI Analysis
 
@@ -249,8 +249,11 @@ suggestCharts({ model: anthropic("claude-sonnet-4-20250514"), data });
 | Utility | Description |
 |---------|-------------|
 | `parseCSV(csv, options?)` | Parse CSV string into `TabularData` with auto-delimiter detection |
+| `parseXLSX(file, options?)` | Parse XLSX file into `TabularData` (browser) |
+| `computeDiff(dataA, dataB, options)` | Compare two datasets (index, key, or content matching) |
+| `generateDataSummary(data)` | Detailed human-readable data summary |
+| `createModel()` / `createAppModel()` | Create a `LanguageModel` from config |
 | `processChartData()` | Process and aggregate chart data |
-| `createModel()` / `resolveModel()` | Create or resolve a `LanguageModel` from config |
 | `COLORS` | Default 8-color palette |
 
 Chart types: `bar`, `line`, `area`, `scatter`, `pie`. Aggregations: `sum`, `avg`, `count`, `min`, `max`, `none`. Multi-series supported via `groupBy`.

@@ -1,4 +1,5 @@
 import Papa, { type ParseResult } from "papaparse";
+import { generateDataSummary as pkgGenerateDataSummary } from "csv-charts-ai";
 
 export interface CSVColumn {
   name: string;
@@ -121,56 +122,10 @@ export const parseCSV = (
   };
 };
 
+/**
+ * Generate a detailed human-readable summary of CSV data.
+ * Delegates to the csv-charts-ai package (CSVData is structurally identical to TabularData).
+ */
 export const generateDataSummary = (data: CSVData): string => {
-  const summary: string[] = [];
-
-  summary.push(
-    `Dataset with ${data.rowCount} rows and ${data.columns.length} columns.`,
-  );
-  summary.push("\nColumns:");
-
-  data.columns.forEach((col) => {
-    const values = data.rows.map((row) => row[col.index] ?? "");
-    const nonEmpty = values.filter((v) => v.trim() !== "");
-
-    if (col.type === "number") {
-      const numbers = nonEmpty
-        .map((v) => parseFloat(v.replace(/[\s,]/g, "").replace(",", ".")))
-        .filter((n) => !isNaN(n));
-
-      if (numbers.length > 0) {
-        const min = Math.min(...numbers);
-        const max = Math.max(...numbers);
-        const avg = numbers.reduce((a, b) => a + b, 0) / numbers.length;
-        summary.push(
-          `- ${col.name} (number): min=${min.toFixed(2)}, max=${max.toFixed(2)}, avg=${avg.toFixed(2)}, ${numbers.length} values`,
-        );
-      } else {
-        summary.push(`- ${col.name} (number): no valid values`);
-      }
-    } else if (col.type === "string") {
-      const uniqueValues = new Set(nonEmpty);
-      const uniqueCount = uniqueValues.size;
-      const sampleValues = Array.from(uniqueValues).slice(0, 5).join(", ");
-      summary.push(
-        `- ${col.name} (text): ${uniqueCount} unique values, examples: ${sampleValues}`,
-      );
-    } else if (col.type === "date") {
-      summary.push(`- ${col.name} (date): ${nonEmpty.length} values`);
-    } else if (col.type === "boolean") {
-      summary.push(`- ${col.name} (boolean): ${nonEmpty.length} values`);
-    }
-  });
-
-  // Add sample rows
-  summary.push("\nFirst 5 rows sample:");
-  const sampleRows = data.rows.slice(0, 5);
-  sampleRows.forEach((row, i) => {
-    const rowData = data.columns
-      .map((col) => `${col.name}: ${row[col.index] ?? "N/A"}`)
-      .join(", ");
-    summary.push(`Row ${i + 1}: ${rowData}`);
-  });
-
-  return summary.join("\n");
+  return pkgGenerateDataSummary(data);
 };
