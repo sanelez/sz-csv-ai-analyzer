@@ -1,3 +1,10 @@
+# [1.9.0](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.8.0...v1.9.0) (2026-03-24)
+
+
+### Features
+
+* split package into core and charts entry points ([8fdd00a](https://github.com/maxgfr/csv-ai-analyzer/commit/8fdd00a38352ed2a741dcb8f9a114ca568482de7))
+
 # [1.8.0](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.7.0...v1.8.0) (2026-03-23)
 
 
