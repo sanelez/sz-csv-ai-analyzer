@@ -1,3 +1,10 @@
+## [1.11.4](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.11.3...v1.11.4) (2026-03-25)
+
+
+### Bug Fixes
+
+* white text in colored buttons + landing page theme fixes ([f1995f6](https://github.com/maxgfr/csv-ai-analyzer/commit/f1995f625fde199bc71365d1f9b5497f95b5aff5))
+
 ## [1.11.3](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.11.2...v1.11.3) (2026-03-25)
 
 
