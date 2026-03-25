@@ -1,3 +1,10 @@
+## [1.11.3](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.11.2...v1.11.3) (2026-03-25)
+
+
+### Bug Fixes
+
+* rework theme — proper contrast, flat CSS selectors, ThemeToggle in sticky header ([8e14c4e](https://github.com/maxgfr/csv-ai-analyzer/commit/8e14c4e749fa331fd169e39659348d0d0e06d511)), closes [#475569](https://github.com/maxgfr/csv-ai-analyzer/issues/475569) [#64748b](https://github.com/maxgfr/csv-ai-analyzer/issues/64748b)
+
 ## [1.11.2](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.11.1...v1.11.2) (2026-03-25)
 
 
