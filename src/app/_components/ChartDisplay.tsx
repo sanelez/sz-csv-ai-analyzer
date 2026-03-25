@@ -3,6 +3,8 @@
 import {
   ChartDisplay as BaseChartDisplay,
   ChartIconProvider,
+  defaultDarkTheme,
+  defaultLightTheme,
 } from "csv-charts-ai/charts";
 import {
   RefreshCw,
@@ -16,6 +18,7 @@ import {
 } from "lucide-react";
 import type { CSVData } from "~/lib/csv-parser";
 import type { ChartSuggestion } from "~/lib/ai-service";
+import { useTheme } from "~/lib/theme";
 import { FullscreenCard } from "./FullscreenCard";
 
 const lucideIcons = {
@@ -40,6 +43,10 @@ export function ChartDisplay({
   charts,
   onRegenerate,
 }: ChartDisplayProps) {
+  const { resolved } = useTheme();
+  const chartTheme =
+    resolved === "light" ? defaultLightTheme : defaultDarkTheme;
+
   return (
     <ChartIconProvider icons={lucideIcons}>
       <BaseChartDisplay
@@ -47,6 +54,7 @@ export function ChartDisplay({
         charts={charts}
         onRegenerate={onRegenerate}
         cardWrapper={FullscreenCard}
+        theme={chartTheme}
       />
     </ChartIconProvider>
   );

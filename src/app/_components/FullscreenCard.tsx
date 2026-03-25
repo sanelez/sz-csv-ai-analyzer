@@ -50,8 +50,11 @@ export function FullscreenCard({
     <div
       className={
         isFullscreen
-          ? "fixed inset-0 z-[99999] flex flex-col overflow-auto bg-slate-950"
+          ? "fixed inset-0 z-[99999] flex flex-col overflow-auto"
           : `group relative ${className}`
+      }
+      style={
+        isFullscreen ? { backgroundColor: "var(--bg-body-start)" } : undefined
       }
     >
       {/* Controls — always at tree position 0 */}

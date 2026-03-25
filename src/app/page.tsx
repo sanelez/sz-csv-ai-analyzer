@@ -12,6 +12,7 @@ import { AIAnalysis } from "~/app/_components/AIAnalysis";
 import { CSVCompare } from "~/app/_components/CSVCompare";
 import { DataTransform } from "~/app/_components/DataTransform";
 import { ClientOnly } from "./_components/ClientOnly";
+import { ThemeToggle } from "./_components/ThemeToggle";
 import { LandingPage } from "./_components/landing/LandingPage";
 import {
   type CSVData,
@@ -300,14 +301,19 @@ export default function HomePage() {
   return (
     <ClientOnly
       fallback={
-        <main className="min-h-screen bg-linear-to-b from-slate-950 to-black p-4 text-white md:p-8">
+        <main className="min-h-screen p-4 md:p-8">
           <div className="mx-auto flex min-h-[50vh] max-w-7xl items-center justify-center">
-            <div className="animate-pulse text-gray-400">Loading...</div>
+            <div
+              className="animate-pulse"
+              style={{ color: "var(--text-secondary)" }}
+            >
+              Loading...
+            </div>
           </div>
         </main>
       }
     >
-      <main className="min-h-screen bg-linear-to-b from-slate-950 to-black text-white">
+      <main className="min-h-screen">
         {/* Landing Section - Only show when no data */}
         {!csvData && (
           <LandingPage
@@ -356,6 +362,7 @@ export default function HomePage() {
 
                 {/* Right: Actions */}
                 <div className="flex items-center gap-2">
+                  <ThemeToggle />
                   <CSVSettingsButton
                     settings={csvSettings}
                     onSettingsChange={setCsvSettings}
