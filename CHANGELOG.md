@@ -1,3 +1,10 @@
+# [1.10.0](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.9.0...v1.10.0) (2026-03-25)
+
+
+### Features
+
+* pluggable AI provider registry — no more forced SDK dependencies ([95a42b0](https://github.com/maxgfr/csv-ai-analyzer/commit/95a42b0180497cc4afe6af84d763ba728b2871dd))
+
 # [1.9.0](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.8.0...v1.9.0) (2026-03-24)
 
 
