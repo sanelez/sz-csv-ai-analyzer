@@ -100,7 +100,7 @@ export function registerProviders(
 export function fromSDK(
   // Intentionally loose: every @ai-sdk/* creator has a slightly different
   // type signature, but they all follow (options) => (model) => LanguageModel.
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   creator: (options: any) => any,
 ): ProviderFactory {
   return (config: ProviderConfig): LanguageModel => {

@@ -16,7 +16,7 @@ pnpm typecheck        # TypeScript type checking (tsc --noEmit)
 # Package (csv-charts-ai)
 cd packages/csv-charts-ai
 pnpm build            # Build package with tsup
-pnpm test             # Run vitest tests (108 tests)
+pnpm test             # Run vitest tests (122 tests)
 pnpm test:watch       # Run tests in watch mode
 ```
 
@@ -34,12 +34,13 @@ The project uses prettier via eslint (`prettier/prettier` rule). Use `pnpm lint:
 ## Architecture
 
 - **App**: Next.js 16 (App Router) in `src/`
-- **Package** (`csv-charts-ai`): The "brain" of the project — bundles all AI SDKs (`ai`, `zod`, `@ai-sdk/openai`, `@ai-sdk/anthropic`, `@ai-sdk/google`, `@ai-sdk/mistral`), `read-excel-file`, CSV/XLSX parsing, data diff, data summary, and React chart components. Only `react`, `recharts`, and `lucide-react` remain as optional peer deps.
+- **Package** (`csv-charts-ai`): The "brain" of the project — bundles core deps (`ai`, `zod`, `read-excel-file`) and provides a **pluggable provider registry** (`registerProvider` / `fromSDK`) so consumers install only the AI SDKs they need (`@ai-sdk/openai`, `@ai-sdk/anthropic`, etc.) as optional peer deps. Chart components use a pluggable icon system (`ChartIconProvider`) — no `lucide-react` dependency. Only `react` and `recharts` remain as optional peer deps (for chart components).
 - **State**: React local state + page-level props drilling + external store for AI chat (`src/lib/chat-store.ts`)
 - **File parsing**: App uses PapaParse for CSV (`src/lib/csv-parser.ts`) and delegates to the package for XLSX. The package has its own zero-dep CSV parser.
-- **AI service**: `src/lib/ai-service.ts` is a thin bridge that converts app settings to the package's `createAppModel()` and delegates all AI logic to the package.
+- **AI service**: `src/lib/ai-service.ts` registers AI providers (`openai`, `anthropic`, `google`, `mistral`) at import time, then bridges app settings to the package's `createAppModel()`. All AI logic is delegated to the package.
 - **Fullscreen**: `FullscreenCard` uses CSS `position: fixed` (not portals) to preserve child component state
-- **Styling**: TailwindCSS v4, dark theme, glass-morphism design
+- **Styling**: TailwindCSS v4, CSS variable-based theming (dark/light/auto), glass-morphism design
+- **Theming**: `src/lib/theme.tsx` provides `ThemeProvider` with cookie persistence + system preference detection. Anti-flash script in `layout.tsx` applies the theme class before first paint.
 
 ## Key Conventions
 

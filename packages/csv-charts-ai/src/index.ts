@@ -21,7 +21,10 @@ export { parseXLSX, convertXLSXRows } from "./xlsx-parser";
 export type { ParseXLSXOptions } from "./xlsx-parser";
 
 // Data processing
-export { processChartData, processChartDataMultiSeries } from "./processChartData";
+export {
+  processChartData,
+  processChartDataMultiSeries,
+} from "./processChartData";
 export type { ProcessedChartResult } from "./processChartData";
 export { COLORS } from "./constants";
 
@@ -39,7 +42,14 @@ export { defaultDarkTheme, defaultLightTheme } from "./types";
 
 // AI — chart generation
 export { suggestCharts, suggestCustomChart, repairChart } from "./ai";
-export { createModel, createAppModel, resolveModel, summarizeTabularData, generateDataSummary, getAIErrorMessage } from "./ai";
+export {
+  createModel,
+  createAppModel,
+  resolveModel,
+  summarizeTabularData,
+  generateDataSummary,
+  getAIErrorMessage,
+} from "./ai";
 export { AIConfigSchema, TabularDataSchema } from "./ai";
 export type {
   AIConfig,

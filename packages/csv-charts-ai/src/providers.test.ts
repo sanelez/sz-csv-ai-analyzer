@@ -129,7 +129,8 @@ describe("provider registry", () => {
       // createXxx(options) => (modelName) => LanguageModel
       const fakeCreateSDK = vi.fn(
         (options: { apiKey?: string; baseURL?: string }) => {
-          return (model: string) => mockLanguageModel(`${model}@${options.apiKey}`);
+          return (model: string) =>
+            mockLanguageModel(`${model}@${options.apiKey}`);
         },
       );
 
@@ -142,7 +143,11 @@ describe("provider registry", () => {
 
     it("forwards baseURL and headers to the SDK creator", () => {
       const fakeCreateSDK = vi.fn(
-        (_options: { apiKey?: string; baseURL?: string; headers?: Record<string, string> }) => {
+        (_options: {
+          apiKey?: string;
+          baseURL?: string;
+          headers?: Record<string, string>;
+        }) => {
           return (model: string) => mockLanguageModel(model);
         },
       );
@@ -163,17 +168,18 @@ describe("provider registry", () => {
     });
 
     it("omits undefined optional fields", () => {
-      const fakeCreateSDK = vi.fn(
-        (_options: Record<string, unknown>) => {
-          return (model: string) => mockLanguageModel(model);
-        },
-      );
+      const fakeCreateSDK = vi.fn((_options: Record<string, unknown>) => {
+        return (model: string) => mockLanguageModel(model);
+      });
 
       const factory = fromSDK(fakeCreateSDK);
       factory({ apiKey: "key", model: "m" });
 
       expect(fakeCreateSDK).toHaveBeenCalledWith({ apiKey: "key" });
-      const callArgs = fakeCreateSDK.mock.calls[0]?.[0] as Record<string, unknown>;
+      const callArgs = fakeCreateSDK.mock.calls[0]?.[0] as Record<
+        string,
+        unknown
+      >;
       expect("baseURL" in callArgs).toBe(false);
       expect("headers" in callArgs).toBe(false);
     });

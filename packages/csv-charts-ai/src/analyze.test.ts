@@ -232,13 +232,13 @@ describe("analyze module", () => {
         model: { apiKey: "sk-test", model: "gpt-4o" },
         data: sampleData,
         question: "And the max?",
-        history: [
-          { prompt: "What is the average?", response: "200" },
-        ],
+        history: [{ prompt: "What is the average?", response: "200" }],
       });
 
       // Get the call from THIS test specifically
-      const lastCall = mockedText.mock.calls[callCountBefore]?.[0] as { prompt: string };
+      const lastCall = mockedText.mock.calls[callCountBefore]?.[0] as {
+        prompt: string;
+      };
       expect(lastCall.prompt).toContain("Previous conversation history");
       expect(lastCall.prompt).toContain("What is the average?");
     });
@@ -255,7 +255,11 @@ describe("analyze module", () => {
         })(),
         finishReason: Promise.resolve("stop"),
         text: Promise.resolve("Hello World!"),
-        usage: Promise.resolve({ promptTokens: 0, completionTokens: 0, totalTokens: 0 }),
+        usage: Promise.resolve({
+          promptTokens: 0,
+          completionTokens: 0,
+          totalTokens: 0,
+        }),
         warnings: Promise.resolve(undefined),
         request: Promise.resolve({} as never),
         response: Promise.resolve({} as never),
@@ -272,7 +276,9 @@ describe("analyze module", () => {
         data: sampleData,
         question: "What do you see?",
         onChunk: (chunk) => receivedChunks.push(chunk),
-        onComplete: (full) => { completedText = full; },
+        onComplete: (full) => {
+          completedText = full;
+        },
       });
 
       expect(receivedChunks).toEqual(["Hello", " World", "!"]);
@@ -287,7 +293,10 @@ describe("analyze module", () => {
         object: {
           questions: [
             { question: "What is the trend in value?", category: "trend" },
-            { question: "Which name has the highest value?", category: "comparison" },
+            {
+              question: "Which name has the highest value?",
+              category: "comparison",
+            },
             { question: "Are there outliers in value?", category: "anomaly" },
           ],
         },

@@ -81,7 +81,9 @@ describe("parseCSV", () => {
 
   describe("quoted fields", () => {
     it("handles double-quoted fields", () => {
-      const data = parseCSV('name,bio\nAlice,"Software engineer"\nBob,Designer');
+      const data = parseCSV(
+        'name,bio\nAlice,"Software engineer"\nBob,Designer',
+      );
       expect(data.rows[0]).toEqual(["Alice", "Software engineer"]);
     });
 
@@ -173,7 +175,9 @@ describe("parseCSV", () => {
     });
 
     it("detects string columns", () => {
-      const data = parseCSV("name,city\nAlice,Paris\nBob,London\nCharlie,Berlin");
+      const data = parseCSV(
+        "name,city\nAlice,Paris\nBob,London\nCharlie,Berlin",
+      );
       const nameCol = data.columns.find((c) => c.name === "name");
       expect(nameCol?.type).toBe("string");
     });
@@ -211,9 +215,7 @@ describe("parseCSV", () => {
     });
 
     it("falls back to string for mixed types", () => {
-      const data = parseCSV(
-        "value\n100\nhello\n200\nworld\n300",
-      );
+      const data = parseCSV("value\n100\nhello\n200\nworld\n300");
       const col = data.columns.find((c) => c.name === "value");
       expect(col?.type).toBe("string");
     });
@@ -234,9 +236,7 @@ describe("parseCSV", () => {
     });
 
     it("recognizes French boolean values", () => {
-      const data = parseCSV(
-        "flag\nvrai\nfaux\nvrai\nfaux\nvrai",
-      );
+      const data = parseCSV("flag\nvrai\nfaux\nvrai\nfaux\nvrai");
       const col = data.columns.find((c) => c.name === "flag");
       expect(col?.type).toBe("boolean");
     });

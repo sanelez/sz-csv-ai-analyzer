@@ -53,8 +53,7 @@ export const processChartDataMultiSeries = (
   const yIdx = yColDef?.index ?? -1;
 
   // GroupBy mode: create multi-series data (not supported for pie/scatter)
-  const supportsGroupBy =
-    chart.type !== "pie" && chart.type !== "scatter";
+  const supportsGroupBy = chart.type !== "pie" && chart.type !== "scatter";
   if (
     supportsGroupBy &&
     groupColDef &&

@@ -167,17 +167,21 @@ Use it in React apps, Node.js scripts, APIs, or CLI tools.
 pnpm add csv-charts-ai
 ```
 
-All AI SDKs and utilities are bundled. **Optional peer dependencies** (for React chart components only): `react`, `recharts`, `lucide-react`.
+Core utilities are bundled. AI providers are **pluggable** — install only the ones you need (`@ai-sdk/openai`, `@ai-sdk/anthropic`, etc.). **Optional peer dependencies** (for React chart components only): `react`, `recharts`.
 
 ### Quick Start — Full AI Analysis
 
 ```ts
-import { parseCSV, analyzeData } from "csv-charts-ai";
+import { registerProvider, fromSDK, parseCSV, analyzeData } from "csv-charts-ai";
+import { createOpenAI } from "@ai-sdk/openai";
 
-// 1. Parse any CSV string (auto-detects delimiter, infers types)
+// 1. Register your AI provider(s) — once, at app startup
+registerProvider("openai", fromSDK(createOpenAI));
+
+// 2. Parse any CSV string (auto-detects delimiter, infers types)
 const data = parseCSV(csvString);
 
-// 2. Run full analysis: summary + anomalies + charts in parallel
+// 3. Run full analysis: summary + anomalies + charts in parallel
 const result = await analyzeData({
   model: { apiKey: "sk-...", model: "gpt-4o" },
   data,
@@ -204,21 +208,27 @@ import { ChartDisplay, defaultDarkTheme } from "csv-charts-ai/charts";
 
 ### Multi-Provider Support
 
+Register only the providers you use, then pass config objects or `LanguageModel` instances:
+
 ```ts
+import { registerProvider, fromSDK } from "csv-charts-ai";
+import { createOpenAI } from "@ai-sdk/openai";
+import { createAnthropic } from "@ai-sdk/anthropic";
+
+registerProvider("openai", fromSDK(createOpenAI));
+registerProvider("anthropic", fromSDK(createAnthropic));
+
 // OpenAI (default)
 { apiKey: "sk-...", model: "gpt-4o" }
 
 // Anthropic
 { apiKey: "sk-ant-...", model: "claude-sonnet-4-20250514", provider: "anthropic" }
 
-// Google Gemini
-{ apiKey: "...", model: "gemini-2.5-flash", provider: "google" }
-
-// Ollama / vLLM / LM Studio (local)
+// Ollama / vLLM / LM Studio (local, uses openai provider)
 { apiKey: "", model: "llama3", baseURL: "http://localhost:11434/v1" }
 
-// Any Vercel AI SDK LanguageModel instance
-import { anthropic } from "@ai-sdk/anthropic";
+// Any Vercel AI SDK LanguageModel instance (no registration needed)
+const anthropic = createAnthropic({ apiKey: "sk-ant-..." });
 suggestCharts({ model: anthropic("claude-sonnet-4-20250514"), data });
 ```
 
@@ -244,6 +254,7 @@ suggestCharts({ model: anthropic("claude-sonnet-4-20250514"), data });
 | `SingleChart` | Individual chart with toolbar (sort, zoom, trendline, CSV/PNG export) |
 | `ChartToolbar` | Standalone toolbar component |
 | `ChartThemeProvider` | React context for chart theming |
+| `ChartIconProvider` | React context for pluggable icons (default: built-in SVGs) |
 | `defaultDarkTheme` / `defaultLightTheme` | Built-in themes |
 
 ### Utilities Reference
@@ -254,6 +265,7 @@ suggestCharts({ model: anthropic("claude-sonnet-4-20250514"), data });
 | `parseXLSX(file, options?)` | Parse XLSX file into `TabularData` (browser) |
 | `computeDiff(dataA, dataB, options)` | Compare two datasets (index, key, or content matching) |
 | `generateDataSummary(data)` | Detailed human-readable data summary |
+| `registerProvider()` / `fromSDK()` | Register AI providers (pluggable) |
 | `createModel()` / `createAppModel()` | Create a `LanguageModel` from config |
 | `processChartData()` | Process and aggregate chart data |
 | `COLORS` | Default 8-color palette |

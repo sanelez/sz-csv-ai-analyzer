@@ -47,11 +47,23 @@ export function ChartToolbar({
     chartType === "bar" || chartType === "line" || chartType === "area";
 
   const cls = (defaultCls: string) => (unstyled ? "" : defaultCls);
-  const activeCls = (active: boolean, activeCls: string, inactiveCls: string) =>
-    unstyled ? "" : `flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm transition-colors ${active ? activeCls : inactiveCls}`;
+  const activeCls = (
+    active: boolean,
+    activeCls: string,
+    inactiveCls: string,
+  ) =>
+    unstyled
+      ? ""
+      : `flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm transition-colors ${active ? activeCls : inactiveCls}`;
 
   return (
-    <div className={unstyled ? (className ?? "") : `mb-4 flex flex-wrap items-center gap-2 rounded-xl border border-white/10 bg-white/5 p-3 ${className ?? ""}`.trim()}>
+    <div
+      className={
+        unstyled
+          ? (className ?? "")
+          : `mb-4 flex flex-wrap items-center gap-2 rounded-xl border border-white/10 bg-white/5 p-3 ${className ?? ""}`.trim()
+      }
+    >
       {/* Sort Control */}
       <button
         onClick={onToggleSort}
@@ -74,12 +86,17 @@ export function ChartToolbar({
 
       {/* Limit Results */}
       <div className={cls("flex items-center gap-2")}>
-        <icons.Filter className={cls("h-4 w-4 text-gray-400")} aria-hidden="true" />
+        <icons.Filter
+          className={cls("h-4 w-4 text-gray-400")}
+          aria-hidden="true"
+        />
         <select
           value={limitResults}
           onChange={(e) => onLimitChange(Number(e.target.value))}
           aria-label="Limit number of results"
-          className={cls("rounded-lg border border-white/10 bg-white/5 px-2 py-1.5 text-sm text-gray-300 focus:border-violet-500/50 focus:outline-none")}
+          className={cls(
+            "rounded-lg border border-white/10 bg-white/5 px-2 py-1.5 text-sm text-gray-300 focus:border-violet-500/50 focus:outline-none",
+          )}
         >
           <option value={10}>Top 10</option>
           <option value={20}>Top 20</option>
@@ -126,7 +143,9 @@ export function ChartToolbar({
       {/* Export PNG Button */}
       <button
         onClick={onExportPNG}
-        className={cls("flex items-center gap-1.5 rounded-lg bg-white/5 px-3 py-1.5 text-sm text-gray-400 transition-colors hover:bg-white/10 hover:text-white")}
+        className={cls(
+          "flex items-center gap-1.5 rounded-lg bg-white/5 px-3 py-1.5 text-sm text-gray-400 transition-colors hover:bg-white/10 hover:text-white",
+        )}
         title="Export chart as PNG image"
       >
         <icons.ImageIcon className="h-4 w-4" />
@@ -136,7 +155,9 @@ export function ChartToolbar({
       {/* Export CSV Button */}
       <button
         onClick={onExportCSV}
-        className={cls("flex items-center gap-1.5 rounded-lg bg-white/5 px-3 py-1.5 text-sm text-gray-400 transition-colors hover:bg-white/10 hover:text-white")}
+        className={cls(
+          "flex items-center gap-1.5 rounded-lg bg-white/5 px-3 py-1.5 text-sm text-gray-400 transition-colors hover:bg-white/10 hover:text-white",
+        )}
         title="Export chart data as CSV"
       >
         <icons.Download className="h-4 w-4" />
@@ -148,7 +169,9 @@ export function ChartToolbar({
         <button
           onClick={onRegenerate}
           disabled={isRegenerating}
-          className={cls("flex items-center gap-1.5 rounded-lg bg-violet-500/20 px-3 py-1.5 text-sm text-violet-400 transition-colors hover:bg-violet-500/30 disabled:opacity-50")}
+          className={cls(
+            "flex items-center gap-1.5 rounded-lg bg-violet-500/20 px-3 py-1.5 text-sm text-violet-400 transition-colors hover:bg-violet-500/30 disabled:opacity-50",
+          )}
         >
           <icons.RefreshCw
             className={`h-4 w-4 ${isRegenerating ? "animate-spin" : ""}`}

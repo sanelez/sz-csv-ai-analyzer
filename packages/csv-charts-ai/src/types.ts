@@ -1,11 +1,5 @@
 export type ChartType = "bar" | "line" | "pie" | "scatter" | "area";
-export type AggregationType =
-  | "sum"
-  | "avg"
-  | "count"
-  | "min"
-  | "max"
-  | "none";
+export type AggregationType = "sum" | "avg" | "count" | "min" | "max" | "none";
 
 export interface TabularData {
   headers: string[];

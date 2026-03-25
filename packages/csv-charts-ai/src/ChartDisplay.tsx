@@ -74,15 +74,9 @@ export function ChartDisplay({
     <ChartThemeProvider theme={theme}>
       <div className={containerCls}>
         {charts.map((chart) => (
-          <CardWrapper
-            key={chart.id}
-            title={chart.title}
-            className={cardCls}
-          >
+          <CardWrapper key={chart.id} title={chart.title} className={cardCls}>
             <div className={innerCls}>
-              <h3 className={titleCls}>
-                {chart.title}
-              </h3>
+              <h3 className={titleCls}>{chart.title}</h3>
               <p className={descCls}>{chart.description}</p>
               <SingleChart
                 data={data}

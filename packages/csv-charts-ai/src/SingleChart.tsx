@@ -42,7 +42,13 @@ export interface SingleChartProps {
   unstyled?: boolean;
 }
 
-export function SingleChart({ data, chart, onRegenerate, className, unstyled = false }: SingleChartProps) {
+export function SingleChart({
+  data,
+  chart,
+  onRegenerate,
+  className,
+  unstyled = false,
+}: SingleChartProps) {
   const theme = useChartTheme();
   const icons = useChartIcons();
   const chartContainerRef = useRef<HTMLDivElement>(null);
@@ -125,10 +131,7 @@ export function SingleChart({ data, chart, onRegenerate, className, unstyled = f
     if (!svgElement) return;
 
     const svgClone = svgElement.cloneNode(true) as SVGSVGElement;
-    svgClone.setAttribute(
-      "xmlns",
-      "http://www.w3.org/2000/svg",
-    );
+    svgClone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
     // Ensure dimensions
     const rect = svgElement.getBoundingClientRect();
     svgClone.setAttribute("width", String(rect.width));
@@ -344,7 +347,11 @@ export function SingleChart({ data, chart, onRegenerate, className, unstyled = f
             <Tooltip contentStyle={tooltipStyle} />
             <Legend />
             {trendlineComponent}
-            <Bar dataKey={yKey} fill={theme.accentPrimary} radius={[4, 4, 0, 0]}>
+            <Bar
+              dataKey={yKey}
+              fill={theme.accentPrimary}
+              radius={[4, 4, 0, 0]}
+            >
               {chartData.map((_, index) => (
                 <Cell
                   key={`cell-${index}`}
@@ -417,15 +424,8 @@ export function SingleChart({ data, chart, onRegenerate, className, unstyled = f
         return (
           <ScatterChart {...commonProps}>
             <CartesianGrid strokeDasharray="3 3" stroke={theme.gridStroke} />
-            <XAxis
-              type="category"
-              {...xAxisProps}
-            />
-            <YAxis
-              type="number"
-              dataKey={yKey}
-              {...yAxisProps}
-            />
+            <XAxis type="category" {...xAxisProps} />
+            <YAxis type="number" dataKey={yKey} {...yAxisProps} />
             <Tooltip
               cursor={{ strokeDasharray: "3 3" }}
               contentStyle={tooltipStyle}
@@ -469,7 +469,13 @@ export function SingleChart({ data, chart, onRegenerate, className, unstyled = f
 
   if (processedData.length === 0) {
     return (
-      <div className={unstyled ? (className ?? "") : `flex h-[300px] flex-col items-center justify-center gap-4 text-gray-400 ${className ?? ""}`.trim()}>
+      <div
+        className={
+          unstyled
+            ? (className ?? "")
+            : `flex h-[300px] flex-col items-center justify-center gap-4 text-gray-400 ${className ?? ""}`.trim()
+        }
+      >
         <div className={unstyled ? "" : "text-center"}>
           <p className={unstyled ? "" : "mb-1 font-medium text-red-400"}>
             Unable to generate this chart
@@ -481,7 +487,11 @@ export function SingleChart({ data, chart, onRegenerate, className, unstyled = f
             <button
               onClick={handleRegenerate}
               disabled={isRegenerating}
-              className={unstyled ? "" : "flex items-center gap-2 rounded-lg bg-violet-600 px-4 py-2 text-sm text-white transition-colors hover:bg-violet-500 disabled:opacity-50"}
+              className={
+                unstyled
+                  ? ""
+                  : "flex items-center gap-2 rounded-lg bg-violet-600 px-4 py-2 text-sm text-white transition-colors hover:bg-violet-500 disabled:opacity-50"
+              }
             >
               <icons.RefreshCw
                 className={`h-4 w-4 ${isRegenerating ? "animate-spin" : ""}`}
@@ -515,7 +525,11 @@ export function SingleChart({ data, chart, onRegenerate, className, unstyled = f
       />
 
       {/* Chart */}
-      <div className={unstyled ? "" : "h-[450px] w-full"} style={unstyled ? { height: 450, width: "100%" } : undefined} ref={chartContainerRef}>
+      <div
+        className={unstyled ? "" : "h-[450px] w-full"}
+        style={unstyled ? { height: 450, width: "100%" } : undefined}
+        ref={chartContainerRef}
+      >
         <ResponsiveContainer
           key={`chart-${chart.id}-${showBrush ? "brush" : "no-brush"}`}
           width="100%"
@@ -535,27 +549,63 @@ export function SingleChart({ data, chart, onRegenerate, className, unstyled = f
 
       {/* Metadata Tags */}
       <div className={unstyled ? "" : "mt-4 flex flex-wrap gap-2"}>
-        <span className={unstyled ? "" : "rounded bg-white/10 px-2 py-0.5 text-xs text-gray-400"}>
+        <span
+          className={
+            unstyled
+              ? ""
+              : "rounded bg-white/10 px-2 py-0.5 text-xs text-gray-400"
+          }
+        >
           X: {chart.xAxis}
         </span>
-        <span className={unstyled ? "" : "rounded bg-white/10 px-2 py-0.5 text-xs text-gray-400"}>
+        <span
+          className={
+            unstyled
+              ? ""
+              : "rounded bg-white/10 px-2 py-0.5 text-xs text-gray-400"
+          }
+        >
           Y: {chart.yAxis}
         </span>
         {chart.groupBy && (
-          <span className={unstyled ? "" : "rounded bg-cyan-500/20 px-2 py-0.5 text-xs text-cyan-300"}>
+          <span
+            className={
+              unstyled
+                ? ""
+                : "rounded bg-cyan-500/20 px-2 py-0.5 text-xs text-cyan-300"
+            }
+          >
             Group: {chart.groupBy}
           </span>
         )}
         {chart.aggregation && chart.aggregation !== "none" && (
-          <span className={unstyled ? "" : "rounded bg-violet-500/20 px-2 py-0.5 text-xs text-violet-300"}>
+          <span
+            className={
+              unstyled
+                ? ""
+                : "rounded bg-violet-500/20 px-2 py-0.5 text-xs text-violet-300"
+            }
+          >
             {chart.aggregation}
           </span>
         )}
-        <span className={unstyled ? "" : "rounded bg-white/10 px-2 py-0.5 text-xs text-gray-400"}>
+        <span
+          className={
+            unstyled
+              ? ""
+              : "rounded bg-white/10 px-2 py-0.5 text-xs text-gray-400"
+          }
+        >
           {processedData.length} items
         </span>
         {isMultiSeries && (
-          <span className={unstyled ? "" : "rounded bg-emerald-500/20 px-2 py-0.5 text-xs text-emerald-300"}>
+          <span
+            className={
+              unstyled
+                ? ""
+                : "rounded bg-emerald-500/20 px-2 py-0.5 text-xs text-emerald-300"
+            }
+          >
             {seriesKeys.length} series
           </span>
         )}

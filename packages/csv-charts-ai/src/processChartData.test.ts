@@ -1,5 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { processChartData, processChartDataMultiSeries } from "./processChartData";
+import {
+  processChartData,
+  processChartDataMultiSeries,
+} from "./processChartData";
 import type { TabularData, ChartConfig } from "./types";
 
 const sampleData: TabularData = {
@@ -36,7 +39,10 @@ function makeChart(overrides: Partial<ChartConfig> = {}): ChartConfig {
 describe("processChartData", () => {
   describe("aggregation modes", () => {
     it("sum aggregation", () => {
-      const result = processChartData(sampleData, makeChart({ aggregation: "sum" }));
+      const result = processChartData(
+        sampleData,
+        makeChart({ aggregation: "sum" }),
+      );
       const electronics = result.find((d) => d["category"] === "Electronics");
       expect(electronics?.["value"]).toBe(300); // 100 + 200
       const clothing = result.find((d) => d["category"] === "Clothing");
@@ -44,13 +50,19 @@ describe("processChartData", () => {
     });
 
     it("avg aggregation", () => {
-      const result = processChartData(sampleData, makeChart({ aggregation: "avg" }));
+      const result = processChartData(
+        sampleData,
+        makeChart({ aggregation: "avg" }),
+      );
       const electronics = result.find((d) => d["category"] === "Electronics");
       expect(electronics?.["value"]).toBe(150); // (100+200)/2
     });
 
     it("count aggregation", () => {
-      const result = processChartData(sampleData, makeChart({ aggregation: "count" }));
+      const result = processChartData(
+        sampleData,
+        makeChart({ aggregation: "count" }),
+      );
       const electronics = result.find((d) => d["category"] === "Electronics");
       expect(electronics?.["value"]).toBe(2);
       const food = result.find((d) => d["category"] === "Food");
@@ -58,13 +70,19 @@ describe("processChartData", () => {
     });
 
     it("min aggregation", () => {
-      const result = processChartData(sampleData, makeChart({ aggregation: "min" }));
+      const result = processChartData(
+        sampleData,
+        makeChart({ aggregation: "min" }),
+      );
       const electronics = result.find((d) => d["category"] === "Electronics");
       expect(electronics?.["value"]).toBe(100);
     });
 
     it("max aggregation", () => {
-      const result = processChartData(sampleData, makeChart({ aggregation: "max" }));
+      const result = processChartData(
+        sampleData,
+        makeChart({ aggregation: "max" }),
+      );
       const food = result.find((d) => d["category"] === "Food");
       expect(food?.["value"]).toBe(300);
     });
@@ -157,12 +175,19 @@ describe("processChartData", () => {
         ],
         rowCount: 0,
       };
-      const result = processChartData(emptyData, makeChart({ xAxis: "a", yAxis: "b" }));
+      const result = processChartData(
+        emptyData,
+        makeChart({ xAxis: "a", yAxis: "b" }),
+      );
       expect(result).toEqual([]);
     });
 
     it("handles case-insensitive column matching", () => {
-      const chart = makeChart({ xAxis: "CATEGORY", yAxis: "VALUE", aggregation: "sum" });
+      const chart = makeChart({
+        xAxis: "CATEGORY",
+        yAxis: "VALUE",
+        aggregation: "sum",
+      });
       const result = processChartData(sampleData, chart);
       expect(result.length).toBeGreaterThan(0);
     });
@@ -181,7 +206,10 @@ describe("processChartData", () => {
         ],
         rowCount: 3,
       };
-      const result = processChartData(data, makeChart({ xAxis: "cat", yAxis: "val", aggregation: "avg" }));
+      const result = processChartData(
+        data,
+        makeChart({ xAxis: "cat", yAxis: "val", aggregation: "avg" }),
+      );
       const val = result[0]?.["val"] as number;
       // Should be rounded
       expect(String(val).split(".")[1]?.length ?? 0).toBeLessThanOrEqual(2);
@@ -201,7 +229,9 @@ describe("processChartDataMultiSeries", () => {
     expect(result.seriesKeys).toContain("South");
     expect(result.data.length).toBeGreaterThan(0);
 
-    const electronics = result.data.find((d) => d["category"] === "Electronics");
+    const electronics = result.data.find(
+      (d) => d["category"] === "Electronics",
+    );
     expect(electronics?.["North"]).toBe(100);
     expect(electronics?.["South"]).toBe(200);
   });
@@ -217,7 +247,12 @@ describe("processChartDataMultiSeries", () => {
       ],
       rowCount: 20,
     };
-    const chart = makeChart({ xAxis: "x", yAxis: "y", groupBy: "group", aggregation: "sum" });
+    const chart = makeChart({
+      xAxis: "x",
+      yAxis: "y",
+      groupBy: "group",
+      aggregation: "sum",
+    });
     const result = processChartDataMultiSeries(manyGroups, chart);
     expect(result.seriesKeys.length).toBeLessThanOrEqual(8);
   });
@@ -266,7 +301,12 @@ describe("processChartDataMultiSeries", () => {
       ],
       rowCount: 3,
     };
-    const chart = makeChart({ xAxis: "x", yAxis: "y", groupBy: "g", aggregation: "sum" });
+    const chart = makeChart({
+      xAxis: "x",
+      yAxis: "y",
+      groupBy: "g",
+      aggregation: "sum",
+    });
     const result = processChartDataMultiSeries(data, chart);
     const bRow = result.data.find((d) => d["x"] === "B");
     expect(bRow?.["G2"]).toBe(0);
@@ -283,7 +323,9 @@ describe("processChartDataMultiSeries", () => {
   it("supports count aggregation in multi-series", () => {
     const chart = makeChart({ groupBy: "region", aggregation: "count" });
     const result = processChartDataMultiSeries(sampleData, chart);
-    const electronics = result.data.find((d) => d["category"] === "Electronics");
+    const electronics = result.data.find(
+      (d) => d["category"] === "Electronics",
+    );
     expect(electronics?.["North"]).toBe(1);
     expect(electronics?.["South"]).toBe(1);
   });

@@ -72,11 +72,7 @@ describe("convertXLSXRows", () => {
   });
 
   it("normalizes uneven row lengths", () => {
-    const rows = [
-      ["A", "B", "C"],
-      ["1"],
-      ["2", "3", "4"],
-    ];
+    const rows = [["A", "B", "C"], ["1"], ["2", "3", "4"]];
     const data = convertXLSXRows(rows);
 
     expect(data.rows[0]).toEqual(["1", "", ""]);

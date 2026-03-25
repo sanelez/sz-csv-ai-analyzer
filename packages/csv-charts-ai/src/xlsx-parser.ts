@@ -127,7 +127,12 @@ export function convertXLSXRows(
     index,
   }));
 
-  return { headers, rows: normalizedRows, columns, rowCount: normalizedRows.length };
+  return {
+    headers,
+    rows: normalizedRows,
+    columns,
+    rowCount: normalizedRows.length,
+  };
 }
 
 // ============ Browser convenience ============

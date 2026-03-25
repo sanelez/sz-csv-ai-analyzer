@@ -343,12 +343,14 @@ useEffect(() => {
 
 ## React Components (`csv-charts-ai/charts`)
 
-Chart components are available as a **separate entry point** so projects that only need AI/parsing don't pull in React, Recharts, or Lucide.
+Chart components are available as a **separate entry point** so projects that only need AI/parsing don't pull in React or Recharts.
 
 ```bash
 # Optional peer dependencies — only needed if you import from csv-charts-ai/charts
-pnpm add react recharts lucide-react
+pnpm add react recharts
 ```
+
+Icons are **built-in** (SVG, zero dependency). To use your own icon library, see [Custom Icons](#custom-icons) below.
 
 ### Display Charts
 
@@ -409,6 +411,23 @@ You can also pass `className` to any component to add classes alongside the buil
 <ChartDisplay data={data} charts={charts} className="my-extra-class" />
 ```
 
+### Custom Icons
+
+Chart toolbar icons are built-in as minimal SVGs (zero dependency). To use your own icon library (lucide-react, heroicons, phosphor, etc.), wrap your charts with `ChartIconProvider`:
+
+```tsx
+import { ChartDisplay, ChartIconProvider } from "csv-charts-ai/charts";
+import { RefreshCw, Download, ArrowUp, ArrowDown, RotateCcw, TrendingUp, Filter, Image } from "lucide-react";
+
+const icons = { RefreshCw, Download, SortAsc: ArrowUp, SortDesc: ArrowDown, RotateCcw, TrendingUp, Filter, ImageIcon: Image };
+
+<ChartIconProvider icons={icons}>
+  <ChartDisplay data={data} charts={charts} />
+</ChartIconProvider>
+```
+
+You only need to override the icons you want to change — the rest fall back to the built-in SVGs.
+
 ### Headless Usage (No React)
 
 The core entry point (`csv-charts-ai`) works without React — use it in Node.js scripts, APIs, or CLI tools:
@@ -439,7 +458,9 @@ console.log(result.summary.keyInsights);
 | `SingleChart` | Individual chart with toolbar (sort, zoom, trendline, CSV/PNG export) |
 | `ChartToolbar` | Standalone toolbar component |
 | `ChartThemeProvider` | React context for chart theming |
+| `ChartIconProvider` | React context for pluggable icons (default: built-in SVGs) |
 | `defaultDarkTheme` / `defaultLightTheme` | Built-in themes |
+| `defaultIcons` | Built-in SVG icon set |
 
 ## AI Functions Reference
 

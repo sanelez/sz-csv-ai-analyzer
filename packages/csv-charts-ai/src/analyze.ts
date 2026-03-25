@@ -80,9 +80,7 @@ Look for:
 
 Analyze ALL rows provided. Return empty array if no anomalies found.`;
 
-const questionSystemPrompt = (
-  language?: string,
-) =>
+const questionSystemPrompt = (language?: string) =>
   `You are a data analysis expert.${language ? ` Respond in ${language}.` : ""}\n\nThe user will ask questions about a CSV dataset. Respond clearly and precisely.`;
 
 // ============ Helper ============
@@ -240,7 +238,14 @@ export interface AskAboutDataOptions {
 export async function askAboutData(
   options: AskAboutDataOptions,
 ): Promise<string> {
-  const { data, question, history = [], language, temperature = 0.5, signal } = options;
+  const {
+    data,
+    question,
+    history = [],
+    language,
+    temperature = 0.5,
+    signal,
+  } = options;
   const dataSummary = options.dataSummary ?? summarizeTabularData(data);
 
   try {
@@ -267,7 +272,10 @@ export async function askAboutData(
   }
 }
 
-export interface StreamAskAboutDataOptions extends Omit<AskAboutDataOptions, "signal"> {
+export interface StreamAskAboutDataOptions extends Omit<
+  AskAboutDataOptions,
+  "signal"
+> {
   onChunk: (chunk: string) => void;
   onComplete: (fullText: string) => void;
   /** AbortSignal to cancel the stream */
@@ -322,8 +330,7 @@ export async function streamAskAboutData(
       temperature,
       ...(signal && { abortSignal: signal }),
       onError: ({ error }) => {
-        streamError =
-          error instanceof Error ? error : new Error(String(error));
+        streamError = error instanceof Error ? error : new Error(String(error));
       },
     });
 
@@ -338,7 +345,9 @@ export async function streamAskAboutData(
 
     const finishReason = await result.finishReason;
     if (finishReason === "error") {
-      throw new Error("The AI model encountered an error while generating the response.");
+      throw new Error(
+        "The AI model encountered an error while generating the response.",
+      );
     }
 
     onComplete(fullText);
@@ -396,12 +405,30 @@ export async function analyzeData(
 
   // Run all in parallel
   const [summary, anomalies, charts] = await Promise.all([
-    summarizeData({ model: options.model, data, dataSummary, language, signal }),
+    summarizeData({
+      model: options.model,
+      data,
+      dataSummary,
+      language,
+      signal,
+    }),
     runAnomalies
-      ? detectAnomalies({ model: options.model, data, dataSummary, language, signal })
+      ? detectAnomalies({
+          model: options.model,
+          data,
+          dataSummary,
+          language,
+          signal,
+        })
       : Promise.resolve([]),
     runCharts
-      ? suggestCharts({ model: options.model, data, dataSummary, language, signal })
+      ? suggestCharts({
+          model: options.model,
+          data,
+          dataSummary,
+          language,
+          signal,
+        })
       : Promise.resolve([]),
   ]);
 

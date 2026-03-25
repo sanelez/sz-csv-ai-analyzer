@@ -35,6 +35,9 @@ export type {
 export { defaultDarkTheme, defaultLightTheme } from "./types";
 
 // Re-export data processing (used internally by charts, also useful standalone)
-export { processChartData, processChartDataMultiSeries } from "./processChartData";
+export {
+  processChartData,
+  processChartDataMultiSeries,
+} from "./processChartData";
 export type { ProcessedChartResult } from "./processChartData";
 export { COLORS } from "./constants";
