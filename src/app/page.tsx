@@ -326,7 +326,14 @@ export default function HomePage() {
         {csvData && (
           <div className="pb-12">
             {/* Sticky Header Bar */}
-            <header className="sticky top-0 z-40 border-b border-white/[0.06] bg-slate-950/80 backdrop-blur-xl">
+            <header
+              className="sticky top-0 z-40 border-b backdrop-blur-xl"
+              style={{
+                borderColor: "var(--border-glass)",
+                backgroundColor:
+                  "color-mix(in srgb, var(--bg-body-start) 80%, transparent)",
+              }}
+            >
               <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-3 md:px-8">
                 {/* Left: Back + File info */}
                 <button

@@ -429,6 +429,24 @@ html.light {
   /* --- Placeholders --- */
   & .placeholder-gray-500::placeholder { color: var(--text-tertiary); }
 
+  /* Slate backgrounds (used in cards, modals) */
+  & .bg-slate-900\/50 { background-color: rgba(255, 255, 255, 0.6); }
+  & .bg-slate-950\/80 { background-color: rgba(248, 250, 252, 0.8); }
+  & .bg-slate-950\/90 { background-color: rgba(248, 250, 252, 0.9); }
+  & .bg-gray-950\/90 { background-color: rgba(248, 250, 252, 0.9); }
+
+  /* Subtle borders used with bracket syntax */
+  & .border-white\/\[0\.06\] { border-color: rgba(0, 0, 0, 0.06); }
+  & .bg-white\/\[0\.06\] { background-color: rgba(0, 0, 0, 0.04); }
+
+  /* Colored badge backgrounds — keep visible in light */
+  & .bg-emerald-500\/10 { background-color: rgba(16, 185, 129, 0.08); }
+  & .bg-amber-500\/10 { background-color: rgba(245, 158, 11, 0.08); }
+  & .bg-cyan-500\/20 { background-color: rgba(6, 182, 212, 0.12); }
+  & .border-cyan-500\/60 { border-color: rgba(6, 182, 212, 0.3); }
+  & .border-emerald-500\/30 { border-color: rgba(16, 185, 129, 0.2); }
+  & .border-amber-500\/30 { border-color: rgba(245, 158, 11, 0.2); }
+
   /* --- Recharts text in light mode --- */
   & .recharts-default-tooltip {
     color: var(--text-primary) !important;

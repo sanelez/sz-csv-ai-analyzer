@@ -65,22 +65,22 @@ export function Hero({
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2">
             <ThemeToggle />
             <a
               href="https://github.com/maxgfr/csv-ai-analyzer"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 rounded-xl border-2 px-4 py-2.5 font-medium shadow-lg transition-all duration-200"
+              className="flex items-center gap-2 rounded-xl border px-3 py-2 text-sm transition-all duration-200"
               style={{
                 borderColor: "var(--border-glass)",
                 background: "var(--bg-glass)",
-                color: "var(--text-primary)",
+                color: "var(--text-secondary)",
               }}
               title="View source code on GitHub"
             >
               <Github className="h-4 w-4" />
-              <span className="hidden text-sm sm:inline">Source Code</span>
+              <span className="hidden sm:inline">Source Code</span>
             </a>
             <CSVSettingsButton
               settings={csvSettings}

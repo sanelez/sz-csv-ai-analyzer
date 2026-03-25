@@ -700,7 +700,7 @@ export function APIKeyButton({
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-sm transition-colors ${
+        className={`flex items-center gap-2 rounded-xl border px-3 py-2 text-sm transition-colors ${
           hasKey
             ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20"
             : "border-amber-500/30 bg-amber-500/10 text-amber-400 hover:bg-amber-500/20"
