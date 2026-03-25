@@ -1,3 +1,10 @@
+# [1.11.0](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.10.0...v1.11.0) (2026-03-25)
+
+
+### Features
+
+* pluggable chart icons + light/dark/auto theme ([89f3e9a](https://github.com/maxgfr/csv-ai-analyzer/commit/89f3e9a5e8e27d691fa39aef936281f5fd0f4b89))
+
 # [1.10.0](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.9.0...v1.10.0) (2026-03-25)
 
 
