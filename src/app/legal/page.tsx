@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function LegalPage() {
   return (
-    <main className="min-h-screen bg-gradient-to-b from-slate-950 to-black p-4 text-white md:p-8">
+    <main className="min-h-screen p-4 md:p-8">
       <div className="mx-auto max-w-3xl">
         {/* Back Button */}
         <Link

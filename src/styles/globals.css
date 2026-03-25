@@ -370,15 +370,29 @@ table {
 
 /* --- Text: white → dark (except inside colored containers) --- */
 html.light .text-white { color: var(--text-primary); }
+/* Keep white text inside colored backgrounds (both Tailwind v3 bg-gradient-to and v4 bg-linear-to) */
 html.light [class*="bg-gradient-to"].text-white,
 html.light [class*="bg-gradient-to"] .text-white,
+html.light [class*="bg-linear-to"].text-white,
+html.light [class*="bg-linear-to"] .text-white,
 html.light [class*="bg-violet-"].text-white,
 html.light [class*="bg-violet-"] .text-white,
+html.light [class*="bg-indigo-"].text-white,
 html.light [class*="bg-indigo-"] .text-white,
+html.light [class*="bg-purple-"].text-white,
 html.light [class*="bg-purple-"] .text-white,
+html.light [class*="bg-red-"].text-white,
 html.light [class*="bg-red-"] .text-white,
+html.light [class*="bg-emerald-"].text-white,
 html.light [class*="bg-emerald-"] .text-white,
-html.light [class*="bg-cyan-"] .text-white { color: #ffffff; }
+html.light [class*="bg-cyan-"].text-white,
+html.light [class*="bg-cyan-"] .text-white,
+html.light [class*="from-violet-"].text-white,
+html.light [class*="from-violet-"] .text-white,
+html.light [class*="from-cyan-"].text-white,
+html.light [class*="from-cyan-"] .text-white,
+html.light [class*="from-fuchsia-"].text-white,
+html.light [class*="from-fuchsia-"] .text-white { color: #ffffff; }
 
 /* --- Text: gray scale → proper contrast --- */
 html.light .text-gray-200 { color: var(--text-primary); }

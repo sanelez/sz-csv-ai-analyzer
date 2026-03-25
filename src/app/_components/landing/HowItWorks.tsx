@@ -6,7 +6,7 @@ export function HowItWorks() {
       </h3>
       <div className="grid gap-6 md:grid-cols-4">
         <div className="text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-violet-600 to-fuchsia-600 text-xl font-bold">
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-violet-600 to-fuchsia-600 text-xl font-bold text-white">
             1
           </div>
           <h4 className="mb-2 font-semibold text-white">Upload your file</h4>
@@ -15,7 +15,7 @@ export function HowItWorks() {
           </p>
         </div>
         <div className="text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-violet-600 to-fuchsia-600 text-xl font-bold">
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-violet-600 to-fuchsia-600 text-xl font-bold text-white">
             2
           </div>
           <h4 className="mb-2 font-semibold text-white">Add API Key</h4>
@@ -25,7 +25,7 @@ export function HowItWorks() {
           </p>
         </div>
         <div className="text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-violet-600 to-fuchsia-600 text-xl font-bold">
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-violet-600 to-fuchsia-600 text-xl font-bold text-white">
             3
           </div>
           <h4 className="mb-2 font-semibold text-white">Run Analysis</h4>
@@ -34,7 +34,7 @@ export function HowItWorks() {
           </p>
         </div>
         <div className="text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-violet-600 to-fuchsia-600 text-xl font-bold">
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-violet-600 to-fuchsia-600 text-xl font-bold text-white">
             4
           </div>
           <h4 className="mb-2 font-semibold text-white">Get Insights</h4>
