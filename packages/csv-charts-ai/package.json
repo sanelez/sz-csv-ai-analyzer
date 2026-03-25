@@ -53,7 +53,11 @@
   "peerDependencies": {
     "react": "^18.0.0 || ^19.0.0",
     "recharts": "^3.0.0",
-    "lucide-react": ">=0.400.0"
+    "lucide-react": ">=0.400.0",
+    "@ai-sdk/openai": "^3.0.0",
+    "@ai-sdk/anthropic": "^3.0.0",
+    "@ai-sdk/google": "^3.0.0",
+    "@ai-sdk/mistral": "^3.0.0"
   },
   "peerDependenciesMeta": {
     "react": {
@@ -64,15 +68,23 @@
     },
     "lucide-react": {
       "optional": true
+    },
+    "@ai-sdk/openai": {
+      "optional": true
+    },
+    "@ai-sdk/anthropic": {
+      "optional": true
+    },
+    "@ai-sdk/google": {
+      "optional": true
+    },
+    "@ai-sdk/mistral": {
+      "optional": true
     }
   },
   "dependencies": {
     "ai": "^6.0.134",
     "zod": "^4.1.13",
-    "@ai-sdk/openai": "^3.0.47",
-    "@ai-sdk/anthropic": "^3.0.63",
-    "@ai-sdk/google": "^3.0.52",
-    "@ai-sdk/mistral": "^3.0.27",
     "read-excel-file": "^7.0.2"
   },
   "devDependencies": {

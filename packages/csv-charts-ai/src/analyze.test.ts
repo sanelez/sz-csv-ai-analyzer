@@ -1,5 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import type { LanguageModel } from "ai";
 import type { TabularData } from "./types";
+import { registerProvider, clearProviders } from "./providers";
 
 // Mock the ai SDK
 vi.mock("ai", () => ({
@@ -8,17 +10,14 @@ vi.mock("ai", () => ({
   streamText: vi.fn(),
 }));
 
-// Mock @ai-sdk/openai
-vi.mock("@ai-sdk/openai", () => ({
-  createOpenAI: vi.fn(() => {
-    const modelFactory = (model: string) => ({
-      doGenerate: vi.fn(),
-      modelId: model,
-      provider: "openai",
-    });
-    return modelFactory;
-  }),
-}));
+/** Create a fake LanguageModel for testing */
+function mockLanguageModel(model: string): LanguageModel {
+  return {
+    doGenerate: vi.fn(),
+    modelId: model,
+    provider: "openai",
+  } as unknown as LanguageModel;
+}
 
 const sampleData: TabularData = {
   headers: ["name", "value", "city"],
@@ -38,6 +37,8 @@ const sampleData: TabularData = {
 describe("analyze module", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    clearProviders();
+    registerProvider("openai", (config) => mockLanguageModel(config.model));
   });
 
   describe("summarizeData", () => {

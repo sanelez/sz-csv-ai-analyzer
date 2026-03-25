@@ -8,6 +8,18 @@ importers:
 
   .:
     dependencies:
+      '@ai-sdk/anthropic':
+        specifier: ^3.0.63
+        version: 3.0.63(zod@4.3.6)
+      '@ai-sdk/google':
+        specifier: ^3.0.52
+        version: 3.0.52(zod@4.3.6)
+      '@ai-sdk/mistral':
+        specifier: ^3.0.27
+        version: 3.0.27(zod@4.3.6)
+      '@ai-sdk/openai':
+        specifier: ^3.0.47
+        version: 3.0.47(zod@4.3.6)
       '@t3-oss/env-nextjs':
         specifier: ^0.13.10
         version: 0.13.10(typescript@5.9.3)(zod@4.3.6)
@@ -148,16 +160,16 @@ importers:
   packages/csv-charts-ai:
     dependencies:
       '@ai-sdk/anthropic':
-        specifier: ^3.0.63
+        specifier: ^3.0.0
         version: 3.0.63(zod@4.1.13)
       '@ai-sdk/google':
-        specifier: ^3.0.52
+        specifier: ^3.0.0
         version: 3.0.52(zod@4.1.13)
       '@ai-sdk/mistral':
-        specifier: ^3.0.27
+        specifier: ^3.0.0
         version: 3.0.27(zod@4.1.13)
       '@ai-sdk/openai':
-        specifier: ^3.0.47
+        specifier: ^3.0.0
         version: 3.0.47(zod@4.1.13)
       ai:
         specifier: ^6.0.134
@@ -4644,6 +4656,12 @@ snapshots:
       '@ai-sdk/provider-utils': 4.0.21(zod@4.1.13)
       zod: 4.1.13
 
+  '@ai-sdk/anthropic@3.0.63(zod@4.3.6)':
+    dependencies:
+      '@ai-sdk/provider': 3.0.8
+      '@ai-sdk/provider-utils': 4.0.21(zod@4.3.6)
+      zod: 4.3.6
+
   '@ai-sdk/gateway@3.0.77(zod@4.1.13)':
     dependencies:
       '@ai-sdk/provider': 3.0.8
@@ -4657,11 +4675,23 @@ snapshots:
       '@ai-sdk/provider-utils': 4.0.21(zod@4.1.13)
       zod: 4.1.13
 
+  '@ai-sdk/google@3.0.52(zod@4.3.6)':
+    dependencies:
+      '@ai-sdk/provider': 3.0.8
+      '@ai-sdk/provider-utils': 4.0.21(zod@4.3.6)
+      zod: 4.3.6
+
   '@ai-sdk/mistral@3.0.27(zod@4.1.13)':
     dependencies:
       '@ai-sdk/provider': 3.0.8
       '@ai-sdk/provider-utils': 4.0.21(zod@4.1.13)
       zod: 4.1.13
+
+  '@ai-sdk/mistral@3.0.27(zod@4.3.6)':
+    dependencies:
+      '@ai-sdk/provider': 3.0.8
+      '@ai-sdk/provider-utils': 4.0.21(zod@4.3.6)
+      zod: 4.3.6
 
   '@ai-sdk/openai@3.0.47(zod@4.1.13)':
     dependencies:
@@ -4669,12 +4699,25 @@ snapshots:
       '@ai-sdk/provider-utils': 4.0.21(zod@4.1.13)
       zod: 4.1.13
 
+  '@ai-sdk/openai@3.0.47(zod@4.3.6)':
+    dependencies:
+      '@ai-sdk/provider': 3.0.8
+      '@ai-sdk/provider-utils': 4.0.21(zod@4.3.6)
+      zod: 4.3.6
+
   '@ai-sdk/provider-utils@4.0.21(zod@4.1.13)':
     dependencies:
       '@ai-sdk/provider': 3.0.8
       '@standard-schema/spec': 1.1.0
       eventsource-parser: 3.0.6
       zod: 4.1.13
+
+  '@ai-sdk/provider-utils@4.0.21(zod@4.3.6)':
+    dependencies:
+      '@ai-sdk/provider': 3.0.8
+      '@standard-schema/spec': 1.1.0
+      eventsource-parser: 3.0.6
+      zod: 4.3.6
 
   '@ai-sdk/provider@3.0.8':
     dependencies:

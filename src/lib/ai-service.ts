@@ -1,12 +1,15 @@
 /**
  * Bridge between the app's configuration system and the csv-charts-ai package.
  * All AI logic lives in the package — this file only handles:
+ * - Registering AI providers (openai, anthropic, google, mistral)
  * - Converting app settings (AIServiceConfig) to a LanguageModel via createAppModel
  * - Re-exporting types for backwards compatibility
  */
 
 import {
   createAppModel,
+  registerProvider,
+  fromSDK,
   suggestCharts,
   suggestCustomChart,
   repairChart,
@@ -20,7 +23,27 @@ import type {
   DataSummaryResult,
   AnomalyResult,
 } from "csv-charts-ai";
+import { createOpenAI } from "@ai-sdk/openai";
+import { createAnthropic } from "@ai-sdk/anthropic";
+import { createGoogleGenerativeAI } from "@ai-sdk/google";
+import { createMistral } from "@ai-sdk/mistral";
 import { type ModelId, type LanguageCode } from "./ai-models";
+
+// ============ Register AI providers ============
+
+registerProvider("openai", fromSDK(createOpenAI));
+registerProvider("anthropic", (config) => {
+  const anthropic = createAnthropic({
+    apiKey: config.apiKey,
+    headers: {
+      ...config.headers,
+      "anthropic-dangerous-direct-browser-access": "true",
+    },
+  });
+  return anthropic(config.model);
+});
+registerProvider("google", fromSDK(createGoogleGenerativeAI));
+registerProvider("mistral", fromSDK(createMistral));
 
 // ============ Re-exports from package ============
 

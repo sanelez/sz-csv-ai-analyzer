@@ -10,22 +10,36 @@ AI-powered CSV analysis, chart generation, and interactive visualization. Built 
 pnpm add csv-charts-ai
 ```
 
-All AI SDKs (`ai`, `zod`, `@ai-sdk/openai`, `@ai-sdk/anthropic`, `@ai-sdk/google`, `@ai-sdk/mistral`) and `read-excel-file` are bundled — no extra installs needed.
+Then install **only the AI provider(s) you need**:
+
+```bash
+# Pick one or more
+pnpm add @ai-sdk/openai      # OpenAI / OpenAI-compatible (Ollama, vLLM, LM Studio…)
+pnpm add @ai-sdk/anthropic    # Anthropic
+pnpm add @ai-sdk/google       # Google Generative AI
+pnpm add @ai-sdk/mistral      # Mistral
+```
+
+Core dependencies (`ai`, `zod`, `read-excel-file`) are bundled. AI provider SDKs are **optional peer dependencies** — you only install what you use.
 
 **Optional peer dependencies** (only for React chart components): `react`, `recharts`, `lucide-react`.
 
 ## Quick Start
 
 ```ts
-import { parseCSV, analyzeData, suggestQuestions } from "csv-charts-ai";
+import { registerProvider, fromSDK, parseCSV, analyzeData, suggestQuestions } from "csv-charts-ai";
+import { createOpenAI } from "@ai-sdk/openai";
 
-// 1. Parse CSV string into structured data
+// 1. Register your provider(s) — once, at app startup
+registerProvider("openai", fromSDK(createOpenAI));
+
+// 2. Parse CSV string into structured data
 const data = parseCSV(`name,age,city,salary
 Alice,30,Paris,75000
 Bob,25,London,62000
 Charlie,35,Berlin,88000`);
 
-// 2. Run full AI analysis (summary + anomalies + charts) in parallel
+// 3. Run full AI analysis (summary + anomalies + charts) in parallel
 const result = await analyzeData({
   model: { apiKey: "sk-...", model: "gpt-4o" },
   data,
@@ -35,13 +49,63 @@ console.log(result.summary.keyInsights);
 console.log(`Found ${result.anomalies.length} anomalies`);
 console.log(`Generated ${result.charts.length} chart suggestions`);
 
-// 3. Suggest questions the user could ask
+// 4. Suggest questions the user could ask
 const questions = await suggestQuestions({
   model: { apiKey: "sk-...", model: "gpt-4o" },
   data,
 });
 questions.forEach(q => console.log(`[${q.category}] ${q.question}`));
 ```
+
+## Provider Setup
+
+Register AI providers **once** at app startup, before calling any AI function. You only install and register the providers you need.
+
+### Using `@ai-sdk/*` packages
+
+The `fromSDK()` helper wraps any `@ai-sdk/*` creator into the format the library expects:
+
+```ts
+import { registerProvider, fromSDK } from "csv-charts-ai";
+import { createOpenAI } from "@ai-sdk/openai";
+import { createAnthropic } from "@ai-sdk/anthropic";
+import { createGoogleGenerativeAI } from "@ai-sdk/google";
+import { createMistral } from "@ai-sdk/mistral";
+
+registerProvider("openai", fromSDK(createOpenAI));
+registerProvider("anthropic", fromSDK(createAnthropic));
+registerProvider("google", fromSDK(createGoogleGenerativeAI));
+registerProvider("mistral", fromSDK(createMistral));
+```
+
+### Custom / self-hosted providers
+
+For full control, pass a `ProviderFactory` directly — a function that receives `{ apiKey, model, baseURL?, headers? }` and returns a `LanguageModel`:
+
+```ts
+import { registerProvider } from "csv-charts-ai";
+
+registerProvider("my-llm", (config) => {
+  return myCustomSDK.createModel(config.apiKey, config.model);
+});
+```
+
+### Batch registration
+
+```ts
+import { registerProviders, fromSDK } from "csv-charts-ai";
+import { createOpenAI } from "@ai-sdk/openai";
+import { createAnthropic } from "@ai-sdk/anthropic";
+
+registerProviders({
+  openai: fromSDK(createOpenAI),
+  anthropic: fromSDK(createAnthropic),
+});
+```
+
+### Aliases
+
+npm package names are resolved automatically — `"@ai-sdk/openai"` and `"openai"` map to the same slot. So `createModel({ provider: "openai" })` and `createAppModel({ providerNpm: "@ai-sdk/openai" })` both work after a single registration.
 
 ## CSV Parsing
 
@@ -105,13 +169,13 @@ All AI functions accept either a simple config object or a pre-built `LanguageMo
 ```ts
 import { suggestCharts } from "csv-charts-ai";
 
-// Simple — OpenAI
+// Simple — OpenAI (provider must be registered, see Provider Setup)
 const charts = await suggestCharts({
   model: { apiKey: "sk-...", model: "gpt-4o" },
   data,
 });
 
-// Custom endpoint — Ollama / vLLM / LM Studio
+// Custom endpoint — Ollama / vLLM / LM Studio (uses the "openai" provider)
 const charts = await suggestCharts({
   model: { apiKey: "", model: "llama3", baseURL: "http://localhost:11434/v1" },
   data,
@@ -123,8 +187,9 @@ const charts = await suggestCharts({
   data,
 });
 
-// Advanced — any LanguageModel instance
-import { anthropic } from "@ai-sdk/anthropic";
+// Advanced — any LanguageModel instance (no registration needed)
+import { createAnthropic } from "@ai-sdk/anthropic";
+const anthropic = createAnthropic({ apiKey: "sk-ant-..." });
 const charts = await suggestCharts({
   model: anthropic("claude-sonnet-4-20250514"),
   data,
@@ -349,8 +414,11 @@ You can also pass `className` to any component to add classes alongside the buil
 The core entry point (`csv-charts-ai`) works without React — use it in Node.js scripts, APIs, or CLI tools:
 
 ```ts
-import { parseCSV, analyzeData } from "csv-charts-ai";
+import { registerProvider, fromSDK, parseCSV, analyzeData } from "csv-charts-ai";
+import { createOpenAI } from "@ai-sdk/openai";
 import { readFileSync } from "fs";
+
+registerProvider("openai", fromSDK(createOpenAI));
 
 const csv = readFileSync("sales.csv", "utf-8");
 const data = parseCSV(csv);
@@ -386,6 +454,17 @@ console.log(result.summary.keyInsights);
 | `streamAskAboutData(options)` | Streaming version of askAboutData |
 | `suggestQuestions(options)` | Suggest interesting questions to ask about the data |
 | `analyzeData(options)` | Full pipeline: summary + anomalies + charts in parallel |
+
+## Provider Registry Reference
+
+| Export | Description |
+|--------|-------------|
+| `registerProvider(name, factory)` | Register a provider by name |
+| `registerProviders(map)` | Register multiple providers at once |
+| `fromSDK(creator)` | Wrap an `@ai-sdk/*` creator into a `ProviderFactory` |
+| `getProvider(name)` | Get a registered provider (or `undefined`) |
+| `hasProvider(name)` | Check if a provider is registered |
+| `clearProviders()` | Remove all registered providers (for testing) |
 
 ## Utilities Reference
 
@@ -443,16 +522,17 @@ Match modes: `"index"` (positional), `"key"` (by column value), `"content"` (ful
 
 ## Provider Support
 
-All provider SDKs are bundled — no extra installs needed.
+Install only the provider(s) you need and register them at startup (see [Provider Setup](#provider-setup)).
 
-| Provider | Config |
-|----------|--------|
-| OpenAI | `{ apiKey, model }` |
-| Anthropic | `{ provider: "anthropic", apiKey, model }` |
-| Google | `{ provider: "google", apiKey, model }` |
-| Mistral | `{ provider: "mistral", apiKey, model }` |
-| Ollama / vLLM / LM Studio | `{ apiKey: "", model, baseURL }` |
-| Any LanguageModel | Pass instance directly |
+| Provider | Install | Config |
+|----------|---------|--------|
+| OpenAI | `@ai-sdk/openai` | `{ apiKey, model }` |
+| Anthropic | `@ai-sdk/anthropic` | `{ provider: "anthropic", apiKey, model }` |
+| Google | `@ai-sdk/google` | `{ provider: "google", apiKey, model }` |
+| Mistral | `@ai-sdk/mistral` | `{ provider: "mistral", apiKey, model }` |
+| Ollama / vLLM / LM Studio | `@ai-sdk/openai` | `{ apiKey: "", model, baseURL }` |
+| Custom provider | — | `registerProvider("name", factory)` |
+| Any LanguageModel | — | Pass instance directly |
 
 ## License
 

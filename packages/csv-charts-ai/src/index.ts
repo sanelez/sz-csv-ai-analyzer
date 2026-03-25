@@ -1,6 +1,17 @@
 // Version
 export { VERSION } from "./version";
 
+// Provider registry
+export {
+  registerProvider,
+  registerProviders,
+  fromSDK,
+  getProvider,
+  hasProvider,
+  clearProviders,
+} from "./providers";
+export type { ProviderConfig, ProviderFactory } from "./providers";
+
 // CSV parsing
 export { parseCSV } from "./csv-parser";
 export type { ParseCSVOptions } from "./csv-parser";

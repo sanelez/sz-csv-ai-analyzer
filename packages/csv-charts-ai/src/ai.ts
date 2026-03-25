@@ -1,10 +1,7 @@
 import { generateObject, type LanguageModel } from "ai";
 import { z } from "zod";
-import { createOpenAI } from "@ai-sdk/openai";
-import { createAnthropic } from "@ai-sdk/anthropic";
-import { createGoogleGenerativeAI } from "@ai-sdk/google";
-import { createMistral } from "@ai-sdk/mistral";
 import type { ChartConfig, TabularData } from "./types";
+import { requireProvider } from "./providers";
 
 // ============ Input Validation Schemas ============
 
@@ -16,11 +13,8 @@ export const AIConfigSchema = z.object({
   model: z.string(),
   /** Custom base URL for non-OpenAI providers (Ollama, vLLM, Mistral, etc.) */
   baseURL: z.string().optional(),
-  /** Provider hint — used to dynamically load the right SDK. Defaults to "openai". */
-  provider: z
-    .enum(["openai", "anthropic", "google", "mistral"])
-    .optional()
-    .default("openai"),
+  /** Provider name — must match a registered provider. Defaults to "openai". */
+  provider: z.string().optional().default("openai"),
 });
 
 export type AIConfig = z.infer<typeof AIConfigSchema>;
@@ -54,6 +48,8 @@ export interface AppModelConfig {
   customEndpoint?: string;
   /** Custom model name (takes priority over model) */
   customModel?: string;
+  /** Custom headers to pass to the provider (e.g. Anthropic browser access header) */
+  headers?: Record<string, string>;
 }
 
 /** Model input: either a simple config object, an app config, or a pre-built LanguageModel */
@@ -275,49 +271,35 @@ function isLanguageModel(input: unknown): input is LanguageModel {
 
 /**
  * Create a LanguageModel from an AIConfig.
- * All provider SDKs are bundled — no dynamic imports needed.
+ * The provider must be registered beforehand via {@link registerProvider}.
  *
  * @example
  * ```ts
+ * import { registerProvider, fromSDK, createModel } from "csv-charts-ai";
+ * import { createOpenAI } from "@ai-sdk/openai";
+ *
+ * registerProvider("openai", fromSDK(createOpenAI));
+ *
  * const model = createModel({ apiKey: "sk-...", model: "gpt-4o" });
- * const charts1 = await suggestCharts({ model, data, dataSummary });
- * const charts2 = await suggestCustomChart({ model, data, dataSummary, prompt: "..." });
  * ```
  */
 export function createModel(config: AIConfig): LanguageModel {
   const parsed = AIConfigSchema.parse(config);
-
-  if (parsed.baseURL || parsed.provider === "openai") {
-    const openai = createOpenAI({
-      apiKey: parsed.apiKey,
-      ...(parsed.baseURL && { baseURL: parsed.baseURL }),
-    }) as unknown as (model: string) => LanguageModel;
-    return openai(parsed.model);
-  }
-
-  switch (parsed.provider) {
-    case "anthropic": {
-      return createAnthropic({ apiKey: parsed.apiKey })(parsed.model);
-    }
-    case "google": {
-      return createGoogleGenerativeAI({ apiKey: parsed.apiKey })(parsed.model);
-    }
-    case "mistral": {
-      return createMistral({ apiKey: parsed.apiKey })(parsed.model);
-    }
-    default: {
-      const openai = createOpenAI({
-        apiKey: parsed.apiKey,
-      }) as unknown as (model: string) => LanguageModel;
-      return openai(parsed.model);
-    }
-  }
+  const factory = requireProvider(parsed.provider);
+  return factory({
+    apiKey: parsed.apiKey,
+    model: parsed.model,
+    ...(parsed.baseURL && { baseURL: parsed.baseURL }),
+  });
 }
 
 /**
  * Create a LanguageModel from an AppModelConfig.
- * Handles multi-provider apps with providerNpm-based routing,
- * custom endpoints, and Anthropic browser headers.
+ * Handles multi-provider apps with providerNpm-based routing and
+ * custom endpoints.
+ *
+ * The provider identified by `providerNpm` (or `"openai"` by default)
+ * must be registered beforehand via {@link registerProvider}.
  *
  * @example
  * ```ts
@@ -332,37 +314,23 @@ export function createAppModel(config: AppModelConfig): LanguageModel {
   const modelName = config.customModel ?? config.model ?? "";
 
   if (config.customEndpoint) {
-    const openai = createOpenAI({
+    const factory = requireProvider("openai");
+    return factory({
       apiKey: config.apiKey || "",
+      model: config.customModel ?? modelName,
       baseURL: config.customEndpoint,
-    }) as unknown as (model: string) => LanguageModel;
-    return openai(config.customModel ?? modelName);
+      ...(config.headers && { headers: config.headers }),
+    });
   }
 
-  switch (config.providerNpm) {
-    case "@ai-sdk/anthropic": {
-      const anthropic = createAnthropic({
-        apiKey: config.apiKey,
-        headers: { "anthropic-dangerous-direct-browser-access": "true" },
-      });
-      return anthropic(modelName);
-    }
-    case "@ai-sdk/google": {
-      const google = createGoogleGenerativeAI({ apiKey: config.apiKey });
-      return google(modelName);
-    }
-    case "@ai-sdk/mistral": {
-      const mistral = createMistral({ apiKey: config.apiKey });
-      return mistral(modelName);
-    }
-    default: {
-      const openai = createOpenAI({
-        apiKey: config.apiKey,
-        baseURL: config.providerApi,
-      }) as unknown as (model: string) => LanguageModel;
-      return openai(modelName);
-    }
-  }
+  const providerName = config.providerNpm ?? "openai";
+  const factory = requireProvider(providerName);
+  return factory({
+    apiKey: config.apiKey,
+    model: modelName,
+    ...(config.providerApi && { baseURL: config.providerApi }),
+    ...(config.headers && { headers: config.headers }),
+  });
 }
 
 function isAppModelConfig(input: unknown): input is AppModelConfig {

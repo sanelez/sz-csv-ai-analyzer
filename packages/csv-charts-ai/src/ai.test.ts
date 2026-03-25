@@ -9,6 +9,8 @@ import {
   suggestCustomChart,
   repairChart,
 } from "./ai";
+import { registerProvider, clearProviders } from "./providers";
+import type { LanguageModel } from "ai";
 import type { TabularData } from "./types";
 
 // Mock the ai SDK
@@ -16,17 +18,14 @@ vi.mock("ai", () => ({
   generateObject: vi.fn(),
 }));
 
-// Mock @ai-sdk/openai
-vi.mock("@ai-sdk/openai", () => ({
-  createOpenAI: vi.fn(() => {
-    const modelFactory = (model: string) => ({
-      doGenerate: vi.fn(),
-      modelId: model,
-      provider: "openai",
-    });
-    return modelFactory;
-  }),
-}));
+/** Create a fake LanguageModel for testing */
+function mockLanguageModel(model: string): LanguageModel {
+  return {
+    doGenerate: vi.fn(),
+    modelId: model,
+    provider: "openai",
+  } as unknown as LanguageModel;
+}
 
 const sampleData: TabularData = {
   headers: ["name", "age", "salary"],
@@ -212,14 +211,13 @@ describe("AIConfigSchema", () => {
     expect(() => AIConfigSchema.parse({ apiKey: "sk-test" })).toThrow();
   });
 
-  it("rejects invalid provider", () => {
-    expect(() =>
-      AIConfigSchema.parse({
-        apiKey: "sk-test",
-        model: "gpt-4o",
-        provider: "invalid",
-      }),
-    ).toThrow();
+  it("accepts any string as provider", () => {
+    const result = AIConfigSchema.parse({
+      apiKey: "sk-test",
+      model: "gpt-4o",
+      provider: "my-custom-provider",
+    });
+    expect(result.provider).toBe("my-custom-provider");
   });
 });
 
@@ -245,8 +243,13 @@ describe("TabularDataSchema", () => {
 });
 
 describe("createModel", () => {
-  it("creates OpenAI model by default", async () => {
-    const model = await createModel({
+  beforeEach(() => {
+    clearProviders();
+    registerProvider("openai", (config) => mockLanguageModel(config.model));
+  });
+
+  it("creates model via registered provider", () => {
+    const model = createModel({
       apiKey: "sk-test",
       model: "gpt-4o",
     });
@@ -254,19 +257,31 @@ describe("createModel", () => {
     expect((model as { modelId: string }).modelId).toBe("gpt-4o");
   });
 
-  it("creates OpenAI model with custom baseURL", async () => {
-    const model = await createModel({
+  it("creates model with custom baseURL", () => {
+    const model = createModel({
       apiKey: "",
       model: "llama3",
       baseURL: "http://localhost:11434/v1",
     });
     expect(model).toBeDefined();
   });
+
+  it("throws when provider is not registered", () => {
+    expect(() =>
+      createModel({
+        apiKey: "sk-test",
+        model: "claude-sonnet-4-20250514",
+        provider: "unregistered",
+      }),
+    ).toThrow('Provider "unregistered" is not registered');
+  });
 });
 
 describe("suggestCharts", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    clearProviders();
+    registerProvider("openai", (config) => mockLanguageModel(config.model));
   });
 
   it("validates input data", async () => {
@@ -357,6 +372,8 @@ describe("suggestCharts", () => {
 describe("suggestCustomChart", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    clearProviders();
+    registerProvider("openai", (config) => mockLanguageModel(config.model));
   });
 
   it("returns a single ChartConfig on success", async () => {
@@ -399,6 +416,8 @@ describe("suggestCustomChart", () => {
 describe("repairChart", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    clearProviders();
+    registerProvider("openai", (config) => mockLanguageModel(config.model));
   });
 
   it("returns a fixed ChartConfig preserving the original id", async () => {
