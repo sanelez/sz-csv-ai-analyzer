@@ -1,13 +1,4 @@
-import {
-  RefreshCw,
-  Download,
-  SortAsc,
-  SortDesc,
-  RotateCcw,
-  TrendingUp,
-  Filter,
-  Image,
-} from "lucide-react";
+import { useChartIcons } from "./IconContext";
 import type { ChartType, SortOrder } from "./types";
 
 interface ChartToolbarProps {
@@ -49,6 +40,7 @@ export function ChartToolbar({
   className,
   unstyled = false,
 }: ChartToolbarProps) {
+  const icons = useChartIcons();
   const supportsBrush =
     chartType === "line" || chartType === "area" || chartType === "bar";
   const supportsTrendline =
@@ -71,18 +63,18 @@ export function ChartToolbar({
         title="Sort by value"
       >
         {sortOrder === "asc" ? (
-          <SortAsc className="h-4 w-4" />
+          <icons.SortAsc className="h-4 w-4" />
         ) : sortOrder === "desc" ? (
-          <SortDesc className="h-4 w-4" />
+          <icons.SortDesc className="h-4 w-4" />
         ) : (
-          <SortDesc className={cls("h-4 w-4 opacity-50")} />
+          <icons.SortDesc className={cls("h-4 w-4 opacity-50")} />
         )}
         Sort
       </button>
 
       {/* Limit Results */}
       <div className={cls("flex items-center gap-2")}>
-        <Filter className={cls("h-4 w-4 text-gray-400")} aria-hidden="true" />
+        <icons.Filter className={cls("h-4 w-4 text-gray-400")} aria-hidden="true" />
         <select
           value={limitResults}
           onChange={(e) => onLimitChange(Number(e.target.value))}
@@ -108,7 +100,7 @@ export function ChartToolbar({
           )}
           title="Enable zoom/brush"
         >
-          <RotateCcw className="h-4 w-4" />
+          <icons.RotateCcw className="h-4 w-4" />
           Zoom
         </button>
       )}
@@ -124,7 +116,7 @@ export function ChartToolbar({
           )}
           title="Show average line"
         >
-          <TrendingUp className="h-4 w-4" />
+          <icons.TrendingUp className="h-4 w-4" />
           Average
         </button>
       )}
@@ -137,7 +129,7 @@ export function ChartToolbar({
         className={cls("flex items-center gap-1.5 rounded-lg bg-white/5 px-3 py-1.5 text-sm text-gray-400 transition-colors hover:bg-white/10 hover:text-white")}
         title="Export chart as PNG image"
       >
-        <Image className="h-4 w-4" />
+        <icons.ImageIcon className="h-4 w-4" />
         PNG
       </button>
 
@@ -147,7 +139,7 @@ export function ChartToolbar({
         className={cls("flex items-center gap-1.5 rounded-lg bg-white/5 px-3 py-1.5 text-sm text-gray-400 transition-colors hover:bg-white/10 hover:text-white")}
         title="Export chart data as CSV"
       >
-        <Download className="h-4 w-4" />
+        <icons.Download className="h-4 w-4" />
         CSV
       </button>
 
@@ -158,7 +150,7 @@ export function ChartToolbar({
           disabled={isRegenerating}
           className={cls("flex items-center gap-1.5 rounded-lg bg-violet-500/20 px-3 py-1.5 text-sm text-violet-400 transition-colors hover:bg-violet-500/30 disabled:opacity-50")}
         >
-          <RefreshCw
+          <icons.RefreshCw
             className={`h-4 w-4 ${isRegenerating ? "animate-spin" : ""}`}
           />
           {isRegenerating ? "..." : "Regenerate"}

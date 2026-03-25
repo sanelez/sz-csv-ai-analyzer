@@ -1,9 +1,33 @@
 "use client";
 
-import { ChartDisplay as BaseChartDisplay } from "csv-charts-ai/charts";
+import {
+  ChartDisplay as BaseChartDisplay,
+  ChartIconProvider,
+} from "csv-charts-ai/charts";
+import {
+  RefreshCw,
+  Download,
+  ArrowUp,
+  ArrowDown,
+  RotateCcw,
+  TrendingUp,
+  Filter,
+  Image,
+} from "lucide-react";
 import type { CSVData } from "~/lib/csv-parser";
 import type { ChartSuggestion } from "~/lib/ai-service";
 import { FullscreenCard } from "./FullscreenCard";
+
+const lucideIcons = {
+  RefreshCw,
+  Download,
+  SortAsc: ArrowUp,
+  SortDesc: ArrowDown,
+  RotateCcw,
+  TrendingUp,
+  Filter,
+  ImageIcon: Image,
+};
 
 interface ChartDisplayProps {
   data: CSVData;
@@ -17,11 +41,13 @@ export function ChartDisplay({
   onRegenerate,
 }: ChartDisplayProps) {
   return (
-    <BaseChartDisplay
-      data={data}
-      charts={charts}
-      onRegenerate={onRegenerate}
-      cardWrapper={FullscreenCard}
-    />
+    <ChartIconProvider icons={lucideIcons}>
+      <BaseChartDisplay
+        data={data}
+        charts={charts}
+        onRegenerate={onRegenerate}
+        cardWrapper={FullscreenCard}
+      />
+    </ChartIconProvider>
   );
 }

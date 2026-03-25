@@ -4,6 +4,7 @@ import { type Metadata } from "next";
 import { Geist } from "next/font/google";
 import Link from "next/link";
 import { Toaster } from "sonner";
+import { ThemeProvider } from "~/lib/theme";
 
 const siteUrl = "https://maxgfr.github.io/csv-ai-analyzer";
 
@@ -104,46 +105,61 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${geist.variable}`} suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`dark ${geist.variable}`}
+      suppressHydrationWarning
+    >
       <head>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
+        {/* Anti-flash: apply theme class before first paint */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var m=(document.cookie.match(/csv-ai-theme=(\\w+)/)||[])[1]||"auto";var d=m==="dark"||(m==="auto"&&window.matchMedia("(prefers-color-scheme:dark)").matches);document.documentElement.classList.remove("dark","light");document.documentElement.classList.add(d?"dark":"light")}catch(e){}})();`,
+          }}
+        />
       </head>
       <body className="antialiased" suppressHydrationWarning>
-        {/* Background effects */}
-        <div className="pointer-events-none fixed inset-0 overflow-hidden">
-          <div className="floating-orb floating-orb-1" />
-          <div className="floating-orb floating-orb-2" />
-          <div className="floating-orb floating-orb-3" />
-          <div className="bg-grid-pattern absolute inset-0" />
-        </div>
+        <ThemeProvider>
+          {/* Background effects */}
+          <div className="pointer-events-none fixed inset-0 overflow-hidden">
+            <div className="floating-orb floating-orb-1" />
+            <div className="floating-orb floating-orb-2" />
+            <div className="floating-orb floating-orb-3" />
+            <div className="bg-grid-pattern absolute inset-0" />
+          </div>
 
-        {/* Main content */}
-        <div className="relative z-10">{children}</div>
+          {/* Main content */}
+          <div className="relative z-10">{children}</div>
 
-        {/* Toast notifications */}
-        <Toaster position="bottom-right" richColors />
+          {/* Toast notifications */}
+          <Toaster position="bottom-right" richColors />
 
-        {/* Footer with legal link */}
-        <footer className="relative z-10 flex items-center justify-center gap-4 py-6 text-center text-sm text-gray-500">
-          <Link
-            href="/legal"
-            className="transition-colors hover:text-violet-400"
+          {/* Footer with legal link */}
+          <footer
+            className="relative z-10 flex items-center justify-center gap-4 py-6 text-center text-sm"
+            style={{ color: "var(--text-secondary)" }}
           >
-            Privacy & Legal
-          </Link>
-          <span className="text-gray-600">•</span>
-          <a
-            href="https://github.com/maxgfr/csv-ai-analyzer"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="transition-colors hover:text-violet-400"
-          >
-            GitHub
-          </a>
-        </footer>
+            <Link
+              href="/legal"
+              className="transition-colors hover:text-violet-400"
+            >
+              Privacy & Legal
+            </Link>
+            <span style={{ color: "var(--text-tertiary)" }}>•</span>
+            <a
+              href="https://github.com/maxgfr/csv-ai-analyzer"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition-colors hover:text-violet-400"
+            >
+              GitHub
+            </a>
+          </footer>
+        </ThemeProvider>
       </body>
     </html>
   );

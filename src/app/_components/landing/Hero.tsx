@@ -4,6 +4,7 @@ import { Sparkles, Database, ChevronDown, Github } from "lucide-react";
 import { FileUpload } from "../FileUpload";
 import { APIKeyButton } from "../APIKeySettings";
 import { CSVSettingsButton } from "../CSVSettings";
+import { ThemeToggle } from "../ThemeToggle";
 import { SAMPLE_DATASETS } from "~/lib/sample-data";
 import type { CSVData, CSVSettings } from "~/lib/csv-parser";
 import type { StoredSettings } from "~/lib/storage";
@@ -45,23 +46,37 @@ export function Hero({
               <Sparkles className="h-8 w-8 text-white" />
             </div>
             <div>
-              <h1 className="bg-gradient-to-r from-white to-gray-400 bg-clip-text text-3xl font-bold text-transparent">
+              <h1
+                className="bg-clip-text text-3xl font-bold text-transparent"
+                style={{
+                  backgroundImage: `linear-gradient(to right, var(--text-heading-from), var(--text-heading-to))`,
+                }}
+              >
                 CSV AI Analyzer
-                <span className="ml-2 align-middle text-xs font-normal text-gray-600">
+                <span
+                  className="ml-2 align-middle text-xs font-normal"
+                  style={{ color: "var(--text-tertiary)" }}
+                >
                   v{process.env.NEXT_PUBLIC_APP_VERSION}
                 </span>
               </h1>
-              <p className="text-gray-400">
+              <p style={{ color: "var(--text-secondary)" }}>
                 Intelligent data analysis powered by AI
               </p>
             </div>
           </div>
           <div className="flex items-center gap-3">
+            <ThemeToggle />
             <a
               href="https://github.com/maxgfr/csv-ai-analyzer"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 rounded-xl border-2 border-gray-600 bg-gray-700 px-4 py-2.5 font-medium text-white shadow-lg shadow-gray-700/25 transition-all duration-200 hover:bg-gray-600"
+              className="flex items-center gap-2 rounded-xl border-2 px-4 py-2.5 font-medium shadow-lg transition-all duration-200"
+              style={{
+                borderColor: "var(--border-glass)",
+                background: "var(--bg-glass)",
+                color: "var(--text-primary)",
+              }}
               title="View source code on GitHub"
             >
               <Github className="h-4 w-4" />
@@ -80,10 +95,18 @@ export function Hero({
 
         {/* Hero Content */}
         <div className="mx-auto mb-12 max-w-4xl text-center">
-          <h2 className="mb-6 bg-gradient-to-r from-white via-violet-200 to-fuchsia-200 bg-clip-text text-4xl font-bold text-transparent md:text-6xl">
+          <h2
+            className="mb-6 bg-clip-text text-4xl font-bold text-transparent md:text-6xl"
+            style={{
+              backgroundImage: `linear-gradient(to right, var(--text-hero-from), var(--text-hero-via), var(--text-hero-to))`,
+            }}
+          >
             Analyze your CSV & Excel files with AI in seconds
           </h2>
-          <p className="mx-auto mb-8 max-w-2xl text-xl text-gray-400">
+          <p
+            className="mx-auto mb-8 max-w-2xl text-xl"
+            style={{ color: "var(--text-secondary)" }}
+          >
             Upload your data, choose your AI provider (OpenAI, Anthropic,
             Google, and more), and get intelligent insights and chart
             suggestions.
@@ -107,11 +130,18 @@ export function Hero({
 
           {/* Sample Data Loader */}
           <div className="animate-fade-in mt-6 flex items-center justify-center gap-3">
-            <span className="text-sm text-gray-500">Or try a sample:</span>
+            <span className="text-sm" style={{ color: "var(--text-tertiary)" }}>
+              Or try a sample:
+            </span>
             <div className="relative">
               <button
                 onClick={onToggleSampleDropdown}
-                className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-gray-300 transition-all hover:bg-white/10"
+                className="flex items-center gap-2 rounded-xl px-4 py-2 text-sm transition-all"
+                style={{
+                  border: "1px solid var(--border-glass)",
+                  background: "var(--bg-glass)",
+                  color: "var(--text-secondary)",
+                }}
               >
                 <Database className="h-4 w-4" />
                 Load Sample Data
@@ -122,13 +152,20 @@ export function Hero({
 
               {/* Dropdown */}
               {showSampleDropdown && (
-                <div className="absolute bottom-full left-0 z-50 mb-2 w-56 overflow-hidden rounded-xl border border-gray-700 bg-gray-900 shadow-xl">
+                <div
+                  className="absolute bottom-full left-0 z-50 mb-2 w-56 overflow-hidden rounded-xl shadow-xl"
+                  style={{
+                    border: "1px solid var(--border-glass)",
+                    background: "var(--bg-dropdown)",
+                  }}
+                >
                   <div className="py-1">
                     {SAMPLE_DATASETS.map((dataset) => (
                       <button
                         key={dataset.id}
                         onClick={() => onLoadSample(dataset.id)}
-                        className="w-full px-4 py-3 text-left text-sm text-gray-300 transition-colors hover:bg-white/10 hover:text-white"
+                        className="w-full px-4 py-3 text-left text-sm transition-colors hover:bg-violet-500/10"
+                        style={{ color: "var(--text-secondary)" }}
                       >
                         {dataset.name}
                       </button>

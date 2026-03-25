@@ -19,6 +19,8 @@ export { SingleChart } from "./SingleChart";
 export type { SingleChartProps } from "./SingleChart";
 export { ChartToolbar } from "./ChartToolbar";
 export { ChartThemeProvider, useChartTheme } from "./ThemeContext";
+export { ChartIconProvider, useChartIcons, defaultIcons } from "./IconContext";
+export type { ChartIconSet, ChartIcon, ChartIconProps } from "./IconContext";
 
 // Re-export types & themes needed for chart usage
 export type {

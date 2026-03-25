@@ -14,7 +14,6 @@ export default defineConfig({
     "react",
     "react-dom",
     "recharts",
-    "lucide-react",
     "@ai-sdk/openai",
     "@ai-sdk/anthropic",
     "@ai-sdk/google",
