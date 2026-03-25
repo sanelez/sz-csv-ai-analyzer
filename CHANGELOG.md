@@ -1,3 +1,10 @@
+## [1.11.2](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.11.1...v1.11.2) (2026-03-25)
+
+
+### Bug Fixes
+
+* consistent button shapes, mobile wrap, and more theme overrides ([7991c5e](https://github.com/maxgfr/csv-ai-analyzer/commit/7991c5effcd6c09e6f0a5a65186c517e975c588f))
+
 ## [1.11.1](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.11.0...v1.11.1) (2026-03-25)
 
 
