@@ -7,8 +7,8 @@ import {
 import {
   RefreshCw,
   Download,
-  ArrowUp,
-  ArrowDown,
+  SortAsc,
+  SortDesc,
   RotateCcw,
   TrendingUp,
   Filter,
@@ -21,8 +21,8 @@ import { FullscreenCard } from "./FullscreenCard";
 const lucideIcons = {
   RefreshCw,
   Download,
-  SortAsc: ArrowUp,
-  SortDesc: ArrowDown,
+  SortAsc,
+  SortDesc,
   RotateCcw,
   TrendingUp,
   Filter,

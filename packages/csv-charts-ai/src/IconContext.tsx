@@ -28,8 +28,8 @@ export interface ChartIconSet {
 
 const svgProps = {
   xmlns: "http://www.w3.org/2000/svg",
-  width: 24,
-  height: 24,
+  width: "1em",
+  height: "1em",
   viewBox: "0 0 24 24",
   fill: "none",
   stroke: "currentColor",

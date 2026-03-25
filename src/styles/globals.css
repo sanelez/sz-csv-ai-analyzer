@@ -363,3 +363,80 @@ table {
 .recharts-legend-wrapper {
   padding-top: 20px !important;
 }
+
+/* ======== Light mode: adapt dark-mode Tailwind utilities ======== */
+html.light {
+  /* --- Text colors --- */
+  /* White text → dark (primary) except inside colored containers */
+  & .text-white {
+    color: var(--text-primary);
+  }
+  /* Keep white text inside colored backgrounds */
+  & [class*="bg-gradient-to"].text-white,
+  & [class*="bg-gradient-to"] .text-white,
+  & [class*="bg-violet-"].text-white,
+  & [class*="bg-violet-"] .text-white,
+  & [class*="bg-indigo-"] .text-white,
+  & [class*="bg-purple-"] .text-white,
+  & [class*="bg-red-"] .text-white,
+  & [class*="bg-emerald-"] .text-white,
+  & [class*="bg-cyan-"] .text-white {
+    color: #ffffff;
+  }
+
+  /* Gray text → better contrast on light backgrounds */
+  & .text-gray-200 { color: var(--text-primary); }
+  & .text-gray-300 { color: var(--text-secondary); }
+  & .text-gray-400 { color: var(--text-secondary); }
+  & .text-gray-500 { color: var(--text-tertiary); }
+  & .text-gray-600 { color: var(--text-tertiary); }
+
+  /* Hover text */
+  & .hover\:text-white:hover { color: var(--text-primary); }
+
+  /* --- Surfaces --- */
+  /* Semi-transparent white → semi-transparent black */
+  & .bg-white\/5 { background-color: rgba(0, 0, 0, 0.03); }
+  & .bg-white\/10 { background-color: rgba(0, 0, 0, 0.05); }
+  & .bg-white\/20 { background-color: rgba(0, 0, 0, 0.06); }
+
+  /* Hover surfaces */
+  & .hover\:bg-white\/10:hover { background-color: rgba(0, 0, 0, 0.05); }
+  & .hover\:bg-white\/8:hover { background-color: rgba(0, 0, 0, 0.04); }
+
+  /* Dark backgrounds → light */
+  & .bg-gray-900 { background-color: #ffffff; color: var(--text-primary); }
+  & .bg-gray-800 { background-color: #f8fafc; }
+  & .bg-gray-700 { background-color: #f1f5f9; }
+  & .bg-slate-900\/50 { background-color: rgba(255, 255, 255, 0.8); }
+
+  /* Dark gradient backgrounds → light */
+  & .from-slate-950 { --tw-gradient-from: #f8fafc; --tw-gradient-from-position: ; }
+  & .to-black { --tw-gradient-to: #e2e8f0; --tw-gradient-to-position: ; }
+
+  /* Hover dark backgrounds */
+  & .hover\:bg-gray-600:hover { background-color: rgba(0, 0, 0, 0.04); }
+  & .hover\:bg-gray-500:hover { background-color: rgba(0, 0, 0, 0.06); }
+
+  /* --- Borders --- */
+  & .border-white\/10 { border-color: rgba(0, 0, 0, 0.08); }
+  & .border-white\/20 { border-color: rgba(0, 0, 0, 0.12); }
+  & .hover\:border-white\/20:hover { border-color: rgba(0, 0, 0, 0.12); }
+  & .border-gray-700 { border-color: rgba(0, 0, 0, 0.08); }
+  & .border-gray-600 { border-color: rgba(0, 0, 0, 0.1); }
+  & .hover\:border-gray-600:hover { border-color: rgba(0, 0, 0, 0.12); }
+
+  /* --- Placeholders --- */
+  & .placeholder-gray-500::placeholder { color: var(--text-tertiary); }
+
+  /* --- Recharts text in light mode --- */
+  & .recharts-default-tooltip {
+    color: var(--text-primary) !important;
+  }
+
+  /* --- Code highlighting --- */
+  & .hljs {
+    background: #f6f8fa !important;
+    color: #24292e !important;
+  }
+}
