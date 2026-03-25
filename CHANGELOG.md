@@ -1,3 +1,10 @@
+## [1.11.1](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.11.0...v1.11.1) (2026-03-25)
+
+
+### Bug Fixes
+
+* light/dark theme actually works + consistent icon sizing ([a65e589](https://github.com/maxgfr/csv-ai-analyzer/commit/a65e589a0358521529f954c2faf550347cdcf621))
+
 # [1.11.0](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.10.0...v1.11.0) (2026-03-25)
 
 
