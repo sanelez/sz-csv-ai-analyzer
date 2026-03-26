@@ -14,7 +14,7 @@ interface ChartToolbarProps {
   onToggleBrush: () => void;
   onToggleTrendline: () => void;
   onExportCSV: () => void;
-  onExportPNG: () => void;
+  onExportSVG: () => void;
   onRegenerate: () => void;
   /** Additional CSS class for the toolbar container */
   className?: string;
@@ -35,7 +35,7 @@ export function ChartToolbar({
   onToggleBrush,
   onToggleTrendline,
   onExportCSV,
-  onExportPNG,
+  onExportSVG,
   onRegenerate,
   className,
   unstyled = false,
@@ -140,16 +140,16 @@ export function ChartToolbar({
 
       <div className={cls("flex-1")} />
 
-      {/* Export PNG Button */}
+      {/* Export SVG Button */}
       <button
-        onClick={onExportPNG}
+        onClick={onExportSVG}
         className={cls(
           "flex items-center gap-1.5 rounded-lg bg-white/5 px-3 py-1.5 text-sm text-gray-400 transition-colors hover:bg-white/10 hover:text-white",
         )}
-        title="Export chart as PNG image"
+        title="Export chart as SVG"
       >
         <icons.ImageIcon className="h-4 w-4" />
-        PNG
+        SVG
       </button>
 
       {/* Export CSV Button */}

@@ -524,30 +524,16 @@ export function exportToPDF(options: PDFExportOptions) {
 }
 
 /**
- * Inline only font properties on text elements.
- * Recharts sets all visual properties (fill, stroke, opacity) as SVG
- * presentation attributes which survive cloneNode. Inlining them from
- * getComputedStyle causes incorrect values due to CSS inheritance
- * (e.g. a rect with fill="none" inherits a parent accent color,
- * turning into a giant colored block).
+ * Clone an SVG element for standalone use (export or PDF embedding).
+ * Adds background, sets safe fonts, preserves all SVG attributes.
+ * Does NOT inline fill/stroke from CSS — Recharts sets them as SVG
+ * attributes which survive cloneNode. Inlining computed styles from CSS
+ * breaks charts because CSS inheritance overrides fill="none" on rects.
  */
-function inlineTextStyles(source: Element, clone: Element) {
-  const srcAll = source.querySelectorAll("*");
-  const clnAll = clone.querySelectorAll("*");
-  srcAll.forEach((srcEl, i) => {
-    if (srcEl.tagName !== "text" && srcEl.tagName !== "tspan") return;
-    const clnEl = clnAll[i];
-    if (!clnEl || !(clnEl instanceof SVGElement)) return;
-    const cs = window.getComputedStyle(srcEl);
-    for (const prop of ["font-family", "font-size", "font-weight"]) {
-      const val = cs.getPropertyValue(prop);
-      if (val !== "") clnEl.style.setProperty(prop, val);
-    }
-  });
-}
-
-/** Prepare an SVG element for standalone serialization */
-function prepareSvgClone(svgElement: Element): SVGSVGElement | null {
+function cloneSvgForExport(
+  svgElement: Element,
+  bgColor: string,
+): SVGSVGElement | null {
   const rect = svgElement.getBoundingClientRect();
   if (rect.width === 0 || rect.height === 0) return null;
 
@@ -560,62 +546,83 @@ function prepareSvgClone(svgElement: Element): SVGSVGElement | null {
     svgClone.setAttribute("viewBox", `0 0 ${rect.width} ${rect.height}`);
   }
 
-  inlineTextStyles(svgElement, svgClone);
+  // Add explicit background as first child
+  const bgRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+  bgRect.setAttribute("width", "100%");
+  bgRect.setAttribute("height", "100%");
+  bgRect.setAttribute("fill", bgColor);
+  svgClone.insertBefore(bgRect, svgClone.firstChild);
+
+  // Set safe default font on text elements
+  svgClone.querySelectorAll("text, tspan").forEach((el) => {
+    if (el instanceof SVGElement) {
+      el.style.fontFamily = "Arial, Helvetica, sans-serif";
+    }
+  });
+
   return svgClone;
 }
 
-/** Convert a prepared SVG clone to a PNG data URL via canvas */
-function svgToDataUrl(
+/** Convert an SVG clone to a PNG data URL via createImageBitmap + canvas */
+async function svgToPngDataUrl(
   svgClone: SVGSVGElement,
   width: number,
   height: number,
-  bgColor: string,
 ): Promise<string | null> {
-  return new Promise((resolve) => {
-    const svgString = new XMLSerializer().serializeToString(svgClone);
-    const svgBlob = new Blob([svgString], {
-      type: "image/svg+xml;charset=utf-8",
-    });
-    const url = URL.createObjectURL(svgBlob);
+  const svgString = new XMLSerializer().serializeToString(svgClone);
+  const svgBlob = new Blob([svgString], {
+    type: "image/svg+xml;charset=utf-8",
+  });
 
-    const img = new Image();
-    img.onload = () => {
-      const canvas = document.createElement("canvas");
-      const scale = 2;
-      canvas.width = width * scale;
-      canvas.height = height * scale;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) {
+  try {
+    // Modern approach: createImageBitmap handles SVG better than Image element
+    const bitmap = await createImageBitmap(svgBlob);
+    const canvas = document.createElement("canvas");
+    canvas.width = width * 2;
+    canvas.height = height * 2;
+    const ctx = canvas.getContext("2d")!;
+    ctx.scale(2, 2);
+    ctx.drawImage(bitmap, 0, 0, width, height);
+    bitmap.close();
+    return canvas.toDataURL("image/png");
+  } catch {
+    // Fallback: Image element approach
+    return new Promise((resolve) => {
+      const url = URL.createObjectURL(svgBlob);
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = width * 2;
+        canvas.height = height * 2;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+          URL.revokeObjectURL(url);
+          resolve(null);
+          return;
+        }
+        ctx.scale(2, 2);
+        ctx.drawImage(img, 0, 0, width, height);
+        URL.revokeObjectURL(url);
+        resolve(canvas.toDataURL("image/png"));
+      };
+      img.onerror = () => {
         URL.revokeObjectURL(url);
         resolve(null);
-        return;
-      }
-      ctx.scale(scale, scale);
-      ctx.fillStyle = bgColor;
-      ctx.fillRect(0, 0, width, height);
-      ctx.drawImage(img, 0, 0, width, height);
-      URL.revokeObjectURL(url);
-      resolve(canvas.toDataURL("image/png"));
-    };
-    img.onerror = () => {
-      URL.revokeObjectURL(url);
-      resolve(null);
-    };
-    img.src = url;
-  });
+      };
+      img.src = url;
+    });
+  }
 }
 
 /**
- * Capture all chart SVGs from the DOM and convert them to image data URLs.
+ * Capture all chart SVGs from the DOM and convert them to PNG data URLs.
  */
 export async function captureChartImages(
   charts: ChartConfig[],
 ): Promise<ChartImage[]> {
-  // Find all recharts SVGs on the page
   const svgElements = document.querySelectorAll(
     ".recharts-responsive-container svg.recharts-surface",
   );
-
   if (svgElements.length === 0) return [];
 
   const results: ChartImage[] = [];
@@ -624,17 +631,12 @@ export async function captureChartImages(
     const svgElement = svgElements[i]!;
     const chart = charts[i];
     const title = chart?.title ?? `Chart ${i + 1}`;
-
     const rect = svgElement.getBoundingClientRect();
-    const svgClone = prepareSvgClone(svgElement);
+
+    const svgClone = cloneSvgForExport(svgElement, "#ffffff");
     if (!svgClone) continue;
 
-    const dataUrl = await svgToDataUrl(
-      svgClone,
-      rect.width,
-      rect.height,
-      "#ffffff",
-    );
+    const dataUrl = await svgToPngDataUrl(svgClone, rect.width, rect.height);
     if (dataUrl) {
       results.push({ title, dataUrl, width: rect.width, height: rect.height });
     }

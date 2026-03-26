@@ -126,7 +126,7 @@ export function SingleChart({
     URL.revokeObjectURL(url);
   }, [processedData, chart.title]);
 
-  const handleExportPNG = useCallback(() => {
+  const handleExportSVG = useCallback(() => {
     const container = chartContainerRef.current;
     if (!container) return;
 
@@ -148,71 +148,37 @@ export function SingleChart({
       );
     }
 
-    // Recharts sets all visual properties (fill, stroke, opacity) as SVG
-    // presentation attributes which survive cloneNode. Do NOT inline these
-    // from getComputedStyle — CSS inheritance causes incorrect values
-    // (e.g. fill:"none" rects inherit a parent color, turning into solid blocks).
-    // Only inline font properties on <text>/<tspan> for consistent rendering.
-    const origEls = svgElement.querySelectorAll("text, tspan");
-    const cloneAllEls = svgClone.querySelectorAll("*");
-    const origAllEls = svgElement.querySelectorAll("*");
-    // Build an index map so we can find matching clone elements
-    origEls.forEach((orig) => {
-      // Find the index of this element in the full list
-      let idx = -1;
-      origAllEls.forEach((el, i) => {
-        if (el === orig) idx = i;
-      });
-      if (idx === -1) return;
-      const clone = cloneAllEls[idx];
-      if (!clone || !(clone instanceof SVGElement)) return;
-      const cs = window.getComputedStyle(orig);
-      for (const prop of ["font-family", "font-size", "font-weight"]) {
-        const val = cs.getPropertyValue(prop);
-        if (val !== "") clone.style.setProperty(prop, val);
+    // Insert a background rect as the first child
+    const bgRect = document.createElementNS(
+      "http://www.w3.org/2000/svg",
+      "rect",
+    );
+    bgRect.setAttribute("width", "100%");
+    bgRect.setAttribute("height", "100%");
+    bgRect.setAttribute("fill", theme.tooltipBackground);
+    svgClone.insertBefore(bgRect, svgClone.firstChild);
+
+    // Set a safe default font on text elements for standalone rendering
+    svgClone.querySelectorAll("text, tspan").forEach((el) => {
+      if (el instanceof SVGElement) {
+        el.style.fontFamily = "Arial, Helvetica, sans-serif";
       }
     });
 
-    const svgString = new XMLSerializer().serializeToString(svgClone);
-    const svgBlob = new Blob([svgString], {
+    const svgString =
+      '<?xml version="1.0" encoding="UTF-8"?>\n' +
+      new XMLSerializer().serializeToString(svgClone);
+    const blob = new Blob([svgString], {
       type: "image/svg+xml;charset=utf-8",
     });
-    const url = URL.createObjectURL(svgBlob);
-
-    const img = new Image();
-    img.onload = () => {
-      const canvas = document.createElement("canvas");
-      const scale = 2; // retina
-      canvas.width = rect.width * scale;
-      canvas.height = rect.height * scale;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) {
-        URL.revokeObjectURL(url);
-        return;
-      }
-      ctx.scale(scale, scale);
-      ctx.fillStyle = theme.tooltipBackground;
-      ctx.fillRect(0, 0, rect.width, rect.height);
-      ctx.drawImage(img, 0, 0, rect.width, rect.height);
-      URL.revokeObjectURL(url);
-
-      canvas.toBlob((blob) => {
-        if (!blob) return;
-        const pngUrl = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = pngUrl;
-        a.download = `${chart.title.replace(/\s+/g, "_")}.png`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(pngUrl);
-      }, "image/png");
-    };
-    img.onerror = () => {
-      console.error("SVG→PNG export: failed to load image");
-      URL.revokeObjectURL(url);
-    };
-    img.src = url;
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${chart.title.replace(/\s+/g, "_")}.svg`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   }, [chart.title, theme.tooltipBackground]);
 
   const toggleSort = () => {
@@ -563,7 +529,7 @@ export function SingleChart({
         onToggleBrush={() => setShowBrush(!showBrush)}
         onToggleTrendline={() => setShowTrendline(!showTrendline)}
         onExportCSV={handleExportCSV}
-        onExportPNG={handleExportPNG}
+        onExportSVG={handleExportSVG}
         onRegenerate={handleRegenerate}
         unstyled={unstyled}
       />
