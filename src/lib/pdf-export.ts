@@ -523,117 +523,147 @@ export function exportToPDF(options: PDFExportOptions) {
   doc.save(`${displayName}-report.pdf`);
 }
 
+/** CSS properties to inline into cloned SVG elements */
+const SVG_STYLE_PROPS = [
+  "fill",
+  "fill-opacity",
+  "fill-rule",
+  "stroke",
+  "stroke-width",
+  "stroke-dasharray",
+  "stroke-dashoffset",
+  "stroke-opacity",
+  "stroke-linecap",
+  "stroke-linejoin",
+  "opacity",
+  "font-family",
+  "font-size",
+  "font-weight",
+  "font-style",
+  "text-anchor",
+  "dominant-baseline",
+  "alignment-baseline",
+  "visibility",
+  "display",
+  "clip-path",
+  "color",
+  "letter-spacing",
+];
+
+/**
+ * Inline computed styles from live SVG elements into a cloned SVG.
+ * CRITICAL: does NOT skip "none" — fill:none means transparent in SVG,
+ * dropping it causes elements to render as solid black.
+ */
+function inlineSvgStyles(source: Element, clone: Element) {
+  const srcEls = source.querySelectorAll("*");
+  const clnEls = clone.querySelectorAll("*");
+  srcEls.forEach((srcEl, i) => {
+    const clnEl = clnEls[i];
+    if (!clnEl || !(clnEl instanceof SVGElement)) return;
+    const cs = window.getComputedStyle(srcEl);
+    for (const prop of SVG_STYLE_PROPS) {
+      const val = cs.getPropertyValue(prop);
+      if (val !== "") clnEl.style.setProperty(prop, val);
+    }
+  });
+}
+
+/** Prepare an SVG element for standalone serialization */
+function prepareSvgClone(svgElement: Element): SVGSVGElement | null {
+  const rect = svgElement.getBoundingClientRect();
+  if (rect.width === 0 || rect.height === 0) return null;
+
+  const svgClone = svgElement.cloneNode(true) as SVGSVGElement;
+  svgClone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+  svgClone.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
+  svgClone.setAttribute("width", String(rect.width));
+  svgClone.setAttribute("height", String(rect.height));
+  if (!svgClone.getAttribute("viewBox")) {
+    svgClone.setAttribute("viewBox", `0 0 ${rect.width} ${rect.height}`);
+  }
+
+  inlineSvgStyles(svgElement, svgClone);
+  return svgClone;
+}
+
+/** Convert a prepared SVG clone to a PNG data URL via canvas */
+function svgToDataUrl(
+  svgClone: SVGSVGElement,
+  width: number,
+  height: number,
+  bgColor: string,
+): Promise<string | null> {
+  return new Promise((resolve) => {
+    const svgString = new XMLSerializer().serializeToString(svgClone);
+    const svgBlob = new Blob([svgString], {
+      type: "image/svg+xml;charset=utf-8",
+    });
+    const url = URL.createObjectURL(svgBlob);
+
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      const scale = 2;
+      canvas.width = width * scale;
+      canvas.height = height * scale;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        URL.revokeObjectURL(url);
+        resolve(null);
+        return;
+      }
+      ctx.scale(scale, scale);
+      ctx.fillStyle = bgColor;
+      ctx.fillRect(0, 0, width, height);
+      ctx.drawImage(img, 0, 0, width, height);
+      URL.revokeObjectURL(url);
+      resolve(canvas.toDataURL("image/png"));
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      resolve(null);
+    };
+    img.src = url;
+  });
+}
+
 /**
  * Capture all chart SVGs from the DOM and convert them to image data URLs.
- * Looks for SVG elements inside containers with data-chart-id attributes,
- * or falls back to all .recharts-responsive-container SVGs.
  */
-export function captureChartImages(
+export async function captureChartImages(
   charts: ChartConfig[],
 ): Promise<ChartImage[]> {
-  return new Promise((resolve) => {
-    // Find all recharts SVGs on the page
-    const svgElements = document.querySelectorAll(
-      ".recharts-responsive-container svg",
+  // Find all recharts SVGs on the page
+  const svgElements = document.querySelectorAll(
+    ".recharts-responsive-container svg.recharts-surface",
+  );
+
+  if (svgElements.length === 0) return [];
+
+  const results: ChartImage[] = [];
+
+  for (let i = 0; i < svgElements.length; i++) {
+    const svgElement = svgElements[i]!;
+    const chart = charts[i];
+    const title = chart?.title ?? `Chart ${i + 1}`;
+
+    const rect = svgElement.getBoundingClientRect();
+    const svgClone = prepareSvgClone(svgElement);
+    if (!svgClone) continue;
+
+    const dataUrl = await svgToDataUrl(
+      svgClone,
+      rect.width,
+      rect.height,
+      "#ffffff",
     );
-
-    if (svgElements.length === 0) {
-      resolve([]);
-      return;
+    if (dataUrl) {
+      results.push({ title, dataUrl, width: rect.width, height: rect.height });
     }
+  }
 
-    const promises: Promise<ChartImage | null>[] = [];
-
-    svgElements.forEach((svgElement, index) => {
-      const chart = charts[index];
-      const title = chart?.title ?? `Chart ${index + 1}`;
-
-      promises.push(
-        new Promise<ChartImage | null>((resolveImg) => {
-          try {
-            const svgClone = svgElement.cloneNode(true) as SVGSVGElement;
-            svgClone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-            svgClone.setAttribute(
-              "xmlns:xlink",
-              "http://www.w3.org/1999/xlink",
-            );
-            const rect = svgElement.getBoundingClientRect();
-            svgClone.setAttribute("width", String(rect.width));
-            svgClone.setAttribute("height", String(rect.height));
-
-            // Inline computed styles so they survive serialization
-            const origChildren = svgElement.querySelectorAll("*");
-            const cloneChildren = svgClone.querySelectorAll("*");
-            const styleProps = [
-              "fill",
-              "stroke",
-              "stroke-width",
-              "stroke-dasharray",
-              "opacity",
-              "font-family",
-              "font-size",
-              "font-weight",
-              "text-anchor",
-              "dominant-baseline",
-              "visibility",
-              "display",
-            ];
-            origChildren.forEach((orig, i) => {
-              const clone = cloneChildren[i];
-              if (!clone) return;
-              const computed = window.getComputedStyle(orig);
-              for (const prop of styleProps) {
-                const val = computed.getPropertyValue(prop);
-                if (val && val !== "none" && val !== "normal" && val !== "") {
-                  (clone as SVGElement).style.setProperty(prop, val);
-                }
-              }
-            });
-
-            const svgString = new XMLSerializer().serializeToString(svgClone);
-            const base64 = btoa(unescape(encodeURIComponent(svgString)));
-            const svgDataUrl = `data:image/svg+xml;base64,${base64}`;
-
-            const img = new Image();
-            img.onload = () => {
-              const canvas = document.createElement("canvas");
-              const scale = 2;
-              canvas.width = rect.width * scale;
-              canvas.height = rect.height * scale;
-              const ctx = canvas.getContext("2d");
-              if (!ctx) {
-                resolveImg(null);
-                return;
-              }
-              ctx.scale(scale, scale);
-              // White background for PDF
-              ctx.fillStyle = "#ffffff";
-              ctx.fillRect(0, 0, rect.width, rect.height);
-              ctx.drawImage(img, 0, 0, rect.width, rect.height);
-
-              const dataUrl = canvas.toDataURL("image/png");
-              resolveImg({
-                title,
-                dataUrl,
-                width: rect.width,
-                height: rect.height,
-              });
-            };
-            img.onerror = () => {
-              resolveImg(null);
-            };
-            img.src = svgDataUrl;
-          } catch {
-            resolveImg(null);
-          }
-        }),
-      );
-    });
-
-    Promise.all(promises).then((results) => {
-      resolve(results.filter((r): r is ChartImage => r !== null));
-    });
-  });
+  return results;
 }
 
 /**

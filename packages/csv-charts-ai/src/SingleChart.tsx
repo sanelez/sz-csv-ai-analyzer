@@ -133,47 +133,67 @@ export function SingleChart({
     const svgElement = container.querySelector("svg");
     if (!svgElement) return;
 
+    const rect = svgElement.getBoundingClientRect();
+    if (rect.width === 0 || rect.height === 0) return;
+
     const svgClone = svgElement.cloneNode(true) as SVGSVGElement;
     svgClone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
     svgClone.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
-
-    const rect = svgElement.getBoundingClientRect();
     svgClone.setAttribute("width", String(rect.width));
     svgClone.setAttribute("height", String(rect.height));
+    if (!svgClone.getAttribute("viewBox")) {
+      svgClone.setAttribute(
+        "viewBox",
+        `0 0 ${rect.width} ${rect.height}`,
+      );
+    }
 
-    // Inline computed styles so they survive serialization
-    const origElements = svgElement.querySelectorAll("*");
-    const cloneElements = svgClone.querySelectorAll("*");
-    const styleProps = [
+    // Inline ALL computed styles — CSS stylesheets are unavailable when
+    // the SVG is loaded as a standalone image.
+    // CRITICAL: do NOT skip "none" — fill:none means transparent in SVG,
+    // dropping it causes elements to render as solid black.
+    const SVG_PROPS = [
       "fill",
+      "fill-opacity",
+      "fill-rule",
       "stroke",
       "stroke-width",
       "stroke-dasharray",
+      "stroke-dashoffset",
+      "stroke-opacity",
+      "stroke-linecap",
+      "stroke-linejoin",
       "opacity",
       "font-family",
       "font-size",
       "font-weight",
+      "font-style",
       "text-anchor",
       "dominant-baseline",
+      "alignment-baseline",
       "visibility",
       "display",
+      "clip-path",
+      "color",
+      "letter-spacing",
     ];
-    origElements.forEach((orig, i) => {
-      const clone = cloneElements[i];
-      if (!clone) return;
-      const computed = window.getComputedStyle(orig);
-      for (const prop of styleProps) {
-        const val = computed.getPropertyValue(prop);
-        if (val && val !== "none" && val !== "normal" && val !== "") {
-          (clone as SVGElement).style.setProperty(prop, val);
-        }
+    const origEls = svgElement.querySelectorAll("*");
+    const cloneEls = svgClone.querySelectorAll("*");
+    origEls.forEach((orig, idx) => {
+      const clone = cloneEls[idx];
+      if (!clone || !(clone instanceof SVGElement)) return;
+      const cs = window.getComputedStyle(orig);
+      for (const prop of SVG_PROPS) {
+        const val = cs.getPropertyValue(prop);
+        if (val !== "") clone.style.setProperty(prop, val);
       }
     });
 
     const svgString = new XMLSerializer().serializeToString(svgClone);
-    // Use base64 data URL instead of blob URL for better cross-browser support
-    const base64 = btoa(unescape(encodeURIComponent(svgString)));
-    const dataUrl = `data:image/svg+xml;base64,${base64}`;
+    const svgBlob = new Blob([svgString], {
+      type: "image/svg+xml;charset=utf-8",
+    });
+    const url = URL.createObjectURL(svgBlob);
 
     const img = new Image();
     img.onload = () => {
@@ -182,11 +202,15 @@ export function SingleChart({
       canvas.width = rect.width * scale;
       canvas.height = rect.height * scale;
       const ctx = canvas.getContext("2d");
-      if (!ctx) return;
+      if (!ctx) {
+        URL.revokeObjectURL(url);
+        return;
+      }
       ctx.scale(scale, scale);
       ctx.fillStyle = theme.tooltipBackground;
       ctx.fillRect(0, 0, rect.width, rect.height);
       ctx.drawImage(img, 0, 0, rect.width, rect.height);
+      URL.revokeObjectURL(url);
 
       canvas.toBlob((blob) => {
         if (!blob) return;
@@ -194,14 +218,17 @@ export function SingleChart({
         const a = document.createElement("a");
         a.href = pngUrl;
         a.download = `${chart.title.replace(/\s+/g, "_")}.png`;
+        document.body.appendChild(a);
         a.click();
+        document.body.removeChild(a);
         URL.revokeObjectURL(pngUrl);
       }, "image/png");
     };
     img.onerror = () => {
-      console.error("Failed to load SVG for PNG export");
+      console.error("SVG→PNG export: failed to load image");
+      URL.revokeObjectURL(url);
     };
-    img.src = dataUrl;
+    img.src = url;
   }, [chart.title, theme.tooltipBackground]);
 
   const toggleSort = () => {
