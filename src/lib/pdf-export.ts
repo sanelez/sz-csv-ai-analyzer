@@ -23,14 +23,49 @@ const CONTENT_WIDTH = PAGE_WIDTH - MARGIN * 2;
 
 /** Strip markdown formatting for plain-text PDF rendering */
 function stripMarkdown(text: string): string {
-  return text
-    .replace(/#{1,6}\s/g, "")
-    .replace(/\*\*(.*?)\*\*/g, "$1")
-    .replace(/\*(.*?)\*/g, "$1")
-    .replace(/`(.*?)`/g, "$1")
-    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
-    .replace(/^[-*+]\s/gm, "- ")
-    .trim();
+  return (
+    text
+      .replace(/#{1,6}\s/g, "")
+      .replace(/\*\*(.*?)\*\*/g, "$1")
+      .replace(/\*(.*?)\*/g, "$1")
+      .replace(/`(.*?)`/g, "$1")
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+      .replace(/^[-*+]\s/gm, "- ")
+      // Strip LaTeX math delimiters but keep content
+      .replace(/\$\$([\s\S]*?)\$\$/g, "$1")
+      .replace(/\$(.*?)\$/g, "$1")
+      .replace(/\\\[[\s\S]*?\\\]/g, (m) => m.slice(2, -2))
+      .replace(/\\\(.*?\\\)/g, (m) => m.slice(2, -2))
+      // Clean up common LaTeX commands for plain text
+      .replace(/\\frac\{([^}]*)\}\{([^}]*)\}/g, "($1/$2)")
+      .replace(/\\sqrt\{([^}]*)\}/g, "sqrt($1)")
+      .replace(/\\sum/g, "Sum")
+      .replace(/\\bar\{([^}]*)\}/g, "$1_mean")
+      .replace(
+        /\\(left|right|cdot|times|div|pm|mp|leq|geq|neq|approx|infty)/g,
+        (_, cmd) => {
+          const symbols: Record<string, string> = {
+            left: "",
+            right: "",
+            cdot: "*",
+            times: "x",
+            div: "/",
+            pm: "+/-",
+            mp: "-/+",
+            leq: "<=",
+            geq: ">=",
+            neq: "!=",
+            approx: "~",
+            infty: "Inf",
+          };
+          return symbols[cmd] ?? "";
+        },
+      )
+      .replace(/\\_/g, "_")
+      .replace(/\\[a-zA-Z]+/g, "")
+      .replace(/[{}]/g, "")
+      .trim()
+  );
 }
 
 function addSectionTitle(doc: jsPDF, title: string, y: number): number {

@@ -269,7 +269,7 @@ export function DataTransform({ data, onTransformed }: DataTransformProps) {
       {/* Accordion sections */}
       <div className="space-y-1">
         {/* Columns section */}
-        <div className="overflow-hidden rounded-xl border border-white/5">
+        <div className="overflow-hidden rounded-xl border border-white/10 bg-white/[0.03]">
           <button
             onClick={() => toggleSection("columns")}
             className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-white/5"
@@ -312,7 +312,7 @@ export function DataTransform({ data, onTransformed }: DataTransformProps) {
         </div>
 
         {/* Sort section */}
-        <div className="overflow-hidden rounded-xl border border-white/5">
+        <div className="overflow-hidden rounded-xl border border-white/10 bg-white/[0.03]">
           <button
             onClick={() => toggleSection("sort")}
             className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-white/5"
@@ -377,7 +377,7 @@ export function DataTransform({ data, onTransformed }: DataTransformProps) {
         </div>
 
         {/* Filters section */}
-        <div className="overflow-hidden rounded-xl border border-white/5">
+        <div className="overflow-hidden rounded-xl border border-white/10 bg-white/[0.03]">
           <button
             onClick={() => toggleSection("filters")}
             className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-white/5"

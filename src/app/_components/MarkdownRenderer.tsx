@@ -3,10 +3,13 @@
 import { useDeferredValue, type ComponentPropsWithoutRef } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
 import rehypeHighlight from "rehype-highlight";
+import rehypeKatex from "rehype-katex";
+import "katex/dist/katex.min.css";
 
-const remarkPlugins = [remarkGfm];
-const rehypePlugins = [rehypeHighlight];
+const remarkPlugins = [remarkGfm, remarkMath];
+const rehypePlugins = [rehypeHighlight, rehypeKatex];
 
 // Stable component map — extracted to module level so ReactMarkdown
 // doesn't reconcile a new object on every streaming chunk.
