@@ -1,3 +1,10 @@
+## [1.11.7](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.11.6...v1.11.7) (2026-03-26)
+
+
+### Bug Fixes
+
+* add LaTeX math support and improve PDF/UI rendering ([f0e9c82](https://github.com/maxgfr/csv-ai-analyzer/commit/f0e9c820be67d987cd013f6933291d9697648b73))
+
 ## [1.11.6](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.11.5...v1.11.6) (2026-03-26)
 
 
