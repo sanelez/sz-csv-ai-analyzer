@@ -1,3 +1,10 @@
+## [1.11.8](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.11.7...v1.11.8) (2026-03-26)
+
+
+### Bug Fixes
+
+* Improve accordion contrast and remove video demo ([8f650e0](https://github.com/maxgfr/csv-ai-analyzer/commit/8f650e0484943225b426eddadc9158ed7a340503))
+
 ## [1.11.7](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.11.6...v1.11.7) (2026-03-26)
 
 
