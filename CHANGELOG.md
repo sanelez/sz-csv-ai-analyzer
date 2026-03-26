@@ -1,3 +1,10 @@
+# [1.12.0](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.11.12...v1.12.0) (2026-03-26)
+
+
+### Features
+
+* Switch chart export from PNG to SVG ([e511f9b](https://github.com/maxgfr/csv-ai-analyzer/commit/e511f9b28f5ec4f6d953cb032894238b3bb6c109))
+
 ## [1.11.12](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.11.11...v1.11.12) (2026-03-26)
 
 
