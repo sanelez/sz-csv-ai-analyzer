@@ -1,3 +1,10 @@
+## [1.11.9](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.11.8...v1.11.9) (2026-03-26)
+
+
+### Bug Fixes
+
+* Add LaTeX support and charts to PDF export ([1aa4908](https://github.com/maxgfr/csv-ai-analyzer/commit/1aa4908fc269658556f0c8c139250b27984d61a6))
+
 ## [1.11.8](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.11.7...v1.11.8) (2026-03-26)
 
 
