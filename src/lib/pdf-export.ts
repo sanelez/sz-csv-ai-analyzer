@@ -1,7 +1,11 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import type { CSVData } from "./csv-parser";
-import type { DataSummaryResult, AnomalyResult } from "csv-charts-ai";
+import type {
+  DataSummaryResult,
+  AnomalyResult,
+  ChartConfig,
+} from "csv-charts-ai";
 
 interface ChatMessage {
   prompt: string;
@@ -14,6 +18,7 @@ export interface PDFExportOptions {
   summary?: DataSummaryResult | null;
   anomalies?: AnomalyResult[] | null;
   chatHistory?: ChatMessage[];
+  charts?: ChartConfig[];
   maxDataRows?: number;
 }
 
@@ -112,6 +117,7 @@ export function exportToPDF(options: PDFExportOptions) {
     summary,
     anomalies,
     chatHistory,
+    charts,
     maxDataRows = 100,
   } = options;
 
@@ -300,6 +306,52 @@ export function exportToPDF(options: PDFExportOptions) {
       columnStyles: {
         0: { cellWidth: 15 },
         4: { cellWidth: 20 },
+      },
+      margin: { left: MARGIN, right: MARGIN },
+      tableWidth: CONTENT_WIDTH,
+    });
+
+    y = (doc as any).lastAutoTable?.finalY ?? y + 10;
+    y += 8;
+  }
+
+  // ─── Charts ───
+  if (charts && charts.length > 0) {
+    if (y > 230) {
+      doc.addPage();
+      y = MARGIN;
+    }
+    y = addSectionTitle(doc, `Graphiques generes (${charts.length})`, y);
+
+    const chartTypeLabels: Record<string, string> = {
+      bar: "Barres",
+      line: "Ligne",
+      pie: "Camembert",
+      scatter: "Nuage de points",
+      area: "Aire",
+      histogram: "Histogramme",
+      radar: "Radar",
+    };
+
+    autoTable(doc, {
+      startY: y,
+      head: [["Type", "Titre", "Description", "Axe X", "Axe Y"]],
+      body: charts.map((c) => [
+        chartTypeLabels[c.type] ?? c.type,
+        truncate(c.title, 30),
+        truncate(c.description, 40),
+        c.xAxis,
+        c.yAxis,
+      ]),
+      styles: {
+        fontSize: 8,
+        cellPadding: 2.5,
+        textColor: [30, 30, 30],
+      },
+      headStyles: {
+        fillColor: [79, 70, 229],
+        textColor: [255, 255, 255],
+        fontStyle: "bold",
       },
       margin: { left: MARGIN, right: MARGIN },
       tableWidth: CONTENT_WIDTH,

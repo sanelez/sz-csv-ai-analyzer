@@ -11,6 +11,31 @@ import "katex/dist/katex.min.css";
 const remarkPlugins = [remarkGfm, remarkMath];
 const rehypePlugins = [rehypeHighlight, rehypeKatex];
 
+/**
+ * Normalize LaTeX delimiters so remark-math can parse them.
+ * remark-math only recognises `$...$` and `$$...$$`.
+ * Many LLMs emit `\[...\]` (display) / `\(...\)` (inline) or even
+ * bare `[ ... ]` blocks that contain LaTeX commands — convert them all.
+ */
+function preprocessLaTeX(content: string): string {
+  // \[...\]  →  $$...$$
+  let result = content.replace(
+    /\\\[([\s\S]*?)\\\]/g,
+    (_m, inner: string) => `$$${inner}$$`,
+  );
+  // \(...\)  →  $...$
+  result = result.replace(
+    /\\\(([\s\S]*?)\\\)/g,
+    (_m, inner: string) => `$${inner}$`,
+  );
+  // Bare [ ... ] on its own line that contains obvious LaTeX commands
+  result = result.replace(
+    /^\[\s*(\\(?:text|frac|sqrt|sum|prod|int|left|right|bar|hat|vec|mathbb|mathrm|operatorname)\b[\s\S]*?)\s*\]$/gm,
+    (_m, inner: string) => `$$${inner}$$`,
+  );
+  return result;
+}
+
 // Stable component map — extracted to module level so ReactMarkdown
 // doesn't reconcile a new object on every streaming chunk.
 const mdComponents = {
@@ -129,6 +154,7 @@ export function MarkdownRenderer({
   isStreaming = false,
 }: MarkdownRendererProps) {
   const deferred = useDeferredValue(content);
+  const processed = preprocessLaTeX(deferred);
 
   return (
     <div className={`markdown-body ${className}`}>
@@ -137,7 +163,7 @@ export function MarkdownRenderer({
         rehypePlugins={rehypePlugins}
         components={mdComponents}
       >
-        {deferred}
+        {processed}
       </ReactMarkdown>
       {isStreaming && content && (
         <span className="ml-1 inline-block h-4 w-2 animate-pulse bg-emerald-400" />

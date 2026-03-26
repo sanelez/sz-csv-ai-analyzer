@@ -49,8 +49,9 @@ import {
   repairChartSuggestion,
 } from "~/lib/ai-service";
 import { loadApiSettings, type StoredSettings } from "~/lib/storage";
-import { clearChatStore } from "~/lib/chat-store";
-import { Sparkles, Loader2, ArrowLeft } from "lucide-react";
+import { clearChatStore, getChatStore } from "~/lib/chat-store";
+import { Sparkles, Loader2, ArrowLeft, FileDown } from "lucide-react";
+import { exportToPDF } from "~/lib/pdf-export";
 
 export default function HomePage() {
   const [csvData, setCsvData] = useState<CSVData | null>(null);
@@ -267,6 +268,25 @@ export default function HomePage() {
     });
   };
 
+  const handleGlobalPDFExport = () => {
+    if (!csvData) return;
+    try {
+      const chatStore = getChatStore();
+      exportToPDF({
+        fileName: currentFileName ?? "analysis",
+        data: effectiveData ?? csvData,
+        summary: analysisResults.summary,
+        anomalies: analysisResults.anomalies,
+        chatHistory: chatStore.history,
+        charts: generatedCharts.length > 0 ? generatedCharts : undefined,
+      });
+      toast.success("Rapport PDF exporté");
+    } catch (e) {
+      console.error("PDF export failed:", e);
+      toast.error("Échec de l'export PDF");
+    }
+  };
+
   const handleRegenerateChart = async (failedChart: ChartSuggestion) => {
     const hasValidCfg = apiSettings?.customEndpoint
       ? !!apiSettings.customModel
@@ -384,6 +404,14 @@ export default function HomePage() {
 
                 {/* Right: Actions */}
                 <div className="flex items-center gap-2">
+                  <button
+                    onClick={handleGlobalPDFExport}
+                    className="flex items-center gap-1.5 rounded-lg bg-violet-500/10 px-3 py-2 text-sm text-violet-400 transition-colors hover:bg-violet-500/20 hover:text-violet-300"
+                    title="Exporter le rapport complet en PDF"
+                  >
+                    <FileDown className="h-4 w-4" />
+                    <span className="hidden sm:inline">PDF</span>
+                  </button>
                   <ThemeToggle />
                   <CSVSettingsButton
                     settings={csvSettings}

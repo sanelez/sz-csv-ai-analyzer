@@ -267,7 +267,7 @@ export function DataTransform({ data, onTransformed }: DataTransformProps) {
         )}
 
       {/* Accordion sections */}
-      <div className="space-y-1">
+      <div className="space-y-3">
         {/* Columns section */}
         <div className="overflow-hidden rounded-xl border border-white/20 bg-white/5">
           <button
