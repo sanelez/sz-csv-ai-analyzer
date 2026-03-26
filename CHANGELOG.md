@@ -1,3 +1,10 @@
+## [1.11.5](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.11.4...v1.11.5) (2026-03-26)
+
+
+### Bug Fixes
+
+* prevent stack overflow, add retry logic, persist chat history ([17eb6b8](https://github.com/maxgfr/csv-ai-analyzer/commit/17eb6b82c9e6b0e5b4cf20897cacc538bfac2025))
+
 ## [1.11.4](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.11.3...v1.11.4) (2026-03-25)
 
 
