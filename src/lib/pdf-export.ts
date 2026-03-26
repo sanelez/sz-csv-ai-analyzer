@@ -27,7 +27,6 @@ export interface PDFExportOptions {
   chatHistory?: ChatMessage[];
   charts?: ChartConfig[];
   chartImages?: ChartImage[];
-  maxDataRows?: number;
 }
 
 const MARGIN = 20;
@@ -210,7 +209,6 @@ export function exportToPDF(options: PDFExportOptions) {
     chatHistory,
     charts,
     chartImages,
-    maxDataRows = 100,
   } = options;
 
   const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
@@ -257,45 +255,6 @@ export function exportToPDF(options: PDFExportOptions) {
   for (const item of overviewItems) {
     doc.text(item, MARGIN + 2, y);
     y += 5;
-  }
-  y += 5;
-
-  // ─── Data table ───
-  y = addSectionTitle(doc, "Data Preview", y);
-
-  const displayRows = data.rows.slice(0, maxDataRows);
-
-  autoTable(doc, {
-    startY: y,
-    head: [data.headers.map((h) => truncate(h, 20))],
-    body: displayRows.map((row) => row.map((cell) => truncate(cell))),
-    styles: {
-      fontSize: 7,
-      cellPadding: 2,
-      overflow: "linebreak",
-      textColor: [30, 30, 30],
-    },
-    headStyles: {
-      fillColor: [79, 70, 229],
-      textColor: [255, 255, 255],
-      fontStyle: "bold",
-      fontSize: 7.5,
-    },
-    alternateRowStyles: { fillColor: [245, 243, 255] },
-    margin: { left: MARGIN, right: MARGIN },
-    tableWidth: CONTENT_WIDTH,
-  });
-
-  y = (doc as any).lastAutoTable?.finalY ?? y + 10;
-  if (displayRows.length < data.rowCount) {
-    doc.setFontSize(8);
-    doc.setTextColor(120, 120, 120);
-    doc.text(
-      `Showing ${displayRows.length} of ${data.rowCount.toLocaleString("en-US")} rows`,
-      MARGIN,
-      y + 5,
-    );
-    y += 10;
   }
   y += 5;
 
@@ -524,83 +483,65 @@ export function exportToPDF(options: PDFExportOptions) {
 }
 
 /**
- * Clone an SVG element for standalone use (export or PDF embedding).
- * Adds background, sets safe fonts, preserves all SVG attributes.
- * Does NOT inline fill/stroke from CSS — Recharts sets them as SVG
- * attributes which survive cloneNode. Inlining computed styles from CSS
- * breaks charts because CSS inheritance overrides fill="none" on rects.
+ * Serialize a live SVG element directly (no cloneNode — that breaks
+ * namespaces and produces blank or purple-filled exports).
+ * Injects a background rect via string manipulation.
  */
-function cloneSvgForExport(
+function serializeSvgWithBg(
   svgElement: Element,
   bgColor: string,
-): SVGSVGElement | null {
+): { svg: string; width: number; height: number } | null {
   const rect = svgElement.getBoundingClientRect();
   if (rect.width === 0 || rect.height === 0) return null;
 
-  const svgClone = svgElement.cloneNode(true) as SVGSVGElement;
-  svgClone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-  svgClone.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
-  svgClone.setAttribute("width", String(rect.width));
-  svgClone.setAttribute("height", String(rect.height));
-  if (!svgClone.getAttribute("viewBox")) {
-    svgClone.setAttribute("viewBox", `0 0 ${rect.width} ${rect.height}`);
-  }
+  let svg = new XMLSerializer().serializeToString(svgElement);
 
-  // Add explicit background as first child
-  const bgRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-  bgRect.setAttribute("width", "100%");
-  bgRect.setAttribute("height", "100%");
-  bgRect.setAttribute("fill", bgColor);
-  svgClone.insertBefore(bgRect, svgClone.firstChild);
+  const openTag = svg.match(/<svg[^>]*>/);
+  if (!openTag) return null;
+  const bgRect = `<rect width="${rect.width}" height="${rect.height}" fill="${bgColor}"/>`;
+  const pos = openTag[0].length;
+  svg = svg.slice(0, pos) + bgRect + svg.slice(pos);
 
-  // Set safe default font on text elements
-  svgClone.querySelectorAll("text, tspan").forEach((el) => {
-    if (el instanceof SVGElement) {
-      el.style.fontFamily = "Arial, Helvetica, sans-serif";
-    }
-  });
-
-  return svgClone;
+  return { svg, width: rect.width, height: rect.height };
 }
 
-/** Convert an SVG clone to a PNG data URL via createImageBitmap + canvas */
-async function svgToPngDataUrl(
-  svgClone: SVGSVGElement,
+/** Convert an SVG string to a PNG data URL via createImageBitmap + canvas */
+async function svgStringToPng(
+  svgString: string,
   width: number,
   height: number,
 ): Promise<string | null> {
-  const svgString = new XMLSerializer().serializeToString(svgClone);
   const svgBlob = new Blob([svgString], {
     type: "image/svg+xml;charset=utf-8",
   });
 
   try {
-    // Modern approach: createImageBitmap handles SVG better than Image element
     const bitmap = await createImageBitmap(svgBlob);
     const canvas = document.createElement("canvas");
-    canvas.width = width * 2;
-    canvas.height = height * 2;
+    const scale = 2;
+    canvas.width = width * scale;
+    canvas.height = height * scale;
     const ctx = canvas.getContext("2d")!;
-    ctx.scale(2, 2);
+    ctx.scale(scale, scale);
     ctx.drawImage(bitmap, 0, 0, width, height);
     bitmap.close();
     return canvas.toDataURL("image/png");
   } catch {
-    // Fallback: Image element approach
     return new Promise((resolve) => {
       const url = URL.createObjectURL(svgBlob);
       const img = new Image();
       img.onload = () => {
         const canvas = document.createElement("canvas");
-        canvas.width = width * 2;
-        canvas.height = height * 2;
+        const scale = 2;
+        canvas.width = width * scale;
+        canvas.height = height * scale;
         const ctx = canvas.getContext("2d");
         if (!ctx) {
           URL.revokeObjectURL(url);
           resolve(null);
           return;
         }
-        ctx.scale(2, 2);
+        ctx.scale(scale, scale);
         ctx.drawImage(img, 0, 0, width, height);
         URL.revokeObjectURL(url);
         resolve(canvas.toDataURL("image/png"));
@@ -631,14 +572,22 @@ export async function captureChartImages(
     const svgElement = svgElements[i]!;
     const chart = charts[i];
     const title = chart?.title ?? `Chart ${i + 1}`;
-    const rect = svgElement.getBoundingClientRect();
 
-    const svgClone = cloneSvgForExport(svgElement, "#ffffff");
-    if (!svgClone) continue;
+    const serialized = serializeSvgWithBg(svgElement, "#ffffff");
+    if (!serialized) continue;
 
-    const dataUrl = await svgToPngDataUrl(svgClone, rect.width, rect.height);
+    const dataUrl = await svgStringToPng(
+      serialized.svg,
+      serialized.width,
+      serialized.height,
+    );
     if (dataUrl) {
-      results.push({ title, dataUrl, width: rect.width, height: rect.height });
+      results.push({
+        title,
+        dataUrl,
+        width: serialized.width,
+        height: serialized.height,
+      });
     }
   }
 

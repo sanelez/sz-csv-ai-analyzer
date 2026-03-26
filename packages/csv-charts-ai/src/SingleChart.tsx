@@ -122,55 +122,47 @@ export function SingleChart({
     const a = document.createElement("a");
     a.href = url;
     a.download = `${chart.title.replace(/\s+/g, "_")}.csv`;
+    document.body.appendChild(a);
     a.click();
-    URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 3000);
   }, [processedData, chart.title]);
 
+  /**
+   * Serialize the live SVG directly (no cloneNode — that breaks namespaces)
+   * and inject a background rect via string manipulation.
+   */
+  const getSvgString = useCallback(
+    (bgColor: string) => {
+      const container = chartContainerRef.current;
+      if (!container) return null;
+
+      const svgElement = container.querySelector("svg.recharts-surface") ??
+        container.querySelector("svg");
+      if (!svgElement) return null;
+
+      const rect = svgElement.getBoundingClientRect();
+      if (rect.width === 0 || rect.height === 0) return null;
+
+      let svg = new XMLSerializer().serializeToString(svgElement);
+
+      // Inject background rect right after the opening <svg ...> tag
+      const openTag = svg.match(/<svg[^>]*>/);
+      if (!openTag) return null;
+      const bgRect = `<rect width="${rect.width}" height="${rect.height}" fill="${bgColor}"/>`;
+      const pos = openTag[0].length;
+      svg = svg.slice(0, pos) + bgRect + svg.slice(pos);
+
+      return { svg, width: rect.width, height: rect.height };
+    },
+    [],
+  );
+
   const handleExportSVG = useCallback(() => {
-    const container = chartContainerRef.current;
-    if (!container) return;
+    const result = getSvgString(theme.tooltipBackground);
+    if (!result) return;
 
-    const svgElement = container.querySelector("svg");
-    if (!svgElement) return;
-
-    const rect = svgElement.getBoundingClientRect();
-    if (rect.width === 0 || rect.height === 0) return;
-
-    const svgClone = svgElement.cloneNode(true) as SVGSVGElement;
-    svgClone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-    svgClone.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
-    svgClone.setAttribute("width", String(rect.width));
-    svgClone.setAttribute("height", String(rect.height));
-    if (!svgClone.getAttribute("viewBox")) {
-      svgClone.setAttribute(
-        "viewBox",
-        `0 0 ${rect.width} ${rect.height}`,
-      );
-    }
-
-    // Insert a background rect as the first child
-    const bgRect = document.createElementNS(
-      "http://www.w3.org/2000/svg",
-      "rect",
-    );
-    bgRect.setAttribute("width", "100%");
-    bgRect.setAttribute("height", "100%");
-    bgRect.setAttribute("fill", theme.tooltipBackground);
-    svgClone.insertBefore(bgRect, svgClone.firstChild);
-
-    // Set a safe default font on text elements for standalone rendering
-    svgClone.querySelectorAll("text, tspan").forEach((el) => {
-      if (el instanceof SVGElement) {
-        el.style.fontFamily = "Arial, Helvetica, sans-serif";
-      }
-    });
-
-    const svgString =
-      '<?xml version="1.0" encoding="UTF-8"?>\n' +
-      new XMLSerializer().serializeToString(svgClone);
-    const blob = new Blob([svgString], {
-      type: "image/svg+xml;charset=utf-8",
-    });
+    const blob = new Blob([result.svg], { type: "image/svg+xml;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -178,8 +170,70 @@ export function SingleChart({
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }, [chart.title, theme.tooltipBackground]);
+    // Delay revocation so the browser has time to read the Blob
+    setTimeout(() => URL.revokeObjectURL(url), 3000);
+  }, [chart.title, theme.tooltipBackground, getSvgString]);
+
+  const handleExportPNG = useCallback(async () => {
+    const result = getSvgString(theme.tooltipBackground);
+    if (!result) return;
+
+    const svgBlob = new Blob([result.svg], { type: "image/svg+xml;charset=utf-8" });
+
+    try {
+      // Modern approach — createImageBitmap handles SVGs well
+      const bitmap = await createImageBitmap(svgBlob);
+      const canvas = document.createElement("canvas");
+      const scale = 2;
+      canvas.width = result.width * scale;
+      canvas.height = result.height * scale;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+      ctx.scale(scale, scale);
+      ctx.drawImage(bitmap, 0, 0, result.width, result.height);
+      bitmap.close();
+
+      canvas.toBlob((blob) => {
+        if (!blob) return;
+        const pngUrl = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = pngUrl;
+        a.download = `${chart.title.replace(/\s+/g, "_")}.png`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(pngUrl), 3000);
+      }, "image/png");
+    } catch {
+      // Fallback — Image element approach
+      const url = URL.createObjectURL(svgBlob);
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const scale = 2;
+        canvas.width = result.width * scale;
+        canvas.height = result.height * scale;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) { URL.revokeObjectURL(url); return; }
+        ctx.scale(scale, scale);
+        ctx.drawImage(img, 0, 0, result.width, result.height);
+        URL.revokeObjectURL(url);
+        canvas.toBlob((blob) => {
+          if (!blob) return;
+          const pngUrl = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = pngUrl;
+          a.download = `${chart.title.replace(/\s+/g, "_")}.png`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          setTimeout(() => URL.revokeObjectURL(pngUrl), 3000);
+        }, "image/png");
+      };
+      img.onerror = () => URL.revokeObjectURL(url);
+      img.src = url;
+    }
+  }, [chart.title, theme.tooltipBackground, getSvgString]);
 
   const toggleSort = () => {
     setSortOrder((prev) => {
@@ -530,6 +584,7 @@ export function SingleChart({
         onToggleTrendline={() => setShowTrendline(!showTrendline)}
         onExportCSV={handleExportCSV}
         onExportSVG={handleExportSVG}
+        onExportPNG={handleExportPNG}
         onRegenerate={handleRegenerate}
         unstyled={unstyled}
       />

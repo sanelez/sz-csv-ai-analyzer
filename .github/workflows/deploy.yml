@@ -1,10 +1,8 @@
 name: Deploy to GitHub Pages
 
 on:
-  push:
-    branches: [main, master]
   workflow_run:
-    workflows: ["Update models.json daily"]
+    workflows: ["Publish", "Update models.json daily"]
     types:
       - completed
     branches: [main]
@@ -26,6 +24,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          ref: main
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
