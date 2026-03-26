@@ -358,26 +358,35 @@ export function exportToPDF(options: PDFExportOptions) {
 
   // ─── Charts ───
   if (chartImages && chartImages.length > 0) {
-    // Embed actual chart images
-    for (const img of chartImages) {
-      doc.addPage();
-      y = MARGIN;
-      y = addSectionTitle(doc, img.title, y);
+    const MAX_Y = 280;
+    const MAX_CHART_H = 120;
 
-      // Fit the chart image within the content width, preserving aspect ratio
+    // Start charts section on a new page
+    doc.addPage();
+    y = MARGIN;
+    y = addSectionTitle(doc, `Charts (${chartImages.length})`, y);
+
+    for (const img of chartImages) {
       const aspectRatio = img.height / img.width;
-      const imgWidth = Math.min(CONTENT_WIDTH, 170);
+      const imgWidth = CONTENT_WIDTH;
       const imgHeight = imgWidth * aspectRatio;
-      const maxHeight = 200; // leave room for title + footer
-      const finalHeight = Math.min(imgHeight, maxHeight);
+      const finalHeight = Math.min(imgHeight, MAX_CHART_H);
       const finalWidth =
         finalHeight < imgHeight ? finalHeight / aspectRatio : imgWidth;
 
+      const blockHeight = 10 + finalHeight + 8;
+
+      if (y + blockHeight > MAX_Y) {
+        doc.addPage();
+        y = MARGIN;
+      }
+
+      y = addSectionTitle(doc, img.title, y);
+
       try {
         doc.addImage(img.dataUrl, "PNG", MARGIN, y, finalWidth, finalHeight);
-        y += finalHeight + 5;
+        y += finalHeight + 8;
       } catch {
-        // Fallback: just show the title if image embedding fails
         y = addWrappedText(doc, `[Chart: ${img.title}]`, y);
       }
     }
@@ -485,7 +494,8 @@ export function exportToPDF(options: PDFExportOptions) {
 /**
  * Serialize a live SVG element directly (no cloneNode — that breaks
  * namespaces and produces blank or purple-filled exports).
- * Injects a background rect via string manipulation.
+ * Injects a background rect via string manipulation and fixes percentage-based
+ * CSS dimensions that break standalone rendering.
  */
 function serializeSvgWithBg(
   svgElement: Element,
@@ -498,9 +508,27 @@ function serializeSvgWithBg(
 
   const openTag = svg.match(/<svg[^>]*>/);
   if (!openTag) return null;
+
+  // Recharts sets style="width:100%;height:100%" for responsive layout.
+  // Strip percentage dimensions so the SVG renders at its intrinsic pixel size
+  // when used standalone (blob → createImageBitmap / <img>).
+  let tag = openTag[0];
+  tag = tag.replace(/style="([^"]*)"/, (_m: string, styles: string) => {
+    const kept = styles
+      .split(";")
+      .map((p) => p.trim())
+      .filter((p) => {
+        const name = p.split(":")[0]?.trim().toLowerCase();
+        return name && name !== "width" && name !== "height";
+      })
+      .join("; ");
+    return kept ? `style="${kept}"` : "";
+  });
+  tag = tag.replace(/\bwidth="[^"]*"/, `width="${rect.width}"`);
+  tag = tag.replace(/\bheight="[^"]*"/, `height="${rect.height}"`);
+
   const bgRect = `<rect width="${rect.width}" height="${rect.height}" fill="${bgColor}"/>`;
-  const pos = openTag[0].length;
-  svg = svg.slice(0, pos) + bgRect + svg.slice(pos);
+  svg = tag + bgRect + svg.slice(openTag[0].length);
 
   return { svg, width: rect.width, height: rect.height };
 }
@@ -561,17 +589,33 @@ async function svgStringToPng(
 export async function captureChartImages(
   charts: ChartConfig[],
 ): Promise<ChartImage[]> {
-  const svgElements = document.querySelectorAll(
-    ".recharts-responsive-container svg.recharts-surface",
+  // Iterate per responsive-container so we pick exactly one SVG per chart.
+  // Recharts v3 legend icons are also <svg class="recharts-surface"> (14×14),
+  // so we select the largest SVG inside each container.
+  const containers = document.querySelectorAll(
+    ".recharts-responsive-container",
   );
-  if (svgElements.length === 0) return [];
+  if (containers.length === 0) return [];
 
   const results: ChartImage[] = [];
 
-  for (let i = 0; i < svgElements.length; i++) {
-    const svgElement = svgElements[i]!;
+  for (let i = 0; i < containers.length; i++) {
+    const container = containers[i]!;
     const chart = charts[i];
     const title = chart?.title ?? `Chart ${i + 1}`;
+
+    const allSvgs = container.querySelectorAll("svg.recharts-surface");
+    let svgElement: Element | null = null;
+    let maxArea = 0;
+    for (const svg of allSvgs) {
+      const r = svg.getBoundingClientRect();
+      const area = r.width * r.height;
+      if (area > maxArea) {
+        maxArea = area;
+        svgElement = svg;
+      }
+    }
+    if (!svgElement) continue;
 
     const serialized = serializeSvgWithBg(svgElement, "#ffffff");
     if (!serialized) continue;
@@ -623,22 +667,27 @@ export async function exportChartsPDF(
   doc.setFont("helvetica", "normal");
   doc.text(dateStr, MARGIN, 27);
 
-  let isFirst = true;
+  const MAX_Y = 280; // leave room for footer
+  const MAX_CHART_H = 120; // cap so ≥2 charts fit per page
+  let y = 45; // after header on first page
 
   for (const img of chartImages) {
-    if (!isFirst) doc.addPage();
-    isFirst = false;
-
-    let y = 45;
-    y = addSectionTitle(doc, img.title, y);
-
     const aspectRatio = img.height / img.width;
-    const imgWidth = Math.min(CONTENT_WIDTH, 170);
+    const imgWidth = CONTENT_WIDTH;
     const imgHeight = imgWidth * aspectRatio;
-    const maxHeight = 210;
-    const finalHeight = Math.min(imgHeight, maxHeight);
+    const finalHeight = Math.min(imgHeight, MAX_CHART_H);
     const finalWidth =
       finalHeight < imgHeight ? finalHeight / aspectRatio : imgWidth;
+
+    // title (10mm) + image + spacing (8mm)
+    const blockHeight = 10 + finalHeight + 8;
+
+    if (y + blockHeight > MAX_Y) {
+      doc.addPage();
+      y = MARGIN;
+    }
+
+    y = addSectionTitle(doc, img.title, y);
 
     try {
       doc.addImage(img.dataUrl, "PNG", MARGIN, y, finalWidth, finalHeight);
@@ -647,6 +696,8 @@ export async function exportChartsPDF(
       doc.setTextColor(120, 120, 120);
       doc.text(`[Could not embed chart: ${img.title}]`, MARGIN, y);
     }
+
+    y += finalHeight + 8;
   }
 
   // Footer

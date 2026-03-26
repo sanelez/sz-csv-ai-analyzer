@@ -137,8 +137,20 @@ export function SingleChart({
       const container = chartContainerRef.current;
       if (!container) return null;
 
-      const svgElement = container.querySelector("svg.recharts-surface") ??
-        container.querySelector("svg");
+      // Recharts v3 legend icons are also <svg class="recharts-surface"> (14×14).
+      // Pick the largest SVG so we always get the main chart, not an icon.
+      const allSvgs = container.querySelectorAll("svg.recharts-surface");
+      let svgElement: Element | null = null;
+      let maxArea = 0;
+      for (const svg of allSvgs) {
+        const r = svg.getBoundingClientRect();
+        const area = r.width * r.height;
+        if (area > maxArea) {
+          maxArea = area;
+          svgElement = svg;
+        }
+      }
+      if (!svgElement) svgElement = container.querySelector("svg");
       if (!svgElement) return null;
 
       const rect = svgElement.getBoundingClientRect();
@@ -146,12 +158,30 @@ export function SingleChart({
 
       let svg = new XMLSerializer().serializeToString(svgElement);
 
-      // Inject background rect right after the opening <svg ...> tag
       const openTag = svg.match(/<svg[^>]*>/);
       if (!openTag) return null;
+
+      // Fix the opening <svg> tag for standalone rendering:
+      // Recharts sets style="width:100%;height:100%" for responsive layout,
+      // but percentage dimensions break standalone SVG/PNG rendering (no parent
+      // container to resolve against → renders at tiny default size).
+      let tag = openTag[0];
+      tag = tag.replace(/style="([^"]*)"/, (_m, styles: string) => {
+        const kept = styles
+          .split(";")
+          .map((p) => p.trim())
+          .filter((p) => {
+            const name = p.split(":")[0]?.trim().toLowerCase();
+            return name && name !== "width" && name !== "height";
+          })
+          .join("; ");
+        return kept ? `style="${kept}"` : "";
+      });
+      tag = tag.replace(/\bwidth="[^"]*"/, `width="${rect.width}"`);
+      tag = tag.replace(/\bheight="[^"]*"/, `height="${rect.height}"`);
+
       const bgRect = `<rect width="${rect.width}" height="${rect.height}" fill="${bgColor}"/>`;
-      const pos = openTag[0].length;
-      svg = svg.slice(0, pos) + bgRect + svg.slice(pos);
+      svg = tag + bgRect + svg.slice(openTag[0].length);
 
       return { svg, width: rect.width, height: rect.height };
     },
@@ -162,7 +192,8 @@ export function SingleChart({
     const result = getSvgString(theme.tooltipBackground);
     if (!result) return;
 
-    const blob = new Blob([result.svg], { type: "image/svg+xml;charset=utf-8" });
+    const svgContent = `<?xml version="1.0" encoding="UTF-8"?>\n${result.svg}`;
+    const blob = new Blob([svgContent], { type: "image/svg+xml;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;

@@ -96,7 +96,7 @@ export function FullscreenCard({
       <div
         className={
           isFullscreen
-            ? `relative flex min-h-full flex-1 flex-col p-6 pt-16 ${className}`
+            ? "relative min-h-full p-6 pt-16"
             : "flex flex-1 flex-col"
         }
       >
