@@ -148,42 +148,26 @@ export function SingleChart({
       );
     }
 
-    // Inline ALL computed styles — CSS stylesheets are unavailable when
-    // the SVG is loaded as a standalone image.
-    // CRITICAL: do NOT skip "none" — fill:none means transparent in SVG,
-    // dropping it causes elements to render as solid black.
-    const SVG_PROPS = [
-      "fill",
-      "fill-opacity",
-      "fill-rule",
-      "stroke",
-      "stroke-width",
-      "stroke-dasharray",
-      "stroke-dashoffset",
-      "stroke-opacity",
-      "stroke-linecap",
-      "stroke-linejoin",
-      "opacity",
-      "font-family",
-      "font-size",
-      "font-weight",
-      "font-style",
-      "text-anchor",
-      "dominant-baseline",
-      "alignment-baseline",
-      "visibility",
-      "display",
-      "clip-path",
-      "color",
-      "letter-spacing",
-    ];
-    const origEls = svgElement.querySelectorAll("*");
-    const cloneEls = svgClone.querySelectorAll("*");
-    origEls.forEach((orig, idx) => {
-      const clone = cloneEls[idx];
+    // Recharts sets all visual properties (fill, stroke, opacity) as SVG
+    // presentation attributes which survive cloneNode. Do NOT inline these
+    // from getComputedStyle — CSS inheritance causes incorrect values
+    // (e.g. fill:"none" rects inherit a parent color, turning into solid blocks).
+    // Only inline font properties on <text>/<tspan> for consistent rendering.
+    const origEls = svgElement.querySelectorAll("text, tspan");
+    const cloneAllEls = svgClone.querySelectorAll("*");
+    const origAllEls = svgElement.querySelectorAll("*");
+    // Build an index map so we can find matching clone elements
+    origEls.forEach((orig) => {
+      // Find the index of this element in the full list
+      let idx = -1;
+      origAllEls.forEach((el, i) => {
+        if (el === orig) idx = i;
+      });
+      if (idx === -1) return;
+      const clone = cloneAllEls[idx];
       if (!clone || !(clone instanceof SVGElement)) return;
       const cs = window.getComputedStyle(orig);
-      for (const prop of SVG_PROPS) {
+      for (const prop of ["font-family", "font-size", "font-weight"]) {
         const val = cs.getPropertyValue(prop);
         if (val !== "") clone.style.setProperty(prop, val);
       }

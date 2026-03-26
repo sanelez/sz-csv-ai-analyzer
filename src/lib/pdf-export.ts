@@ -523,46 +523,23 @@ export function exportToPDF(options: PDFExportOptions) {
   doc.save(`${displayName}-report.pdf`);
 }
 
-/** CSS properties to inline into cloned SVG elements */
-const SVG_STYLE_PROPS = [
-  "fill",
-  "fill-opacity",
-  "fill-rule",
-  "stroke",
-  "stroke-width",
-  "stroke-dasharray",
-  "stroke-dashoffset",
-  "stroke-opacity",
-  "stroke-linecap",
-  "stroke-linejoin",
-  "opacity",
-  "font-family",
-  "font-size",
-  "font-weight",
-  "font-style",
-  "text-anchor",
-  "dominant-baseline",
-  "alignment-baseline",
-  "visibility",
-  "display",
-  "clip-path",
-  "color",
-  "letter-spacing",
-];
-
 /**
- * Inline computed styles from live SVG elements into a cloned SVG.
- * CRITICAL: does NOT skip "none" — fill:none means transparent in SVG,
- * dropping it causes elements to render as solid black.
+ * Inline only font properties on text elements.
+ * Recharts sets all visual properties (fill, stroke, opacity) as SVG
+ * presentation attributes which survive cloneNode. Inlining them from
+ * getComputedStyle causes incorrect values due to CSS inheritance
+ * (e.g. a rect with fill="none" inherits a parent accent color,
+ * turning into a giant colored block).
  */
-function inlineSvgStyles(source: Element, clone: Element) {
-  const srcEls = source.querySelectorAll("*");
-  const clnEls = clone.querySelectorAll("*");
-  srcEls.forEach((srcEl, i) => {
-    const clnEl = clnEls[i];
+function inlineTextStyles(source: Element, clone: Element) {
+  const srcAll = source.querySelectorAll("*");
+  const clnAll = clone.querySelectorAll("*");
+  srcAll.forEach((srcEl, i) => {
+    if (srcEl.tagName !== "text" && srcEl.tagName !== "tspan") return;
+    const clnEl = clnAll[i];
     if (!clnEl || !(clnEl instanceof SVGElement)) return;
     const cs = window.getComputedStyle(srcEl);
-    for (const prop of SVG_STYLE_PROPS) {
+    for (const prop of ["font-family", "font-size", "font-weight"]) {
       const val = cs.getPropertyValue(prop);
       if (val !== "") clnEl.style.setProperty(prop, val);
     }
@@ -583,7 +560,7 @@ function prepareSvgClone(svgElement: Element): SVGSVGElement | null {
     svgClone.setAttribute("viewBox", `0 0 ${rect.width} ${rect.height}`);
   }
 
-  inlineSvgStyles(svgElement, svgClone);
+  inlineTextStyles(svgElement, svgClone);
   return svgClone;
 }
 
