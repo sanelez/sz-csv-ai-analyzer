@@ -466,12 +466,6 @@ html.light .hover\:text-violet-400:hover { color: #5b21b6; }
 /* --- Code blocks: softer background in light mode --- */
 html.light .bg-black\/30 { background-color: rgba(0, 0, 0, 0.04); }
 
-/* --- Data Transforms section panels (slightly more contrast) --- */
-html.light .bg-white\/\[0\.03\] { background-color: rgba(0, 0, 0, 0.04); }
-
-/* --- Select/option readability --- */
-html.light select option { background: #ffffff; color: #0f172a; }
-
 /* --- Code highlighting --- */
 html.light .hljs { background: #f6f8fa !important; color: #24292e !important; }
 html.light .hljs-string,

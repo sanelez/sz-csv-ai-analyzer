@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { Hero } from "./Hero";
-import { VideoDemo } from "./VideoDemo";
 import { FeaturesGrid } from "./FeaturesGrid";
 import { HowItWorks } from "./HowItWorks";
 import { generateDatasetById } from "~/lib/sample-data";
@@ -75,7 +74,6 @@ export function LandingPage({
           }
         />
         <div className="mx-auto max-w-7xl px-4 md:px-8">
-          <VideoDemo />
           <FeaturesGrid />
           <HowItWorks />
           {/* Footer info */}
