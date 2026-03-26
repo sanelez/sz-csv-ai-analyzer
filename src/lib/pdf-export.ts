@@ -12,6 +12,13 @@ interface ChatMessage {
   response: string;
 }
 
+export interface ChartImage {
+  title: string;
+  dataUrl: string;
+  width: number;
+  height: number;
+}
+
 export interface PDFExportOptions {
   fileName?: string;
   data: CSVData;
@@ -19,6 +26,7 @@ export interface PDFExportOptions {
   anomalies?: AnomalyResult[] | null;
   chatHistory?: ChatMessage[];
   charts?: ChartConfig[];
+  chartImages?: ChartImage[];
   maxDataRows?: number;
 }
 
@@ -26,51 +34,130 @@ const MARGIN = 20;
 const PAGE_WIDTH = 210; // A4
 const CONTENT_WIDTH = PAGE_WIDTH - MARGIN * 2;
 
-/** Strip markdown formatting for plain-text PDF rendering */
+/**
+ * Convert LaTeX math notation to readable plain text.
+ * jsPDF cannot render LaTeX natively, so we produce clean ASCII math.
+ */
+function latexToPlainText(tex: string): string {
+  let result = tex.trim();
+
+  // \text{...} → content
+  result = result.replace(/\\text\{([^}]*)\}/g, "$1");
+  // \textbf{...} → content
+  result = result.replace(/\\textbf\{([^}]*)\}/g, "$1");
+  // \mathrm{...} → content
+  result = result.replace(/\\mathrm\{([^}]*)\}/g, "$1");
+  // \operatorname{...} → content
+  result = result.replace(/\\operatorname\{([^}]*)\}/g, "$1");
+  // \frac{a}{b} → (a / b)
+  result = result.replace(/\\frac\{([^}]*)\}\{([^}]*)\}/g, "($1 / $2)");
+  // \sqrt{x} → sqrt(x)
+  result = result.replace(/\\sqrt\{([^}]*)\}/g, "sqrt($1)");
+  // \bar{x} → x_mean
+  result = result.replace(/\\bar\{([^}]*)\}/g, "$1_mean");
+  // \hat{x} → x_hat
+  result = result.replace(/\\hat\{([^}]*)\}/g, "$1_hat");
+  // \vec{x} → x_vec
+  result = result.replace(/\\vec\{([^}]*)\}/g, "$1");
+  // Named functions
+  result = result.replace(/\\sum/g, "Sum");
+  result = result.replace(/\\prod/g, "Prod");
+  result = result.replace(/\\int/g, "Integral");
+  result = result.replace(/\\log/g, "log");
+  result = result.replace(/\\ln/g, "ln");
+  result = result.replace(/\\exp/g, "exp");
+  result = result.replace(/\\sin/g, "sin");
+  result = result.replace(/\\cos/g, "cos");
+  result = result.replace(/\\tan/g, "tan");
+  result = result.replace(/\\min/g, "min");
+  result = result.replace(/\\max/g, "max");
+  result = result.replace(/\\lim/g, "lim");
+  // Symbols
+  const symbols: Record<string, string> = {
+    "\\left": "",
+    "\\right": "",
+    "\\cdot": " * ",
+    "\\times": " x ",
+    "\\div": " / ",
+    "\\pm": " +/- ",
+    "\\mp": " -/+ ",
+    "\\leq": " <= ",
+    "\\geq": " >= ",
+    "\\neq": " != ",
+    "\\approx": " ~ ",
+    "\\infty": "Inf",
+    "\\alpha": "alpha",
+    "\\beta": "beta",
+    "\\gamma": "gamma",
+    "\\delta": "delta",
+    "\\sigma": "sigma",
+    "\\mu": "mu",
+    "\\pi": "pi",
+    "\\theta": "theta",
+    "\\lambda": "lambda",
+    "\\in": " in ",
+    "\\forall": "for all ",
+    "\\exists": "exists ",
+    "\\partial": "d",
+    "\\nabla": "nabla",
+    "\\ldots": "...",
+    "\\cdots": "...",
+    "\\quad": "  ",
+    "\\qquad": "    ",
+  };
+  for (const [cmd, replacement] of Object.entries(symbols)) {
+    result = result.split(cmd).join(replacement);
+  }
+  // Subscript: x_{sub} → x_sub  or  x_i → x_i
+  result = result.replace(/\_\{([^}]*)\}/g, "_$1");
+  // Superscript: x^{sup} → x^sup  or  x^2 → x^2
+  result = result.replace(/\^\{([^}]*)\}/g, "^$1");
+  // Remove remaining \commands
+  result = result.replace(/\\_/g, "_");
+  result = result.replace(/\\[a-zA-Z]+/g, "");
+  // Remove leftover braces
+  result = result.replace(/[{}]/g, "");
+  // Clean up whitespace
+  result = result.replace(/\s+/g, " ").trim();
+
+  return result;
+}
+
+/** Strip markdown + LaTeX for plain-text PDF rendering */
 function stripMarkdown(text: string): string {
-  return (
-    text
-      .replace(/#{1,6}\s/g, "")
-      .replace(/\*\*(.*?)\*\*/g, "$1")
-      .replace(/\*(.*?)\*/g, "$1")
-      .replace(/`(.*?)`/g, "$1")
-      .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
-      .replace(/^[-*+]\s/gm, "- ")
-      // Strip LaTeX math delimiters but keep content
-      .replace(/\$\$([\s\S]*?)\$\$/g, "$1")
-      .replace(/\$(.*?)\$/g, "$1")
-      .replace(/\\\[[\s\S]*?\\\]/g, (m) => m.slice(2, -2))
-      .replace(/\\\(.*?\\\)/g, (m) => m.slice(2, -2))
-      // Clean up common LaTeX commands for plain text
-      .replace(/\\frac\{([^}]*)\}\{([^}]*)\}/g, "($1/$2)")
-      .replace(/\\sqrt\{([^}]*)\}/g, "sqrt($1)")
-      .replace(/\\sum/g, "Sum")
-      .replace(/\\bar\{([^}]*)\}/g, "$1_mean")
-      .replace(
-        /\\(left|right|cdot|times|div|pm|mp|leq|geq|neq|approx|infty)/g,
-        (_, cmd) => {
-          const symbols: Record<string, string> = {
-            left: "",
-            right: "",
-            cdot: "*",
-            times: "x",
-            div: "/",
-            pm: "+/-",
-            mp: "-/+",
-            leq: "<=",
-            geq: ">=",
-            neq: "!=",
-            approx: "~",
-            infty: "Inf",
-          };
-          return symbols[cmd] ?? "";
-        },
-      )
-      .replace(/\\_/g, "_")
-      .replace(/\\[a-zA-Z]+/g, "")
-      .replace(/[{}]/g, "")
-      .trim()
+  let result = text;
+
+  // Extract and convert display math: $$...$$ or \[...\]
+  result = result.replace(/\$\$([\s\S]*?)\$\$/g, (_m, inner: string) =>
+    latexToPlainText(inner),
   );
+  result = result.replace(/\\\[([\s\S]*?)\\\]/g, (_m, inner: string) =>
+    latexToPlainText(inner),
+  );
+  // Bare [ ... ] with LaTeX commands
+  result = result.replace(
+    /^\[\s*(\\(?:text|frac|sqrt|sum|prod|int|left|right|bar|hat)\b[\s\S]*?)\s*\]$/gm,
+    (_m, inner: string) => latexToPlainText(inner),
+  );
+  // Inline math: $...$ or \(...\)
+  result = result.replace(/\$(.*?)\$/g, (_m, inner: string) =>
+    latexToPlainText(inner),
+  );
+  result = result.replace(/\\\((.*?)\\\)/g, (_m, inner: string) =>
+    latexToPlainText(inner),
+  );
+
+  // Strip markdown formatting
+  result = result
+    .replace(/#{1,6}\s/g, "")
+    .replace(/\*\*(.*?)\*\*/g, "$1")
+    .replace(/\*(.*?)\*/g, "$1")
+    .replace(/`(.*?)`/g, "$1")
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+    .replace(/^[-*+]\s/gm, "- ")
+    .trim();
+
+  return result;
 }
 
 function addSectionTitle(doc: jsPDF, title: string, y: number): number {
@@ -110,6 +197,10 @@ function addWrappedText(
   return y + 3;
 }
 
+// Truncate cell values for readability
+const truncate = (v: string, max = 30) =>
+  v.length > max ? v.slice(0, max - 1) + "\u2026" : v;
+
 export function exportToPDF(options: PDFExportOptions) {
   const {
     fileName = "analysis-report",
@@ -118,12 +209,13 @@ export function exportToPDF(options: PDFExportOptions) {
     anomalies,
     chatHistory,
     charts,
+    chartImages,
     maxDataRows = 100,
   } = options;
 
   const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
   const now = new Date();
-  const dateStr = now.toLocaleDateString("fr-FR", {
+  const dateStr = now.toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
     day: "numeric",
@@ -142,7 +234,7 @@ export function exportToPDF(options: PDFExportOptions) {
 
   doc.setFontSize(11);
   doc.setFont("helvetica", "normal");
-  doc.text("Rapport d'analyse", MARGIN, 28);
+  doc.text("Analysis Report", MARGIN, 28);
 
   doc.setFontSize(9);
   doc.text(dateStr, MARGIN, 36);
@@ -150,7 +242,7 @@ export function exportToPDF(options: PDFExportOptions) {
   let y = 55;
 
   // ─── File overview ───
-  y = addSectionTitle(doc, "Fichier", y);
+  y = addSectionTitle(doc, "File Overview", y);
 
   doc.setFontSize(10);
   doc.setFont("helvetica", "normal");
@@ -158,9 +250,9 @@ export function exportToPDF(options: PDFExportOptions) {
 
   const displayName = fileName.replace(/\.(csv|xlsx?)$/i, "") || "untitled";
   const overviewItems = [
-    `Nom: ${displayName}`,
-    `Lignes: ${data.rowCount.toLocaleString("fr-FR")}`,
-    `Colonnes: ${data.headers.length} (${data.headers.slice(0, 10).join(", ")}${data.headers.length > 10 ? "..." : ""})`,
+    `Name: ${displayName}`,
+    `Rows: ${data.rowCount.toLocaleString("en-US")}`,
+    `Columns: ${data.headers.length} (${data.headers.slice(0, 10).join(", ")}${data.headers.length > 10 ? "..." : ""})`,
   ];
   for (const item of overviewItems) {
     doc.text(item, MARGIN + 2, y);
@@ -169,13 +261,9 @@ export function exportToPDF(options: PDFExportOptions) {
   y += 5;
 
   // ─── Data table ───
-  y = addSectionTitle(doc, "Apercu des donnees", y);
+  y = addSectionTitle(doc, "Data Preview", y);
 
   const displayRows = data.rows.slice(0, maxDataRows);
-
-  // Truncate cell values for readability
-  const truncate = (v: string, max = 30) =>
-    v.length > max ? v.slice(0, max - 1) + "\u2026" : v;
 
   autoTable(doc, {
     startY: y,
@@ -203,7 +291,7 @@ export function exportToPDF(options: PDFExportOptions) {
     doc.setFontSize(8);
     doc.setTextColor(120, 120, 120);
     doc.text(
-      `Affichage de ${displayRows.length} lignes sur ${data.rowCount.toLocaleString("fr-FR")}`,
+      `Showing ${displayRows.length} of ${data.rowCount.toLocaleString("en-US")} rows`,
       MARGIN,
       y + 5,
     );
@@ -217,7 +305,7 @@ export function exportToPDF(options: PDFExportOptions) {
       doc.addPage();
       y = MARGIN;
     }
-    y = addSectionTitle(doc, "Resume IA", y);
+    y = addSectionTitle(doc, "AI Summary", y);
     y = addWrappedText(doc, stripMarkdown(summary.summary), y);
     y += 3;
 
@@ -229,7 +317,7 @@ export function exportToPDF(options: PDFExportOptions) {
         doc.addPage();
         y = MARGIN;
       }
-      doc.text("Points cles", MARGIN, y);
+      doc.text("Key Insights", MARGIN, y);
       y += 6;
 
       for (const insight of summary.keyInsights) {
@@ -262,7 +350,7 @@ export function exportToPDF(options: PDFExportOptions) {
         doc.addPage();
         y = MARGIN;
       }
-      doc.text("Qualite des donnees", MARGIN, y);
+      doc.text("Data Quality", MARGIN, y);
       y += 6;
       y = addWrappedText(doc, stripMarkdown(summary.dataQuality), y);
       y += 3;
@@ -275,23 +363,17 @@ export function exportToPDF(options: PDFExportOptions) {
       doc.addPage();
       y = MARGIN;
     }
-    y = addSectionTitle(doc, `Anomalies detectees (${anomalies.length})`, y);
-
-    const severityLabel = {
-      low: "Faible",
-      medium: "Moyen",
-      high: "Eleve",
-    };
+    y = addSectionTitle(doc, `Detected Anomalies (${anomalies.length})`, y);
 
     autoTable(doc, {
       startY: y,
-      head: [["Ligne", "Colonne", "Valeur", "Probleme", "Severite"]],
+      head: [["Row", "Column", "Value", "Issue", "Severity"]],
       body: anomalies.map((a) => [
         String(a.row),
         a.column,
         truncate(a.value, 25),
         truncate(a.issue, 40),
-        severityLabel[a.severity] ?? a.severity,
+        a.severity.charAt(0).toUpperCase() + a.severity.slice(1),
       ]),
       styles: {
         fontSize: 8,
@@ -316,26 +398,51 @@ export function exportToPDF(options: PDFExportOptions) {
   }
 
   // ─── Charts ───
-  if (charts && charts.length > 0) {
+  if (chartImages && chartImages.length > 0) {
+    // Embed actual chart images
+    for (const img of chartImages) {
+      doc.addPage();
+      y = MARGIN;
+      y = addSectionTitle(doc, img.title, y);
+
+      // Fit the chart image within the content width, preserving aspect ratio
+      const aspectRatio = img.height / img.width;
+      const imgWidth = Math.min(CONTENT_WIDTH, 170);
+      const imgHeight = imgWidth * aspectRatio;
+      const maxHeight = 200; // leave room for title + footer
+      const finalHeight = Math.min(imgHeight, maxHeight);
+      const finalWidth =
+        finalHeight < imgHeight ? finalHeight / aspectRatio : imgWidth;
+
+      try {
+        doc.addImage(img.dataUrl, "PNG", MARGIN, y, finalWidth, finalHeight);
+        y += finalHeight + 5;
+      } catch {
+        // Fallback: just show the title if image embedding fails
+        y = addWrappedText(doc, `[Chart: ${img.title}]`, y);
+      }
+    }
+  } else if (charts && charts.length > 0) {
+    // Fallback: table of chart descriptions when images aren't available
     if (y > 230) {
       doc.addPage();
       y = MARGIN;
     }
-    y = addSectionTitle(doc, `Graphiques generes (${charts.length})`, y);
+    y = addSectionTitle(doc, `Generated Charts (${charts.length})`, y);
 
     const chartTypeLabels: Record<string, string> = {
-      bar: "Barres",
-      line: "Ligne",
-      pie: "Camembert",
-      scatter: "Nuage de points",
-      area: "Aire",
-      histogram: "Histogramme",
+      bar: "Bar",
+      line: "Line",
+      pie: "Pie",
+      scatter: "Scatter",
+      area: "Area",
+      histogram: "Histogram",
       radar: "Radar",
     };
 
     autoTable(doc, {
       startY: y,
-      head: [["Type", "Titre", "Description", "Axe X", "Axe Y"]],
+      head: [["Type", "Title", "Description", "X Axis", "Y Axis"]],
       body: charts.map((c) => [
         chartTypeLabels[c.type] ?? c.type,
         truncate(c.title, 30),
@@ -367,7 +474,7 @@ export function exportToPDF(options: PDFExportOptions) {
       doc.addPage();
       y = MARGIN;
     }
-    y = addSectionTitle(doc, "Historique des questions", y);
+    y = addSectionTitle(doc, "Chat History", y);
 
     for (let i = 0; i < chatHistory.length; i++) {
       const item = chatHistory[i]!;
@@ -414,4 +521,188 @@ export function exportToPDF(options: PDFExportOptions) {
   }
 
   doc.save(`${displayName}-report.pdf`);
+}
+
+/**
+ * Capture all chart SVGs from the DOM and convert them to image data URLs.
+ * Looks for SVG elements inside containers with data-chart-id attributes,
+ * or falls back to all .recharts-responsive-container SVGs.
+ */
+export function captureChartImages(
+  charts: ChartConfig[],
+): Promise<ChartImage[]> {
+  return new Promise((resolve) => {
+    // Find all recharts SVGs on the page
+    const svgElements = document.querySelectorAll(
+      ".recharts-responsive-container svg",
+    );
+
+    if (svgElements.length === 0) {
+      resolve([]);
+      return;
+    }
+
+    const promises: Promise<ChartImage | null>[] = [];
+
+    svgElements.forEach((svgElement, index) => {
+      const chart = charts[index];
+      const title = chart?.title ?? `Chart ${index + 1}`;
+
+      promises.push(
+        new Promise<ChartImage | null>((resolveImg) => {
+          try {
+            const svgClone = svgElement.cloneNode(true) as SVGSVGElement;
+            svgClone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+            svgClone.setAttribute(
+              "xmlns:xlink",
+              "http://www.w3.org/1999/xlink",
+            );
+            const rect = svgElement.getBoundingClientRect();
+            svgClone.setAttribute("width", String(rect.width));
+            svgClone.setAttribute("height", String(rect.height));
+
+            // Inline computed styles so they survive serialization
+            const origChildren = svgElement.querySelectorAll("*");
+            const cloneChildren = svgClone.querySelectorAll("*");
+            const styleProps = [
+              "fill",
+              "stroke",
+              "stroke-width",
+              "stroke-dasharray",
+              "opacity",
+              "font-family",
+              "font-size",
+              "font-weight",
+              "text-anchor",
+              "dominant-baseline",
+              "visibility",
+              "display",
+            ];
+            origChildren.forEach((orig, i) => {
+              const clone = cloneChildren[i];
+              if (!clone) return;
+              const computed = window.getComputedStyle(orig);
+              for (const prop of styleProps) {
+                const val = computed.getPropertyValue(prop);
+                if (val && val !== "none" && val !== "normal" && val !== "") {
+                  (clone as SVGElement).style.setProperty(prop, val);
+                }
+              }
+            });
+
+            const svgString = new XMLSerializer().serializeToString(svgClone);
+            const base64 = btoa(unescape(encodeURIComponent(svgString)));
+            const svgDataUrl = `data:image/svg+xml;base64,${base64}`;
+
+            const img = new Image();
+            img.onload = () => {
+              const canvas = document.createElement("canvas");
+              const scale = 2;
+              canvas.width = rect.width * scale;
+              canvas.height = rect.height * scale;
+              const ctx = canvas.getContext("2d");
+              if (!ctx) {
+                resolveImg(null);
+                return;
+              }
+              ctx.scale(scale, scale);
+              // White background for PDF
+              ctx.fillStyle = "#ffffff";
+              ctx.fillRect(0, 0, rect.width, rect.height);
+              ctx.drawImage(img, 0, 0, rect.width, rect.height);
+
+              const dataUrl = canvas.toDataURL("image/png");
+              resolveImg({
+                title,
+                dataUrl,
+                width: rect.width,
+                height: rect.height,
+              });
+            };
+            img.onerror = () => {
+              resolveImg(null);
+            };
+            img.src = svgDataUrl;
+          } catch {
+            resolveImg(null);
+          }
+        }),
+      );
+    });
+
+    Promise.all(promises).then((results) => {
+      resolve(results.filter((r): r is ChartImage => r !== null));
+    });
+  });
+}
+
+/**
+ * Export only charts as a PDF document.
+ */
+export async function exportChartsPDF(
+  charts: ChartConfig[],
+  fileName = "charts",
+) {
+  const chartImages = await captureChartImages(charts);
+  if (chartImages.length === 0) return;
+
+  const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+  const now = new Date();
+  const dateStr = now.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
+  // Header
+  doc.setFillColor(79, 70, 229);
+  doc.rect(0, 0, PAGE_WIDTH, 35, "F");
+  doc.setFontSize(18);
+  doc.setFont("helvetica", "bold");
+  doc.setTextColor(255, 255, 255);
+  doc.text("Charts Report", MARGIN, 18);
+  doc.setFontSize(9);
+  doc.setFont("helvetica", "normal");
+  doc.text(dateStr, MARGIN, 27);
+
+  let isFirst = true;
+
+  for (const img of chartImages) {
+    if (!isFirst) doc.addPage();
+    isFirst = false;
+
+    let y = 45;
+    y = addSectionTitle(doc, img.title, y);
+
+    const aspectRatio = img.height / img.width;
+    const imgWidth = Math.min(CONTENT_WIDTH, 170);
+    const imgHeight = imgWidth * aspectRatio;
+    const maxHeight = 210;
+    const finalHeight = Math.min(imgHeight, maxHeight);
+    const finalWidth =
+      finalHeight < imgHeight ? finalHeight / aspectRatio : imgWidth;
+
+    try {
+      doc.addImage(img.dataUrl, "PNG", MARGIN, y, finalWidth, finalHeight);
+    } catch {
+      doc.setFontSize(10);
+      doc.setTextColor(120, 120, 120);
+      doc.text(`[Could not embed chart: ${img.title}]`, MARGIN, y);
+    }
+  }
+
+  // Footer
+  const pageCount = doc.getNumberOfPages();
+  for (let i = 1; i <= pageCount; i++) {
+    doc.setPage(i);
+    doc.setFontSize(8);
+    doc.setTextColor(150, 150, 150);
+    doc.text(`Page ${i} / ${pageCount}`, PAGE_WIDTH / 2, 292, {
+      align: "center",
+    });
+    doc.text("CSV AI Analyzer", MARGIN, 292);
+  }
+
+  const displayName = fileName.replace(/\.(csv|xlsx?)$/i, "") || "charts";
+  doc.save(`${displayName}-charts.pdf`);
 }

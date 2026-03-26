@@ -135,16 +135,45 @@ export function SingleChart({
 
     const svgClone = svgElement.cloneNode(true) as SVGSVGElement;
     svgClone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-    // Ensure dimensions
+    svgClone.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
+
     const rect = svgElement.getBoundingClientRect();
     svgClone.setAttribute("width", String(rect.width));
     svgClone.setAttribute("height", String(rect.height));
 
-    const svgString = new XMLSerializer().serializeToString(svgClone);
-    const svgBlob = new Blob([svgString], {
-      type: "image/svg+xml;charset=utf-8",
+    // Inline computed styles so they survive serialization
+    const origElements = svgElement.querySelectorAll("*");
+    const cloneElements = svgClone.querySelectorAll("*");
+    const styleProps = [
+      "fill",
+      "stroke",
+      "stroke-width",
+      "stroke-dasharray",
+      "opacity",
+      "font-family",
+      "font-size",
+      "font-weight",
+      "text-anchor",
+      "dominant-baseline",
+      "visibility",
+      "display",
+    ];
+    origElements.forEach((orig, i) => {
+      const clone = cloneElements[i];
+      if (!clone) return;
+      const computed = window.getComputedStyle(orig);
+      for (const prop of styleProps) {
+        const val = computed.getPropertyValue(prop);
+        if (val && val !== "none" && val !== "normal" && val !== "") {
+          (clone as SVGElement).style.setProperty(prop, val);
+        }
+      }
     });
-    const url = URL.createObjectURL(svgBlob);
+
+    const svgString = new XMLSerializer().serializeToString(svgClone);
+    // Use base64 data URL instead of blob URL for better cross-browser support
+    const base64 = btoa(unescape(encodeURIComponent(svgString)));
+    const dataUrl = `data:image/svg+xml;base64,${base64}`;
 
     const img = new Image();
     img.onload = () => {
@@ -168,10 +197,11 @@ export function SingleChart({
         a.click();
         URL.revokeObjectURL(pngUrl);
       }, "image/png");
-
-      URL.revokeObjectURL(url);
     };
-    img.src = url;
+    img.onerror = () => {
+      console.error("Failed to load SVG for PNG export");
+    };
+    img.src = dataUrl;
   }, [chart.title, theme.tooltipBackground]);
 
   const toggleSort = () => {

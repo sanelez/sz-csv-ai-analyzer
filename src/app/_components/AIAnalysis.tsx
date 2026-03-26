@@ -232,10 +232,10 @@ export function AIAnalysis({
         anomalies: anomaliesResult,
         chatHistory: customHistory,
       });
-      toast.success("Rapport PDF exporté");
+      toast.success("PDF report exported");
     } catch (e) {
       console.error("PDF export failed:", e);
-      toast.error("Échec de l'export PDF");
+      toast.error("PDF export failed");
     }
   }, [fileName, data, summaryResult, anomaliesResult, customHistory]);
 

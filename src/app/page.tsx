@@ -51,7 +51,7 @@ import {
 import { loadApiSettings, type StoredSettings } from "~/lib/storage";
 import { clearChatStore, getChatStore } from "~/lib/chat-store";
 import { Sparkles, Loader2, ArrowLeft, FileDown } from "lucide-react";
-import { exportToPDF } from "~/lib/pdf-export";
+import { exportToPDF, captureChartImages } from "~/lib/pdf-export";
 
 export default function HomePage() {
   const [csvData, setCsvData] = useState<CSVData | null>(null);
@@ -268,10 +268,15 @@ export default function HomePage() {
     });
   };
 
-  const handleGlobalPDFExport = () => {
+  const handleGlobalPDFExport = async () => {
     if (!csvData) return;
     try {
       const chatStore = getChatStore();
+      // Capture chart images from the DOM if charts are rendered
+      const chartImages =
+        generatedCharts.length > 0
+          ? await captureChartImages(generatedCharts)
+          : undefined;
       exportToPDF({
         fileName: currentFileName ?? "analysis",
         data: effectiveData ?? csvData,
@@ -279,11 +284,12 @@ export default function HomePage() {
         anomalies: analysisResults.anomalies,
         chatHistory: chatStore.history,
         charts: generatedCharts.length > 0 ? generatedCharts : undefined,
+        chartImages,
       });
-      toast.success("Rapport PDF exporté");
+      toast.success("PDF report exported");
     } catch (e) {
       console.error("PDF export failed:", e);
-      toast.error("Échec de l'export PDF");
+      toast.error("PDF export failed");
     }
   };
 
@@ -407,7 +413,7 @@ export default function HomePage() {
                   <button
                     onClick={handleGlobalPDFExport}
                     className="flex items-center gap-1.5 rounded-lg bg-violet-500/10 px-3 py-2 text-sm text-violet-400 transition-colors hover:bg-violet-500/20 hover:text-violet-300"
-                    title="Exporter le rapport complet en PDF"
+                    title="Export full report as PDF"
                   >
                     <FileDown className="h-4 w-4" />
                     <span className="hidden sm:inline">PDF</span>
@@ -523,6 +529,7 @@ export default function HomePage() {
                         <ChartDisplay
                           data={effectiveData ?? csvData}
                           charts={generatedCharts}
+                          fileName={currentFileName}
                           onRegenerate={handleRegenerateChart}
                         />
                       </FullscreenCard>
