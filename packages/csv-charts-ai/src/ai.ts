@@ -222,8 +222,9 @@ export function generateDataSummary(data: TabularData): string {
         .filter((n) => !isNaN(n));
 
       if (numbers.length > 0) {
-        const min = Math.min(...numbers);
-        const max = Math.max(...numbers);
+        // Use reduce instead of Math.min/max spread to avoid stack overflow on large arrays
+        const min = numbers.reduce((a, b) => (b < a ? b : a), numbers[0]!);
+        const max = numbers.reduce((a, b) => (b > a ? b : a), numbers[0]!);
         const avg = numbers.reduce((a, b) => a + b, 0) / numbers.length;
         summary.push(
           `- ${col.name} (number): min=${min.toFixed(2)}, max=${max.toFixed(2)}, avg=${avg.toFixed(2)}, ${numbers.length} values`,

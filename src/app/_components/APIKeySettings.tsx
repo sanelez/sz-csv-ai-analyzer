@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { createPortal } from "react-dom";
+import { useFocusTrap } from "~/lib/use-focus-trap";
 import { toast } from "sonner";
 import {
   Key,
@@ -170,6 +171,9 @@ export function APIKeySettings({
     );
   }, [selectedProvider, searchTerm]);
 
+  const modalRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(modalRef, isOpen && mounted);
+
   if (!isOpen || !mounted) return null;
 
   const providerMeta = selectedProvider
@@ -234,6 +238,7 @@ export function APIKeySettings({
         aria-modal="true"
       >
         <div
+          ref={modalRef}
           className="animate-scale-in pointer-events-auto max-h-[90vh] w-full max-w-md overflow-y-auto rounded-2xl border-2 border-violet-500/60 bg-gray-900 shadow-[0_0_60px_rgba(139,92,246,0.3)]"
           onClick={(e) => e.stopPropagation()}
         >
@@ -366,10 +371,14 @@ export function APIKeySettings({
             {useCustomEndpoint && (
               <div className="space-y-4 rounded-xl border border-gray-700 bg-gray-800/50 p-4">
                 <div>
-                  <label className="mb-2 block text-sm font-semibold text-gray-200">
+                  <label
+                    htmlFor="custom-endpoint-input"
+                    className="mb-2 block text-sm font-semibold text-gray-200"
+                  >
                     API Base URL
                   </label>
                   <input
+                    id="custom-endpoint-input"
                     type="text"
                     value={customEndpoint}
                     onChange={(e) => setCustomEndpoint(e.target.value)}
@@ -381,10 +390,14 @@ export function APIKeySettings({
                   </p>
                 </div>
                 <div>
-                  <label className="mb-2 block text-sm font-semibold text-gray-200">
+                  <label
+                    htmlFor="custom-model-input"
+                    className="mb-2 block text-sm font-semibold text-gray-200"
+                  >
                     Model Name
                   </label>
                   <input
+                    id="custom-model-input"
                     type="text"
                     value={customModel}
                     onChange={(e) => setCustomModel(e.target.value)}
@@ -400,11 +413,15 @@ export function APIKeySettings({
 
             {/* API Key Input */}
             <div>
-              <label className="mb-2 block text-sm font-semibold text-gray-200">
+              <label
+                htmlFor="api-key-input"
+                className="mb-2 block text-sm font-semibold text-gray-200"
+              >
                 {useCustomEndpoint ? "API Key (optional)" : "Provider API Key"}
               </label>
               <div className="relative">
                 <input
+                  id="api-key-input"
                   type={showKey ? "text" : "password"}
                   value={apiKey}
                   onChange={(e) => setApiKey(e.target.value)}
@@ -435,10 +452,14 @@ export function APIKeySettings({
             {/* Provider Selection */}
             {!useCustomEndpoint && (
               <div className="space-y-2">
-                <label className="mb-1 block text-sm font-semibold text-gray-200">
+                <label
+                  htmlFor="provider-select"
+                  className="mb-1 block text-sm font-semibold text-gray-200"
+                >
                   Provider
                 </label>
                 <select
+                  id="provider-select"
                   value={providerId}
                   onChange={(e) => {
                     // Reset the apiKey field when switching providers
@@ -547,7 +568,11 @@ export function APIKeySettings({
 
                 {/* Search field to filter the models list */}
                 <div className="mb-3">
+                  <label htmlFor="model-search" className="sr-only">
+                    Search models
+                  </label>
                   <input
+                    id="model-search"
                     type="text"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
@@ -619,13 +644,17 @@ export function APIKeySettings({
 
             {/* Language Selection */}
             <div>
-              <label className="mb-2 block text-sm font-semibold text-gray-200">
+              <label
+                htmlFor="language-select"
+                className="mb-2 block text-sm font-semibold text-gray-200"
+              >
                 <div className="flex items-center gap-2">
                   <Globe className="h-4 w-4" />
                   Response Language
                 </div>
               </label>
               <select
+                id="language-select"
                 value={language}
                 onChange={(e) => setLanguage(e.target.value as LanguageCode)}
                 className="w-full rounded-xl border-2 border-gray-700 bg-gray-800 px-4 py-3 text-white transition-all focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 focus:outline-none"

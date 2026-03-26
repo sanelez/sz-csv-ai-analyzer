@@ -80,28 +80,24 @@ export const processChartDataMultiSeries = (
       const xGroup = grouped.get(xVal)!;
 
       if (isCountMode) {
-        const current = xGroup.get(groupVal) ?? {
-          sum: 0,
-          count: 0,
-          min: 0,
-          max: 0,
-        };
-        xGroup.set(groupVal, { ...current, count: current.count + 1 });
+        let current = xGroup.get(groupVal);
+        if (!current) {
+          current = { sum: 0, count: 0, min: 0, max: 0 };
+          xGroup.set(groupVal, current);
+        }
+        current.count++;
       } else if (yIdx >= 0) {
         const yVal = parseFloat(String(row[yIdx] ?? "0"));
         if (!isNaN(yVal)) {
-          const current = xGroup.get(groupVal) ?? {
-            sum: 0,
-            count: 0,
-            min: Infinity,
-            max: -Infinity,
-          };
-          xGroup.set(groupVal, {
-            sum: current.sum + yVal,
-            count: current.count + 1,
-            min: Math.min(current.min, yVal),
-            max: Math.max(current.max, yVal),
-          });
+          let current = xGroup.get(groupVal);
+          if (!current) {
+            current = { sum: 0, count: 0, min: Infinity, max: -Infinity };
+            xGroup.set(groupVal, current);
+          }
+          current.sum += yVal;
+          current.count++;
+          if (yVal < current.min) current.min = yVal;
+          if (yVal > current.max) current.max = yVal;
         }
       }
     });
@@ -170,31 +166,24 @@ export const processChartDataMultiSeries = (
       if (!xVal) return;
 
       if (isCountMode) {
-        const current = groups.get(xVal) ?? {
-          sum: 0,
-          count: 0,
-          min: 0,
-          max: 0,
-        };
-        groups.set(xVal, {
-          ...current,
-          count: current.count + 1,
-        });
+        let current = groups.get(xVal);
+        if (!current) {
+          current = { sum: 0, count: 0, min: 0, max: 0 };
+          groups.set(xVal, current);
+        }
+        current.count++;
       } else if (yIdx >= 0) {
         const yVal = parseFloat(String(row[yIdx] ?? "0"));
         if (!isNaN(yVal)) {
-          const current = groups.get(xVal) ?? {
-            sum: 0,
-            count: 0,
-            min: Infinity,
-            max: -Infinity,
-          };
-          groups.set(xVal, {
-            sum: current.sum + yVal,
-            count: current.count + 1,
-            min: Math.min(current.min, yVal),
-            max: Math.max(current.max, yVal),
-          });
+          let current = groups.get(xVal);
+          if (!current) {
+            current = { sum: 0, count: 0, min: Infinity, max: -Infinity };
+            groups.set(xVal, current);
+          }
+          current.sum += yVal;
+          current.count++;
+          if (yVal < current.min) current.min = yVal;
+          if (yVal > current.max) current.max = yVal;
         }
       }
     });

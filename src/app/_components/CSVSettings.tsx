@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
+import { useFocusTrap } from "~/lib/use-focus-trap";
 import { toast } from "sonner";
 import { Settings, X, Check } from "lucide-react";
 import { type CSVSettings, DEFAULT_CSV_SETTINGS } from "~/lib/csv-parser";
@@ -46,6 +47,9 @@ export function CSVSettingsModal({
     setLocalSettings(settings);
   }, [settings]);
 
+  const modalRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(modalRef, isOpen && mounted);
+
   if (!isOpen || !mounted) return null;
 
   const handleSave = () => {
@@ -73,6 +77,7 @@ export function CSVSettingsModal({
         aria-modal="true"
       >
         <div
+          ref={modalRef}
           className="animate-scale-in pointer-events-auto w-full max-w-md rounded-2xl border-2 border-cyan-500/60 bg-gray-900 shadow-[0_0_60px_rgba(6,182,212,0.3)]"
           onClick={(e) => e.stopPropagation()}
         >

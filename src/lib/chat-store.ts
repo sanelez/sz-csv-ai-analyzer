@@ -1,5 +1,6 @@
 // Store to persist chat history and UI state across component remounts (e.g., fullscreen toggle)
 // Uses immutable updates and proper React 18 external store pattern
+// Chat history is also persisted to localStorage so it survives page reloads
 
 import { useSyncExternalStore, useCallback, useRef, useEffect } from "react";
 import type { ChartSuggestion } from "./ai-service";
@@ -22,6 +23,36 @@ type ChatStore = {
   version: number; // Force re-render on updates
 };
 
+// ============ localStorage persistence ============
+
+const CHAT_HISTORY_KEY = "csv-ai-chat-history";
+
+function loadHistoryFromStorage(): ChatMessage[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const stored = localStorage.getItem(CHAT_HISTORY_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored) as ChatMessage[];
+      if (Array.isArray(parsed)) return parsed;
+    }
+  } catch {
+    // Corrupted data — ignore
+  }
+  return [];
+}
+
+function saveHistoryToStorage(history: ChatMessage[]) {
+  if (typeof window === "undefined") return;
+  // Defer write to avoid blocking the UI thread on large histories
+  requestAnimationFrame(() => {
+    try {
+      localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(history));
+    } catch {
+      // localStorage full or unavailable — silently ignore
+    }
+  });
+}
+
 // Initial state
 const initialState: ChatStore = {
   history: [],
@@ -34,7 +65,11 @@ const initialState: ChatStore = {
 };
 
 // Global state that persists across component mounts/unmounts
-let store: ChatStore = { ...initialState };
+// Restore chat history from localStorage on first load
+let store: ChatStore = {
+  ...initialState,
+  history: loadHistoryFromStorage(),
+};
 
 // Subscribers to notify on state changes
 const subscribers = new Set<() => void>();
@@ -84,12 +119,14 @@ function updateStore(
 }
 
 export function addChatMessage(message: ChatMessage) {
+  const newHistory = [...store.history, message];
   updateStore({
-    history: [...store.history, message],
+    history: newHistory,
     streamingResponse: "",
     isLoading: false,
     pendingPrompt: "",
   });
+  saveHistoryToStorage(newHistory);
 }
 
 export function setStreamingResponse(response: string) {
@@ -119,11 +156,13 @@ export function updateChatMessageByIndex(
   const updated = [...store.history];
   updated[index] = { ...updated[index]!, ...updates };
   updateStore({ history: updated });
+  saveHistoryToStorage(updated);
 }
 
 export function clearChatStore() {
   store = { ...initialState, version: store.version + 1 };
   notifySubscribers();
+  saveHistoryToStorage([]);
 }
 
 export function setActiveTabInStore(tab: AnalysisTab) {

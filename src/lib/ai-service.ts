@@ -16,13 +16,16 @@ import {
   summarizeData,
   detectAnomalies as pkgDetectAnomalies,
   streamAskAboutData,
+  suggestQuestions as pkgSuggestQuestions,
 } from "csv-charts-ai";
 import type {
   ChartConfig,
   TabularData,
   DataSummaryResult,
   AnomalyResult,
+  SuggestedQuestion,
 } from "csv-charts-ai";
+import { withRetry } from "./retry";
 import { createOpenAI } from "@ai-sdk/openai";
 import { createAnthropic } from "@ai-sdk/anthropic";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
@@ -49,7 +52,11 @@ registerProvider("mistral", fromSDK(createMistral));
 
 export type { ChartConfig as ChartSuggestion } from "csv-charts-ai";
 export type { ChartType, AggregationType } from "csv-charts-ai";
-export type { DataSummaryResult, AnomalyResult } from "csv-charts-ai";
+export type {
+  DataSummaryResult,
+  AnomalyResult,
+  SuggestedQuestion,
+} from "csv-charts-ai";
 export { getAIErrorMessage } from "csv-charts-ai";
 
 export interface CustomAnalysisResult {
@@ -108,21 +115,23 @@ export const generateChartSuggestions = async (
   columns: string[],
 ): Promise<ChartConfig[]> => {
   const model = getModel(config);
-  return suggestCharts({
-    model,
-    data: {
-      headers: columns,
-      rows: [],
-      columns: columns.map((name, index) => ({
-        name,
-        type: "string" as const,
-        index,
-      })),
-      rowCount: 0,
-    },
-    dataSummary,
-    language: LANGUAGE_NAMES[config.language ?? "en"],
-  });
+  return withRetry(() =>
+    suggestCharts({
+      model,
+      data: {
+        headers: columns,
+        rows: [],
+        columns: columns.map((name, index) => ({
+          name,
+          type: "string" as const,
+          index,
+        })),
+        rowCount: 0,
+      },
+      dataSummary,
+      language: LANGUAGE_NAMES[config.language ?? "en"],
+    }),
+  );
 };
 
 export const generateCustomChart = async (
@@ -132,22 +141,24 @@ export const generateCustomChart = async (
   columns: string[],
 ): Promise<ChartConfig | null> => {
   const model = getModel(config);
-  return suggestCustomChart({
-    model,
-    data: {
-      headers: columns,
-      rows: [],
-      columns: columns.map((name, index) => ({
-        name,
-        type: "string" as const,
-        index,
-      })),
-      rowCount: 0,
-    },
-    dataSummary,
-    prompt: userPrompt,
-    language: LANGUAGE_NAMES[config.language ?? "en"],
-  });
+  return withRetry(() =>
+    suggestCustomChart({
+      model,
+      data: {
+        headers: columns,
+        rows: [],
+        columns: columns.map((name, index) => ({
+          name,
+          type: "string" as const,
+          index,
+        })),
+        rowCount: 0,
+      },
+      dataSummary,
+      prompt: userPrompt,
+      language: LANGUAGE_NAMES[config.language ?? "en"],
+    }),
+  );
 };
 
 export const repairChartSuggestion = async (
@@ -157,13 +168,15 @@ export const repairChartSuggestion = async (
   errorContext: string,
 ): Promise<ChartConfig | null> => {
   const model = getModel(config);
-  return repairChart({
-    model,
-    failedChart,
-    columns,
-    errorContext,
-    language: LANGUAGE_NAMES[config.language ?? "en"],
-  });
+  return withRetry(() =>
+    repairChart({
+      model,
+      failedChart,
+      columns,
+      errorContext,
+      language: LANGUAGE_NAMES[config.language ?? "en"],
+    }),
+  );
 };
 
 export const generateDataSummary = async (
@@ -171,17 +184,19 @@ export const generateDataSummary = async (
   dataSummary: string,
 ): Promise<DataSummaryResult> => {
   const model = getModel(config);
-  return summarizeData({
-    model,
-    data: {
-      headers: ["_"],
-      rows: [],
-      columns: [{ name: "_", type: "string", index: 0 }],
-      rowCount: 0,
-    },
-    dataSummary,
-    language: LANGUAGE_NAMES[config.language ?? "en"],
-  });
+  return withRetry(() =>
+    summarizeData({
+      model,
+      data: {
+        headers: ["_"],
+        rows: [],
+        columns: [{ name: "_", type: "string", index: 0 }],
+        rowCount: 0,
+      },
+      dataSummary,
+      language: LANGUAGE_NAMES[config.language ?? "en"],
+    }),
+  );
 };
 
 export const detectAnomalies = async (
@@ -190,12 +205,14 @@ export const detectAnomalies = async (
   data: TabularData,
 ): Promise<AnomalyResult[]> => {
   const model = getModel(config);
-  return pkgDetectAnomalies({
-    model,
-    data,
-    dataSummary,
-    language: LANGUAGE_NAMES[config.language ?? "en"],
-  });
+  return withRetry(() =>
+    pkgDetectAnomalies({
+      model,
+      data,
+      dataSummary,
+      language: LANGUAGE_NAMES[config.language ?? "en"],
+    }),
+  );
 };
 
 export const streamCustomAnalysis = async (
@@ -222,4 +239,25 @@ export const streamCustomAnalysis = async (
     onChunk,
     onComplete,
   });
+};
+
+export const fetchSuggestedQuestions = async (
+  config: AIServiceConfig,
+  dataSummary: string,
+): Promise<SuggestedQuestion[]> => {
+  const model = getModel(config);
+  return withRetry(() =>
+    pkgSuggestQuestions({
+      model,
+      data: {
+        headers: ["_"],
+        rows: [],
+        columns: [{ name: "_", type: "string", index: 0 }],
+        rowCount: 0,
+      },
+      dataSummary,
+      language: LANGUAGE_NAMES[config.language ?? "en"],
+      count: 6,
+    }),
+  );
 };

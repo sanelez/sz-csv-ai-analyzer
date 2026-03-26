@@ -30,9 +30,11 @@ import {
   detectAnomalies,
   streamCustomAnalysis,
   generateCustomChart,
+  fetchSuggestedQuestions,
   type DataSummaryResult,
   type AnomalyResult,
   type AIServiceConfig,
+  type SuggestedQuestion,
 } from "~/lib/ai-service";
 import type { StoredSettings } from "~/lib/storage";
 import { useChatStore } from "~/lib/chat-store";
@@ -107,6 +109,13 @@ export function AIAnalysis({
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
+  // Suggested questions state
+  const [suggestedQuestions, setSuggestedQuestions] = useState<
+    SuggestedQuestion[]
+  >([]);
+  const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
+  const suggestionsLoadedRef = useRef(false);
+
   const [expandedSections, setExpandedSections] = useState<
     Record<string, boolean>
   >({
@@ -121,6 +130,12 @@ export function AIAnalysis({
         chatContainerRef.current.scrollHeight;
     }
   }, [customHistory, streamingResponse, expandedSections.custom]);
+
+  // Reset suggested questions when data changes (new file loaded)
+  useEffect(() => {
+    suggestionsLoadedRef.current = false;
+    setSuggestedQuestions([]);
+  }, [data]);
 
   // Sync with external results
   useEffect(() => {
@@ -221,6 +236,41 @@ export function AIAnalysis({
       customModel: apiSettings!.customModel,
     };
   };
+
+  // Auto-fetch suggested questions when custom tab is first shown
+  useEffect(() => {
+    if (
+      activeTab !== "custom" ||
+      suggestionsLoadedRef.current ||
+      customHistory.length > 0 ||
+      isLoadingSuggestions
+    )
+      return;
+
+    const config = getConfig();
+    if (!config) return;
+
+    suggestionsLoadedRef.current = true;
+    setIsLoadingSuggestions(true);
+
+    // Guard against stale responses when data changes mid-flight
+    let cancelled = false;
+    const csvSummary = generateCSVSummary(data);
+    void fetchSuggestedQuestions(config, csvSummary)
+      .then((questions) => {
+        if (!cancelled) setSuggestedQuestions(questions);
+      })
+      .catch(() => {
+        // Non-critical — silently ignore
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoadingSuggestions(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [activeTab]);
 
   const handleGenerateSummary = async () => {
     const config = getConfig();
@@ -478,7 +528,7 @@ export function AIAnalysis({
       )}
 
       {/* Tab Content */}
-      <div className="min-h-[200px] flex-1 overflow-y-auto">
+      <div className="min-h-[200px] flex-1 overflow-y-auto" aria-live="polite">
         {/* Summary Tab */}
         {activeTab === "summary" && (
           <div className="space-y-4">
@@ -895,7 +945,11 @@ export function AIAnalysis({
 
             {/* Input */}
             <div className="flex gap-3">
+              <label htmlFor="custom-query-input" className="sr-only">
+                Ask a question about your data
+              </label>
               <input
+                id="custom-query-input"
                 type="text"
                 value={customPrompt}
                 onChange={(e) => setCustomPrompt(e.target.value)}
@@ -919,6 +973,7 @@ export function AIAnalysis({
                   !apiSettings?.apiKey
                 }
                 className="btn-primary px-4 disabled:opacity-50"
+                aria-label="Send question"
               >
                 {isLoadingCustom ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -929,13 +984,42 @@ export function AIAnalysis({
             </div>
 
             {customHistory.length === 0 && !isLoadingCustom && (
-              <p className="py-4 text-center text-sm text-gray-500">
-                Ask any question about your data. For example:
-                <br />
-                <span className="text-gray-400">
-                  &quot;What is the sales trend?&quot;
-                </span>
-              </p>
+              <div className="py-4 text-center">
+                {isLoadingSuggestions ? (
+                  <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Loading suggested questions...
+                  </div>
+                ) : suggestedQuestions.length > 0 ? (
+                  <div className="space-y-3">
+                    <p className="text-sm text-gray-500">
+                      Try one of these questions:
+                    </p>
+                    <div className="flex flex-wrap justify-center gap-2">
+                      {suggestedQuestions.map((q, i) => (
+                        <button
+                          key={`suggestion-${i}`}
+                          type="button"
+                          onClick={() => {
+                            setCustomPrompt(q.question);
+                          }}
+                          className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-left text-sm text-gray-300 transition-colors hover:border-violet-500/30 hover:bg-violet-500/10 hover:text-white"
+                        >
+                          {q.question}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500">
+                    Ask any question about your data. For example:
+                    <br />
+                    <span className="text-gray-400">
+                      &quot;What is the sales trend?&quot;
+                    </span>
+                  </p>
+                )}
+              </div>
             )}
           </div>
         )}

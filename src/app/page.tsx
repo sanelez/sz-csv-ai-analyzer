@@ -1,19 +1,37 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { toast } from "sonner";
 import { DataTable } from "./_components/DataTable";
 import { FullscreenCard } from "./_components/FullscreenCard";
-import { ChartSuggestions } from "~/app/_components/ChartSuggestions";
 import { ChartDisplay } from "~/app/_components/ChartDisplay";
 import { APIKeyButton } from "~/app/_components/APIKeySettings";
 import { CSVSettingsButton } from "~/app/_components/CSVSettings";
-import { AIAnalysis } from "~/app/_components/AIAnalysis";
-import { CSVCompare } from "~/app/_components/CSVCompare";
-import { DataTransform } from "~/app/_components/DataTransform";
 import { ClientOnly } from "./_components/ClientOnly";
 import { ThemeToggle } from "./_components/ThemeToggle";
 import { LandingPage } from "./_components/landing/LandingPage";
+
+// Lazy-load heavy components to reduce initial bundle size
+const ChartSuggestions = lazy(() =>
+  import("~/app/_components/ChartSuggestions").then((m) => ({
+    default: m.ChartSuggestions,
+  })),
+);
+const AIAnalysis = lazy(() =>
+  import("~/app/_components/AIAnalysis").then((m) => ({
+    default: m.AIAnalysis,
+  })),
+);
+const CSVCompare = lazy(() =>
+  import("~/app/_components/CSVCompare").then((m) => ({
+    default: m.CSVCompare,
+  })),
+);
+const DataTransform = lazy(() =>
+  import("~/app/_components/DataTransform").then((m) => ({
+    default: m.DataTransform,
+  })),
+);
 import {
   type CSVData,
   type CSVSettings,
@@ -31,6 +49,7 @@ import {
   repairChartSuggestion,
 } from "~/lib/ai-service";
 import { loadApiSettings, type StoredSettings } from "~/lib/storage";
+import { clearChatStore } from "~/lib/chat-store";
 import { Sparkles, Loader2, ArrowLeft } from "lucide-react";
 
 export default function HomePage() {
@@ -81,6 +100,7 @@ export default function HomePage() {
     setChartGenerationError(null);
     setSummaryError(null);
     setAnomaliesError(null);
+    clearChatStore();
     toast.success("File Loaded", {
       description: `${fileName} loaded successfully with ${data.rows.length} rows`,
     });
@@ -95,6 +115,7 @@ export default function HomePage() {
     setChartGenerationError(null);
     setSummaryError(null);
     setAnomaliesError(null);
+    clearChatStore();
     toast.info("File Cleared", {
       description: "Ready to upload a new file",
     });
@@ -109,6 +130,7 @@ export default function HomePage() {
     setChartGenerationError(null);
     setSummaryError(null);
     setAnomaliesError(null);
+    clearChatStore();
     toast.success("Sample Data Loaded", {
       description: `${fileName} loaded with ${data.rows.length} rows`,
     });
@@ -387,22 +409,24 @@ export default function HomePage() {
                   </FullscreenCard>
 
                   {/* Data Transform + CSV Compare - Side by side */}
-                  <div className="grid grid-cols-1 items-stretch gap-4 lg:grid-cols-2">
-                    <FullscreenCard className="flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-slate-900/50">
-                      <DataTransform
-                        data={csvData}
-                        onTransformed={setWorkingData}
-                      />
-                    </FullscreenCard>
+                  <Suspense fallback={<LazyFallback />}>
+                    <div className="grid grid-cols-1 items-stretch gap-4 lg:grid-cols-2">
+                      <FullscreenCard className="flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-slate-900/50">
+                        <DataTransform
+                          data={csvData}
+                          onTransformed={setWorkingData}
+                        />
+                      </FullscreenCard>
 
-                    <FullscreenCard className="flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-slate-900/50">
-                      <CSVCompare
-                        primaryData={csvData}
-                        primaryFileName={currentFileName}
-                        csvSettings={csvSettings}
-                      />
-                    </FullscreenCard>
-                  </div>
+                      <FullscreenCard className="flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-slate-900/50">
+                        <CSVCompare
+                          primaryData={csvData}
+                          primaryFileName={currentFileName}
+                          csvSettings={csvSettings}
+                        />
+                      </FullscreenCard>
+                    </div>
+                  </Suspense>
                 </div>
               </section>
 
@@ -440,46 +464,57 @@ export default function HomePage() {
                     )}
                   </button>
                 </div>
-                <div className="space-y-4">
-                  <FullscreenCard className="overflow-hidden rounded-2xl border border-white/10 bg-slate-900/50">
-                    <AIAnalysis
-                      data={effectiveData ?? csvData}
-                      apiSettings={apiSettings}
-                      externalSummary={analysisResults.summary}
-                      externalAnomalies={analysisResults.anomalies}
-                      externalSummaryError={summaryError}
-                      externalAnomaliesError={anomaliesError}
-                      disabled={isAnalyzingAll}
-                    />
-                  </FullscreenCard>
-
-                  <FullscreenCard className="overflow-hidden rounded-2xl border border-white/10 bg-slate-900/50">
-                    <ChartSuggestions
-                      data={effectiveData ?? csvData}
-                      apiSettings={apiSettings}
-                      onChartsGenerated={setGeneratedCharts}
-                      externalSuggestions={analysisResults.charts}
-                      externalError={chartGenerationError}
-                      disabled={isAnalyzingAll}
-                    />
-                  </FullscreenCard>
-
-                  {generatedCharts && generatedCharts.length > 0 && (
+                <Suspense fallback={<LazyFallback />}>
+                  <div className="space-y-4">
                     <FullscreenCard className="overflow-hidden rounded-2xl border border-white/10 bg-slate-900/50">
-                      <ChartDisplay
+                      <AIAnalysis
                         data={effectiveData ?? csvData}
-                        charts={generatedCharts}
-                        onRegenerate={handleRegenerateChart}
+                        apiSettings={apiSettings}
+                        externalSummary={analysisResults.summary}
+                        externalAnomalies={analysisResults.anomalies}
+                        externalSummaryError={summaryError}
+                        externalAnomaliesError={anomaliesError}
+                        disabled={isAnalyzingAll}
                       />
                     </FullscreenCard>
-                  )}
-                </div>
+
+                    <FullscreenCard className="overflow-hidden rounded-2xl border border-white/10 bg-slate-900/50">
+                      <ChartSuggestions
+                        data={effectiveData ?? csvData}
+                        apiSettings={apiSettings}
+                        onChartsGenerated={setGeneratedCharts}
+                        externalSuggestions={analysisResults.charts}
+                        externalError={chartGenerationError}
+                        disabled={isAnalyzingAll}
+                      />
+                    </FullscreenCard>
+
+                    {generatedCharts && generatedCharts.length > 0 && (
+                      <FullscreenCard className="overflow-hidden rounded-2xl border border-white/10 bg-slate-900/50">
+                        <ChartDisplay
+                          data={effectiveData ?? csvData}
+                          charts={generatedCharts}
+                          onRegenerate={handleRegenerateChart}
+                        />
+                      </FullscreenCard>
+                    )}
+                  </div>
+                </Suspense>
               </section>
             </div>
           </div>
         )}
       </main>
     </ClientOnly>
+  );
+}
+
+/** Loading placeholder for lazy-loaded components */
+function LazyFallback() {
+  return (
+    <div className="flex min-h-[120px] items-center justify-center rounded-2xl border border-white/10 bg-slate-900/50">
+      <div className="animate-pulse text-sm text-gray-500">Loading...</div>
+    </div>
   );
 }
 

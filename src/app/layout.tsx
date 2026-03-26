@@ -111,6 +111,11 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
+        {/* Security: restrict framing and form targets */}
+        <meta
+          httpEquiv="Content-Security-Policy"
+          content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; connect-src *; img-src 'self' data: blob:; font-src 'self' data:; frame-ancestors 'none'; form-action 'self'"
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
