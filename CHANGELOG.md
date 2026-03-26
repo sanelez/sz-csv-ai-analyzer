@@ -1,3 +1,10 @@
+## [1.11.6](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.11.5...v1.11.6) (2026-03-26)
+
+
+### Bug Fixes
+
+* add PDF export, remove localStorage persistence, fix CSV escaping ([b43817e](https://github.com/maxgfr/csv-ai-analyzer/commit/b43817e3909b621bb892ae1b3e4118f2dc0aa979))
+
 ## [1.11.5](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.11.4...v1.11.5) (2026-03-26)
 
 
