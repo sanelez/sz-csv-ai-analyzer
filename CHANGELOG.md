@@ -1,3 +1,10 @@
+## [1.11.11](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.11.10...v1.11.11) (2026-03-26)
+
+
+### Bug Fixes
+
+* Improve SVG export reliability and resource cleanup ([78d881f](https://github.com/maxgfr/csv-ai-analyzer/commit/78d881fc5a50acfd0f47d4b35022c202b98a2e09))
+
 ## [1.11.10](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.11.9...v1.11.10) (2026-03-26)
 
 
