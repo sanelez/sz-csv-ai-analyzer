@@ -1,3 +1,10 @@
+# [1.13.0](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.12.0...v1.13.0) (2026-03-26)
+
+
+### Features
+
+* Add PNG export for charts ([093aceb](https://github.com/maxgfr/csv-ai-analyzer/commit/093aceb364f4b4a9992675a964d56cd8ed5872fe))
+
 # [1.12.0](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.11.12...v1.12.0) (2026-03-26)
 
 
