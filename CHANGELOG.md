@@ -1,3 +1,10 @@
+# [1.14.0](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.13.0...v1.14.0) (2026-03-26)
+
+
+### Features
+
+* Fix SVG export rendering and improve PDF pagination ([d0326ff](https://github.com/maxgfr/csv-ai-analyzer/commit/d0326ff2d7c8e545e6c2592a3914751e8073ff9f))
+
 # [1.13.0](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.12.0...v1.13.0) (2026-03-26)
 
 
