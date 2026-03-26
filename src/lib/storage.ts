@@ -20,13 +20,6 @@ export interface StoredSettings {
   customModel?: string;
 }
 
-export interface CSVStoredSettings {
-  delimiter: string;
-  hasHeader: boolean;
-  encoding: string;
-  skipEmptyLines: boolean;
-}
-
 const API_KEY_COOKIE = "csv-ai-api-key";
 const MODEL_COOKIE = "csv-ai-model";
 const LANGUAGE_COOKIE = "csv-ai-language";
@@ -36,8 +29,6 @@ const PROVIDER_NPM_COOKIE = "csv-ai-provider-npm";
 const PROVIDER_API_COOKIE = "csv-ai-provider-api";
 const CUSTOM_ENDPOINT_COOKIE = "csv-ai-custom-endpoint";
 const CUSTOM_MODEL_COOKIE = "csv-ai-custom-model";
-const CSV_SETTINGS_KEY = "csv-ai-analyzer-csv-settings";
-
 // Cookie options for security
 const COOKIE_OPTIONS: Cookies.CookieAttributes = {
   expires: 365, // 1 year
@@ -130,24 +121,4 @@ export const clearApiSettings = (): void => {
     Cookies.remove(CUSTOM_ENDPOINT_COOKIE);
     Cookies.remove(CUSTOM_MODEL_COOKIE);
   }
-};
-
-export const saveCsvSettings = (settings: CSVStoredSettings): void => {
-  if (typeof window !== "undefined") {
-    localStorage.setItem(CSV_SETTINGS_KEY, JSON.stringify(settings));
-  }
-};
-
-export const loadCsvSettings = (): CSVStoredSettings | null => {
-  if (typeof window !== "undefined") {
-    const stored = localStorage.getItem(CSV_SETTINGS_KEY);
-    if (stored) {
-      try {
-        return JSON.parse(stored) as CSVStoredSettings;
-      } catch {
-        return null;
-      }
-    }
-  }
-  return null;
 };

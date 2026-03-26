@@ -178,10 +178,11 @@ export function DataTransform({ data, onTransformed }: DataTransformProps) {
   }, [transformedData, hasTransforms, onTransformed]);
 
   const handleExport = useCallback(() => {
+    const escapeField = (v: string) => `"${v.replace(/"/g, '""')}"`;
     const csv = [
-      transformedData.headers.join(","),
+      transformedData.headers.map(escapeField).join(","),
       ...transformedData.rows.map((r) =>
-        r.map((v) => `"${String(v)}"`).join(","),
+        r.map((v) => escapeField(String(v))).join(","),
       ),
     ].join("\n");
     const blob = new Blob([csv], { type: "text/csv" });

@@ -5,8 +5,7 @@ import { createPortal } from "react-dom";
 import { useFocusTrap } from "~/lib/use-focus-trap";
 import { toast } from "sonner";
 import { Settings, X, Check } from "lucide-react";
-import { type CSVSettings, DEFAULT_CSV_SETTINGS } from "~/lib/csv-parser";
-import { loadCsvSettings, saveCsvSettings } from "~/lib/storage";
+import type { CSVSettings } from "~/lib/csv-parser";
 
 interface CSVSettingsModalProps {
   isOpen: boolean;
@@ -53,7 +52,6 @@ export function CSVSettingsModal({
   if (!isOpen || !mounted) return null;
 
   const handleSave = () => {
-    saveCsvSettings(localSettings);
     onSettingsChange(localSettings);
     toast.success("CSV Settings Saved", {
       description: "Parser settings have been updated",
@@ -245,13 +243,6 @@ export function CSVSettingsButton({
   onSettingsChange,
 }: CSVSettingsButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
-
-  useEffect(() => {
-    const stored = loadCsvSettings();
-    if (stored) {
-      onSettingsChange({ ...DEFAULT_CSV_SETTINGS, ...stored });
-    }
-  }, [onSettingsChange]);
 
   return (
     <>

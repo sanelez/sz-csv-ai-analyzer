@@ -30,6 +30,8 @@
     "csv-charts-ai": "workspace:*",
     "highlight.js": "^11.11.1",
     "js-cookie": "^3.0.5",
+    "jspdf": "^4.2.1",
+    "jspdf-autotable": "^5.0.7",
     "lucide-react": "^0.577.0",
     "next": "^16.2.1",
     "papaparse": "^5.5.3",

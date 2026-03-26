@@ -469,6 +469,7 @@ export default function HomePage() {
                     <FullscreenCard className="overflow-hidden rounded-2xl border border-white/10 bg-slate-900/50">
                       <AIAnalysis
                         data={effectiveData ?? csvData}
+                        fileName={currentFileName}
                         apiSettings={apiSettings}
                         externalSummary={analysisResults.summary}
                         externalAnomalies={analysisResults.anomalies}

@@ -5,13 +5,11 @@ import { Maximize2, Minimize2, X } from "lucide-react";
 
 interface FullscreenCardProps {
   children: React.ReactNode;
-  title?: string;
   className?: string;
 }
 
 export function FullscreenCard({
   children,
-  title: _title,
   className = "",
 }: FullscreenCardProps) {
   const [isFullscreen, setIsFullscreen] = useState(false);

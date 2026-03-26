@@ -19,6 +19,7 @@ import {
   Trash2,
   Download,
   BarChart3,
+  FileDown,
 } from "lucide-react";
 import {
   type CSVData,
@@ -39,9 +40,11 @@ import {
 import type { StoredSettings } from "~/lib/storage";
 import { useChatStore } from "~/lib/chat-store";
 import { ChartDisplay } from "./ChartDisplay";
+import { exportToPDF } from "~/lib/pdf-export";
 
 interface AIAnalysisProps {
   data: CSVData;
+  fileName?: string;
   apiSettings: StoredSettings | null;
   externalSummary?: DataSummaryResult | null;
   externalAnomalies?: AnomalyResult[] | null;
@@ -64,6 +67,7 @@ const SEVERITY_LABELS = {
 
 export function AIAnalysis({
   data,
+  fileName,
   apiSettings,
   externalSummary,
   externalAnomalies,
@@ -218,6 +222,22 @@ export function AIAnalysis({
     URL.revokeObjectURL(url);
     toast.success("Report exported as Markdown");
   }, [summaryResult, anomaliesResult, customHistory]);
+
+  const handleExportPDF = useCallback(() => {
+    try {
+      exportToPDF({
+        fileName: fileName ?? "analysis",
+        data,
+        summary: summaryResult,
+        anomalies: anomaliesResult,
+        chatHistory: customHistory,
+      });
+      toast.success("Rapport PDF exporté");
+    } catch (e) {
+      console.error("PDF export failed:", e);
+      toast.error("Échec de l'export PDF");
+    }
+  }, [fileName, data, summaryResult, anomaliesResult, customHistory]);
 
   const getConfig = (): AIServiceConfig | null => {
     // Allow custom endpoint without API key
@@ -467,15 +487,26 @@ export function AIAnalysis({
           </p>
         </div>
         {(summaryResult || anomaliesResult || customHistory.length > 0) && (
-          <button
-            type="button"
-            onClick={handleExportReport}
-            className="flex items-center gap-2 rounded-lg bg-white/5 px-3 py-2 text-sm text-gray-400 transition-colors hover:bg-white/10 hover:text-white"
-            title="Export report as Markdown"
-          >
-            <Download className="h-4 w-4" />
-            Export
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={handleExportPDF}
+              className="flex items-center gap-2 rounded-lg bg-violet-500/10 px-3 py-2 text-sm text-violet-400 transition-colors hover:bg-violet-500/20 hover:text-violet-300"
+              title="Export full report as PDF"
+            >
+              <FileDown className="h-4 w-4" />
+              PDF
+            </button>
+            <button
+              type="button"
+              onClick={handleExportReport}
+              className="flex items-center gap-2 rounded-lg bg-white/5 px-3 py-2 text-sm text-gray-400 transition-colors hover:bg-white/10 hover:text-white"
+              title="Export report as Markdown"
+            >
+              <Download className="h-4 w-4" />
+              MD
+            </button>
+          </div>
         )}
       </div>
 

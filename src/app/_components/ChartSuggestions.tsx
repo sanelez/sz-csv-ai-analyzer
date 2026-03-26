@@ -94,6 +94,16 @@ export function ChartSuggestions({
     aggregation: "sum",
   });
 
+  // Reset internal state when data changes (new file loaded)
+  useEffect(() => {
+    setSuggestions([]);
+    setSelectedCharts(new Set());
+    setError(null);
+    setShowCustomInput(false);
+    setShowManualCreate(false);
+    setCustomPrompt("");
+  }, [data]);
+
   // Sync with external suggestions
   useEffect(() => {
     if (externalSuggestions) {

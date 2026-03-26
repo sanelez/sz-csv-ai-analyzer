@@ -43,28 +43,38 @@ export function computeDiff(
 ): DiffResult {
   const { matchMode, keyColumn = "" } = options;
 
-  const commonHeaders = primaryData.headers.filter((h) =>
-    compareData.headers.includes(h),
-  );
-  const onlyInA = primaryData.headers.filter(
-    (h) => !compareData.headers.includes(h),
-  );
-  const onlyInB = compareData.headers.filter(
-    (h) => !primaryData.headers.includes(h),
-  );
+  const bHeaderSet = new Set(compareData.headers);
+  const aHeaderSet = new Set(primaryData.headers);
+
+  const commonHeaders = primaryData.headers.filter((h) => bHeaderSet.has(h));
+  const onlyInA = primaryData.headers.filter((h) => !bHeaderSet.has(h));
+  const onlyInB = compareData.headers.filter((h) => !aHeaderSet.has(h));
 
   const rows: DiffRow[] = [];
+
+  // Pre-compute header → index maps to avoid O(n) indexOf calls per row
+  const aHeaderIdx = new Map<string, number>();
+  const bHeaderIdx = new Map<string, number>();
+  for (let i = 0; i < primaryData.headers.length; i++)
+    aHeaderIdx.set(primaryData.headers[i]!, i);
+  for (let i = 0; i < compareData.headers.length; i++)
+    bHeaderIdx.set(compareData.headers[i]!, i);
+
+  // Pre-compute common header index pairs for fast row comparison
+  const commonIdxPairs = commonHeaders.map((h) => ({
+    header: h,
+    aIdx: aHeaderIdx.get(h)!,
+    bIdx: bHeaderIdx.get(h)!,
+  }));
 
   const getChangedCols = (
     a: (string | number)[],
     b: (string | number)[],
   ): Set<string> => {
     const changed = new Set<string>();
-    for (const h of commonHeaders) {
-      const aIdx = primaryData.headers.indexOf(h);
-      const bIdx = compareData.headers.indexOf(h);
+    for (const { header, aIdx, bIdx } of commonIdxPairs) {
       if (String(a[aIdx] ?? "") !== String(b[bIdx] ?? "")) {
-        changed.add(h);
+        changed.add(header);
       }
     }
     return changed;
@@ -79,14 +89,14 @@ export function computeDiff(
         : "index";
 
   if (effectiveMode === "content") {
-    const makeKey = (row: (string | number)[], headers: string[]) =>
+    const makeKey = (row: (string | number)[], idxMap: Map<string, number>) =>
       commonHeaders
-        .map((h) => String(row[headers.indexOf(h)] ?? ""))
+        .map((h) => String(row[idxMap.get(h)!] ?? ""))
         .join("\0");
 
     const aMap = new Map<string, { row: (string | number)[]; idx: number }[]>();
     for (let i = 0; i < primaryData.rows.length; i++) {
-      const key = makeKey(primaryData.rows[i]!, primaryData.headers);
+      const key = makeKey(primaryData.rows[i]!, aHeaderIdx);
       const list = aMap.get(key) ?? [];
       list.push({ row: primaryData.rows[i]!, idx: i });
       aMap.set(key, list);
@@ -95,7 +105,7 @@ export function computeDiff(
     const matchedAIndices = new Set<number>();
 
     for (let i = 0; i < compareData.rows.length; i++) {
-      const key = makeKey(compareData.rows[i]!, compareData.headers);
+      const key = makeKey(compareData.rows[i]!, bHeaderIdx);
       const candidates = aMap.get(key);
 
       if (candidates) {
@@ -182,8 +192,8 @@ export function computeDiff(
     }
   } else {
     // Key-based matching
-    const keyIdxA = primaryData.headers.indexOf(keyColumn);
-    const keyIdxB = compareData.headers.indexOf(keyColumn);
+    const keyIdxA = aHeaderIdx.get(keyColumn)!;
+    const keyIdxB = bHeaderIdx.get(keyColumn)!;
 
     const aMap = new Map<string, { row: (string | number)[]; idx: number }>();
     const bMap = new Map<string, { row: (string | number)[]; idx: number }>();
@@ -238,12 +248,11 @@ export function computeDiff(
     }
   }
 
-  const counts: DiffCounts = {
-    same: rows.filter((r) => r.status === "same").length,
-    changed: rows.filter((r) => r.status === "changed").length,
-    added: rows.filter((r) => r.status === "added").length,
-    removed: rows.filter((r) => r.status === "removed").length,
-  };
+  // Single-pass count instead of 4 separate filter calls
+  const counts: DiffCounts = { same: 0, changed: 0, added: 0, removed: 0 };
+  for (const r of rows) {
+    counts[r.status]++;
+  }
 
   return { commonHeaders, onlyInA, onlyInB, rows, counts };
 }

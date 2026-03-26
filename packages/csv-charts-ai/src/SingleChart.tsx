@@ -104,11 +104,14 @@ export function SingleChart({
   const handleExportCSV = useCallback(() => {
     if (processedData.length === 0) return;
 
-    const headers = Object.keys(processedData[0] ?? {}).join(",");
+    const escapeField = (v: string) => `"${v.replace(/"/g, '""')}"`;
+    const headers = Object.keys(processedData[0] ?? {})
+      .map(escapeField)
+      .join(",");
     const rows = processedData
       .map((row) =>
         Object.values(row)
-          .map((v) => `"${String(v)}"`)
+          .map((v) => escapeField(String(v)))
           .join(","),
       )
       .join("\n");

@@ -452,5 +452,37 @@ html.light .shadow-violet-500\/25 { --tw-shadow-color: rgba(139, 92, 246, 0.1); 
 /* --- Recharts --- */
 html.light .recharts-default-tooltip { color: var(--text-primary) !important; }
 
+/* --- Emerald text — darker in light mode for readability --- */
+html.light .text-emerald-300 { color: #047857; }
+html.light .text-emerald-400 { color: #059669; }
+html.light .bg-emerald-400 { background-color: #059669; }
+
+/* --- Violet text — darker in light mode for contrast (WCAG AA) --- */
+html.light .text-violet-400 { color: #6d28d9; }
+html.light .text-violet-300 { color: #7c3aed; }
+html.light .hover\:text-violet-300:hover { color: #6d28d9; }
+html.light .hover\:text-violet-400:hover { color: #5b21b6; }
+
+/* --- Code blocks: softer background in light mode --- */
+html.light .bg-black\/30 { background-color: rgba(0, 0, 0, 0.04); }
+
 /* --- Code highlighting --- */
 html.light .hljs { background: #f6f8fa !important; color: #24292e !important; }
+html.light .hljs-string,
+html.light .hljs-regexp,
+html.light .hljs-addition,
+html.light .hljs-attribute,
+html.light .hljs-meta .hljs-string { color: #22863a !important; }
+html.light .hljs-keyword,
+html.light .hljs-selector-tag,
+html.light .hljs-literal,
+html.light .hljs-section,
+html.light .hljs-link { color: #d73a49 !important; }
+html.light .hljs-comment,
+html.light .hljs-quote { color: #6a737d !important; }
+html.light .hljs-number,
+html.light .hljs-built_in,
+html.light .hljs-type { color: #005cc5 !important; }
+html.light .hljs-title,
+html.light .hljs-class .hljs-title,
+html.light .hljs-function .hljs-title { color: #6f42c1 !important; }
