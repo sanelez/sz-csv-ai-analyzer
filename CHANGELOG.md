@@ -1,3 +1,10 @@
+## [1.11.12](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.11.11...v1.11.12) (2026-03-26)
+
+
+### Bug Fixes
+
+* Fix SVG style inlining to prevent CSS inheritance issues ([3ea99b0](https://github.com/maxgfr/csv-ai-analyzer/commit/3ea99b0157c4239304a66c369733d2412ac765a2))
+
 ## [1.11.11](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.11.10...v1.11.11) (2026-03-26)
 
 
