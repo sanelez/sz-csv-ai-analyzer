@@ -1,3 +1,10 @@
+## [1.14.1](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.14.0...v1.14.1) (2026-03-27)
+
+
+### Bug Fixes
+
+* restore pnpm workspace symlink and add API key env vars in Docker ([d40e813](https://github.com/maxgfr/csv-ai-analyzer/commit/d40e813361d6fdfe198457b2c85fbe918ce1f5a5))
+
 # [1.14.0](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.13.0...v1.14.0) (2026-03-26)
 
 
