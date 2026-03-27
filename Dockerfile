@@ -15,6 +15,11 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /app/packages/csv-charts-ai/node_modules ./packages/csv-charts-ai/node_modules
 COPY . .
 
+# Docker COPY follows symlinks, breaking pnpm workspace link.
+# Restore it so Node.js resolves csv-charts-ai to the real package source.
+RUN rm -rf node_modules/csv-charts-ai && \
+  ln -s ../packages/csv-charts-ai node_modules/csv-charts-ai
+
 # Build workspace package first, then the app
 ENV SKIP_ENV_VALIDATION=1
 ENV NEXT_TELEMETRY_DISABLED=1
