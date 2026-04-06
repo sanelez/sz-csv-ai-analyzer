@@ -1,3 +1,10 @@
+## [1.14.6](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.14.5...v1.14.6) (2026-04-06)
+
+
+### Bug Fixes
+
+* add version update notifications ([92eb84d](https://github.com/maxgfr/csv-ai-analyzer/commit/92eb84d687998625d06cc5e26d66b9d9bc5f38e1))
+
 ## [1.14.5](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.14.4...v1.14.5) (2026-04-06)
 
 
