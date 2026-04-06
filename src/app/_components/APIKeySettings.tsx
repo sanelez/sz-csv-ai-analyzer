@@ -13,6 +13,8 @@ import {
   Globe,
   Server,
   AlertTriangle,
+  Wifi,
+  Loader2,
 } from "lucide-react";
 import {
   loadApiSettings,
@@ -86,6 +88,7 @@ export function APIKeySettings({
   const [searchTerm, setSearchTerm] = useState("");
   const [catalog, setCatalog] = useState<ModelCatalog | null>(null);
   const [isLoadingCatalog, setIsLoadingCatalog] = useState(false);
+  const [isTestingConnection, setIsTestingConnection] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -190,6 +193,38 @@ export function APIKeySettings({
         providerApi: "https://api.openai.com/v1",
       };
 
+  const handleTestConnection = async () => {
+    if (!customEndpoint.trim()) return;
+    setIsTestingConnection(true);
+    try {
+      const base = customEndpoint.trim().replace(/\/+$/, "");
+      const res = await fetch(`${base}/models`, {
+        signal: AbortSignal.timeout(5000),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const models = Array.isArray(data?.data) ? data.data : [];
+        toast.success("Connection successful!", {
+          description:
+            models.length > 0
+              ? `${models.length} model(s) available`
+              : "Server is reachable",
+        });
+      } else {
+        toast.error("Connection failed", {
+          description: `Server returned status ${res.status}`,
+        });
+      }
+    } catch (err) {
+      toast.error("Connection failed", {
+        description:
+          err instanceof Error ? err.message : "Could not reach the server",
+      });
+    } finally {
+      setIsTestingConnection(false);
+    }
+  };
+
   const handleSave = () => {
     if (useCustomEndpoint && customEndpoint.trim()) {
       try {
@@ -217,7 +252,9 @@ export function APIKeySettings({
     saveApiSettings(settings);
     onSettingsChange(settings);
     toast.success("Settings Saved", {
-      description: `Using ${providerMeta.providerName} with ${model.split("/").pop() ?? model}`,
+      description: useCustomEndpoint
+        ? `Using ${customModel} at ${customEndpoint}`
+        : `Using ${providerMeta.providerName} with ${model.split("/").pop() ?? model}`,
     });
     onClose();
   };
@@ -370,6 +407,45 @@ export function APIKeySettings({
             {/* Custom Endpoint Fields */}
             {useCustomEndpoint && (
               <div className="space-y-4 rounded-xl border border-gray-700 bg-gray-800/50 p-4">
+                {/* Quick Presets */}
+                <div>
+                  <p className="mb-2 text-xs font-semibold tracking-wide text-gray-400 uppercase">
+                    Quick Setup
+                  </p>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setCustomEndpoint("http://localhost:11434/v1");
+                        if (!customModel.trim()) setCustomModel("llama3.2");
+                      }}
+                      className={`flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors ${
+                        customEndpoint === "http://localhost:11434/v1"
+                          ? "border-violet-500 bg-violet-500/20 text-violet-300"
+                          : "border-gray-700 bg-gray-800 text-gray-300 hover:border-violet-500/50 hover:bg-violet-500/10"
+                      }`}
+                    >
+                      <Server className="h-3.5 w-3.5" />
+                      Ollama
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setCustomEndpoint("http://localhost:1234/v1");
+                        if (!customModel.trim()) setCustomModel("local-model");
+                      }}
+                      className={`flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors ${
+                        customEndpoint === "http://localhost:1234/v1"
+                          ? "border-violet-500 bg-violet-500/20 text-violet-300"
+                          : "border-gray-700 bg-gray-800 text-gray-300 hover:border-violet-500/50 hover:bg-violet-500/10"
+                      }`}
+                    >
+                      <Server className="h-3.5 w-3.5" />
+                      LM Studio
+                    </button>
+                  </div>
+                </div>
+
                 <div>
                   <label
                     htmlFor="custom-endpoint-input"
@@ -408,6 +484,26 @@ export function APIKeySettings({
                     The model name as configured in your server
                   </p>
                 </div>
+
+                {/* Test Connection */}
+                <button
+                  type="button"
+                  onClick={handleTestConnection}
+                  disabled={!customEndpoint.trim() || isTestingConnection}
+                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-gray-700 bg-gray-800 px-4 py-2.5 text-sm font-medium text-gray-300 transition-colors hover:border-violet-500/50 hover:bg-violet-500/10 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {isTestingConnection ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Testing...
+                    </>
+                  ) : (
+                    <>
+                      <Wifi className="h-4 w-4" />
+                      Test Connection
+                    </>
+                  )}
+                </button>
               </div>
             )}
 
@@ -722,7 +818,9 @@ export function APIKeyButton({
   }, [onSettingsChange]);
 
   const hasKey =
-    currentSettings?.apiKey && currentSettings.apiKey.trim() !== "";
+    (currentSettings?.apiKey && currentSettings.apiKey.trim() !== "") ||
+    (currentSettings?.customEndpoint &&
+      currentSettings.customEndpoint.trim() !== "");
 
   return (
     <>

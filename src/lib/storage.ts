@@ -92,9 +92,9 @@ export const loadApiSettings = (): StoredSettings | null => {
     const customEndpoint = Cookies.get(CUSTOM_ENDPOINT_COOKIE);
     const customModel = Cookies.get(CUSTOM_MODEL_COOKIE);
 
-    if (apiKey) {
+    if (apiKey || customEndpoint) {
       return {
-        apiKey,
+        apiKey: apiKey ?? "",
         model,
         providerId,
         providerName: providerName ?? undefined,
