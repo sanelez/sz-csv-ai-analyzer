@@ -1,3 +1,10 @@
+## [1.14.5](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.14.4...v1.14.5) (2026-04-06)
+
+
+### Bug Fixes
+
+* unify connection testing for custom endpoints and APIs ([732952d](https://github.com/maxgfr/csv-ai-analyzer/commit/732952d828d7067df349fdec58f17d86258cc78c))
+
 ## [1.14.4](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.14.3...v1.14.4) (2026-04-06)
 
 
