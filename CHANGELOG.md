@@ -1,3 +1,10 @@
+## [1.14.7](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.14.6...v1.14.7) (2026-04-06)
+
+
+### Bug Fixes
+
+* add well-known API URLs for provider testing ([4ee5df6](https://github.com/maxgfr/csv-ai-analyzer/commit/4ee5df6cfef12ba18fdd3abbe7a70429eb1b943b))
+
 ## [1.14.6](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.14.5...v1.14.6) (2026-04-06)
 
 
