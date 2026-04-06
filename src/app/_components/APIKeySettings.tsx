@@ -90,6 +90,14 @@ export function APIKeySettings({
   const [isLoadingCatalog, setIsLoadingCatalog] = useState(false);
   const [isTestingConnection, setIsTestingConnection] = useState(false);
 
+  // Keep provider API key separate so toggling custom endpoint doesn't erase it
+  const [providerApiKey, setProviderApiKey] = useState(
+    currentSettings?.customEndpoint ? "" : (currentSettings?.apiKey ?? ""),
+  );
+  const [customApiKey, setCustomApiKey] = useState(
+    currentSettings?.customEndpoint ? (currentSettings?.apiKey ?? "") : "",
+  );
+
   useEffect(() => {
     setMounted(true);
     return () => setMounted(false);
@@ -97,13 +105,19 @@ export function APIKeySettings({
 
   useEffect(() => {
     if (currentSettings) {
-      setApiKey(currentSettings.apiKey);
       setModel(currentSettings.model ?? DEFAULT_MODEL);
       setProviderId(currentSettings.providerId ?? DEFAULT_PROVIDER_ID);
       setLanguage(currentSettings.language ?? getBrowserLanguage());
       setCustomEndpoint(currentSettings.customEndpoint ?? "");
       setCustomModel(currentSettings.customModel ?? "");
-      setUseCustomEndpoint(!!currentSettings.customEndpoint);
+      const isCustom = !!currentSettings.customEndpoint;
+      setUseCustomEndpoint(isCustom);
+      if (isCustom) {
+        setCustomApiKey(currentSettings.apiKey);
+      } else {
+        setProviderApiKey(currentSettings.apiKey);
+      }
+      setApiKey(currentSettings.apiKey);
     }
   }, [currentSettings]);
 
@@ -192,6 +206,51 @@ export function APIKeySettings({
         providerNpm: "@ai-sdk/openai",
         providerApi: "https://api.openai.com/v1",
       };
+
+  const handleTestApiKey = async () => {
+    if (!apiKey.trim()) return;
+    setIsTestingConnection(true);
+    const apiUrl = (providerMeta.providerApi || "").replace(/\/+$/, "");
+    if (!apiUrl) {
+      toast.error("No API URL for this provider");
+      setIsTestingConnection(false);
+      return;
+    }
+    try {
+      const headers: Record<string, string> = {};
+      if (providerMeta.providerId === "anthropic") {
+        headers["x-api-key"] = apiKey;
+        headers["anthropic-version"] = "2023-06-01";
+        headers["anthropic-dangerous-direct-browser-access"] = "true";
+      } else {
+        headers["Authorization"] = `Bearer ${apiKey}`;
+      }
+      const res = await fetch(`${apiUrl}/models`, {
+        headers,
+        signal: AbortSignal.timeout(10000),
+      });
+      if (res.ok) {
+        toast.success("API key is valid!", {
+          description: `Connected to ${providerMeta.providerName}`,
+        });
+      } else if (res.status === 401 || res.status === 403) {
+        toast.error("Invalid API key", {
+          description: "The provider rejected your API key.",
+        });
+      } else {
+        toast.error("Connection issue", {
+          description: `Server returned status ${res.status}`,
+        });
+      }
+    } catch {
+      toast.error("Could not reach provider", {
+        description:
+          "Network error or CORS not supported. Your key may still work.",
+      });
+    } finally {
+      setIsTestingConnection(false);
+    }
+  };
 
   const handleTestConnection = async () => {
     if (!customEndpoint.trim()) return;
@@ -381,14 +440,16 @@ export function APIKeySettings({
                     checked={useCustomEndpoint}
                     onChange={(e) => {
                       const checked = e.target.checked;
-                      // When switching to a custom endpoint, visually reset the API key
-                      // (clear the field and hide the key preview) so the UI reflects
-                      // that provider keys are optional for most custom endpoints.
-                      setUseCustomEndpoint(checked);
+                      // Save current key to the right slot before switching
                       if (checked) {
-                        setApiKey("");
-                        setShowKey(false);
+                        setProviderApiKey(apiKey);
+                        setApiKey(customApiKey);
+                      } else {
+                        setCustomApiKey(apiKey);
+                        setApiKey(providerApiKey);
                       }
+                      setUseCustomEndpoint(checked);
+                      setShowKey(false);
                     }}
                     className="peer sr-only"
                   />
@@ -538,7 +599,14 @@ export function APIKeySettings({
                   id="api-key-input"
                   type={showKey ? "text" : "password"}
                   value={apiKey}
-                  onChange={(e) => setApiKey(e.target.value)}
+                  onChange={(e) => {
+                    setApiKey(e.target.value);
+                    if (useCustomEndpoint) {
+                      setCustomApiKey(e.target.value);
+                    } else {
+                      setProviderApiKey(e.target.value);
+                    }
+                  }}
                   placeholder={
                     useCustomEndpoint ? "Leave empty if not required" : "sk-..."
                   }
@@ -559,6 +627,27 @@ export function APIKeySettings({
               <p className="mt-2 text-xs text-gray-500">
                 🔒 Your key is stored securely in a cookie
               </p>
+              {/* Test API Key button — only for cloud providers */}
+              {!useCustomEndpoint && apiKey.trim() && (
+                <button
+                  type="button"
+                  onClick={handleTestApiKey}
+                  disabled={isTestingConnection}
+                  className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-gray-700 bg-gray-800 px-4 py-2.5 text-sm font-medium text-gray-300 transition-colors hover:border-violet-500/50 hover:bg-violet-500/10 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {isTestingConnection ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Verifying...
+                    </>
+                  ) : (
+                    <>
+                      <Wifi className="h-4 w-4" />
+                      Test API Key
+                    </>
+                  )}
+                </button>
+              )}
             </div>
 
             {/* catalog status & refresh UI removed — we use only the simple model selector for users */}
@@ -576,9 +665,7 @@ export function APIKeySettings({
                   id="provider-select"
                   value={providerId}
                   onChange={(e) => {
-                    // Reset the apiKey field when switching providers
                     setProviderId(e.target.value);
-                    setApiKey("");
                   }}
                   className="w-full rounded-xl border-2 border-gray-700 bg-gray-800 px-4 py-3 text-white transition-all focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 focus:outline-none"
                 >
