@@ -13,8 +13,8 @@ import {
   Globe,
   Server,
   AlertTriangle,
-  Wifi,
   Loader2,
+  Zap,
 } from "lucide-react";
 import {
   loadApiSettings,
@@ -208,8 +208,48 @@ export function APIKeySettings({
       };
 
   const handleTestApiKey = async () => {
-    if (!apiKey.trim()) return;
     setIsTestingConnection(true);
+
+    if (useCustomEndpoint) {
+      // Custom endpoint: use the custom URL
+      const base = customEndpoint.trim().replace(/\/+$/, "");
+      try {
+        const headers: Record<string, string> = {};
+        if (apiKey.trim()) {
+          headers["Authorization"] = `Bearer ${apiKey}`;
+        }
+        const res = await fetch(`${base}/models`, {
+          headers,
+          signal: AbortSignal.timeout(5000),
+        });
+        if (res.ok) {
+          const data = await res.json();
+          const models = Array.isArray(data?.data) ? data.data : [];
+          toast.success("Connection successful!", {
+            description:
+              models.length > 0
+                ? `${models.length} model(s) available`
+                : "Server is reachable",
+          });
+        } else {
+          toast.error("Connection failed", {
+            description: `Server returned status ${res.status}`,
+          });
+        }
+      } catch {
+        toast.error("CORS error — enable CORS in your server", {
+          description:
+            "LM Studio: Settings > Enable CORS. " +
+            "Ollama: set OLLAMA_ORIGINS=* then restart.",
+          duration: 10000,
+        });
+      } finally {
+        setIsTestingConnection(false);
+      }
+      return;
+    }
+
+    // Cloud provider: use the provider API URL
     const apiUrl = (providerMeta.providerApi || "").replace(/\/+$/, "");
     if (!apiUrl) {
       toast.error("No API URL for this provider");
@@ -246,41 +286,6 @@ export function APIKeySettings({
       toast.error("Could not reach provider", {
         description:
           "Network error or CORS not supported. Your key may still work.",
-      });
-    } finally {
-      setIsTestingConnection(false);
-    }
-  };
-
-  const handleTestConnection = async () => {
-    if (!customEndpoint.trim()) return;
-    setIsTestingConnection(true);
-    const base = customEndpoint.trim().replace(/\/+$/, "");
-
-    try {
-      const res = await fetch(`${base}/models`, {
-        signal: AbortSignal.timeout(5000),
-      });
-      if (res.ok) {
-        const data = await res.json();
-        const models = Array.isArray(data?.data) ? data.data : [];
-        toast.success("Connection successful!", {
-          description:
-            models.length > 0
-              ? `${models.length} model(s) available`
-              : "Server is reachable",
-        });
-      } else {
-        toast.error("Connection failed", {
-          description: `Server returned status ${res.status}`,
-        });
-      }
-    } catch {
-      toast.error("CORS error — enable CORS in your server", {
-        description:
-          "LM Studio: Settings > Enable CORS. " +
-          "Ollama: set OLLAMA_ORIGINS=* then restart.",
-        duration: 10000,
       });
     } finally {
       setIsTestingConnection(false);
@@ -563,26 +568,6 @@ export function APIKeySettings({
                     then restart
                   </p>
                 </div>
-
-                {/* Test Connection */}
-                <button
-                  type="button"
-                  onClick={handleTestConnection}
-                  disabled={!customEndpoint.trim() || isTestingConnection}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-gray-700 bg-gray-800 px-4 py-2.5 text-sm font-medium text-gray-300 transition-colors hover:border-violet-500/50 hover:bg-violet-500/10 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  {isTestingConnection ? (
-                    <>
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      Testing...
-                    </>
-                  ) : (
-                    <>
-                      <Wifi className="h-4 w-4" />
-                      Test Connection
-                    </>
-                  )}
-                </button>
               </div>
             )}
 
@@ -627,27 +612,6 @@ export function APIKeySettings({
               <p className="mt-2 text-xs text-gray-500">
                 🔒 Your key is stored securely in a cookie
               </p>
-              {/* Test API Key button — only for cloud providers */}
-              {!useCustomEndpoint && apiKey.trim() && (
-                <button
-                  type="button"
-                  onClick={handleTestApiKey}
-                  disabled={isTestingConnection}
-                  className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-gray-700 bg-gray-800 px-4 py-2.5 text-sm font-medium text-gray-300 transition-colors hover:border-violet-500/50 hover:bg-violet-500/10 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  {isTestingConnection ? (
-                    <>
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      Verifying...
-                    </>
-                  ) : (
-                    <>
-                      <Wifi className="h-4 w-4" />
-                      Test API Key
-                    </>
-                  )}
-                </button>
-              )}
             </div>
 
             {/* catalog status & refresh UI removed — we use only the simple model selector for users */}
@@ -873,28 +837,43 @@ export function APIKeySettings({
           </div>
 
           {/* Footer */}
-          <div className="border-t border-white/10 px-6 py-4">
-            <div className="flex gap-3">
-              <button
-                type="button"
-                onClick={onClose}
-                className="hover:bg-gray-750 flex-1 rounded-xl border border-gray-700 bg-gray-800 px-4 py-3 font-medium text-gray-300 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={handleSave}
-                disabled={
-                  useCustomEndpoint
-                    ? !customEndpoint.trim() || !customModel.trim()
-                    : !apiKey.trim() || !model
-                }
-                className="flex-1 rounded-xl bg-linear-to-r from-violet-600 to-purple-600 px-4 py-3 font-semibold text-white shadow-lg shadow-violet-500/25 transition-all hover:from-violet-500 hover:to-purple-500 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                Save Configuration
-              </button>
-            </div>
+          <div className="flex gap-3 border-t border-white/10 px-6 py-4">
+            <button
+              type="button"
+              onClick={handleTestApiKey}
+              disabled={
+                isTestingConnection ||
+                (useCustomEndpoint ? !customEndpoint.trim() : !apiKey.trim())
+              }
+              className="flex items-center gap-1.5 rounded-xl border border-gray-700 px-4 py-3 text-sm font-medium text-gray-300 transition-colors hover:bg-white/5 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {isTestingConnection ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Zap className="h-4 w-4" />
+              )}
+              Test
+            </button>
+            <div className="flex-1" />
+            <button
+              type="button"
+              onClick={onClose}
+              className="rounded-xl border border-gray-700 px-4 py-3 text-sm font-medium text-gray-300 transition-colors hover:bg-white/5"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={handleSave}
+              disabled={
+                useCustomEndpoint
+                  ? !customEndpoint.trim() || !customModel.trim()
+                  : !apiKey.trim() || !model
+              }
+              className="rounded-xl bg-linear-to-r from-violet-600 to-purple-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-violet-500/25 transition-all hover:from-violet-500 hover:to-purple-500 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Save Configuration
+            </button>
           </div>
         </div>
       </div>
