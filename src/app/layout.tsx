@@ -5,6 +5,7 @@ import { Geist } from "next/font/google";
 import Link from "next/link";
 import { Toaster } from "sonner";
 import { ThemeProvider } from "~/lib/theme";
+import { VersionGuard } from "./_components/VersionGuard";
 
 const siteUrl = "https://maxgfr.github.io/csv-ai-analyzer";
 
@@ -142,6 +143,7 @@ export default function RootLayout({
 
           {/* Toast notifications */}
           <Toaster position="bottom-right" richColors />
+          <VersionGuard />
 
           {/* Footer with legal link */}
           <footer

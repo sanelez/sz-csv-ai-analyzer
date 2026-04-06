@@ -4,9 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "prebuild": "node scripts/write-version.js",
     "build": "next build",
-    "build:export": "NEXT_OUTPUT_MODE=export next build",
-    "build:github-pages": "NEXT_PUBLIC_BASE_PATH=/$(basename $(git rev-parse --show-toplevel)) NEXT_OUTPUT_MODE=export next build",
+    "build:export": "node scripts/write-version.js && NEXT_OUTPUT_MODE=export next build",
+    "build:github-pages": "node scripts/write-version.js && NEXT_PUBLIC_BASE_PATH=/$(basename $(git rev-parse --show-toplevel)) NEXT_OUTPUT_MODE=export next build",
     "check": "eslint src --ext .ts,.tsx && tsc --noEmit",
     "dev": "next dev --turbo",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,mdx}\" --cache",
