@@ -1,3 +1,10 @@
+## [1.14.3](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.14.2...v1.14.3) (2026-04-06)
+
+
+### Bug Fixes
+
+* support custom endpoints alongside API keys ([ab26121](https://github.com/maxgfr/csv-ai-analyzer/commit/ab261212c447780cd3d082813391c98e65405dcc))
+
 ## [1.14.2](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.14.1...v1.14.2) (2026-04-06)
 
 
