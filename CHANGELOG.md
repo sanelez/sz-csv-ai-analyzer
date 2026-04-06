@@ -1,3 +1,10 @@
+## [1.14.2](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.14.1...v1.14.2) (2026-04-06)
+
+
+### Bug Fixes
+
+* add connection testing and quick setup for custom endpoints ([2ecc31b](https://github.com/maxgfr/csv-ai-analyzer/commit/2ecc31b0da721d006df7dd6f785c1d31b4818b39))
+
 ## [1.14.1](https://github.com/maxgfr/csv-ai-analyzer/compare/v1.14.0...v1.14.1) (2026-03-27)
 
 
