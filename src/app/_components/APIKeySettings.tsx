@@ -51,6 +51,15 @@ interface ProviderInfo {
 
 type ModelCatalog = Record<string, ProviderInfo>;
 
+/** Well-known API base URLs for providers that rely on their SDK and don't
+ *  ship an `api` field in the catalog.  Used only for the "Test" button. */
+const KNOWN_PROVIDER_API: Record<string, string> = {
+  openai: "https://api.openai.com/v1",
+  anthropic: "https://api.anthropic.com/v1",
+  google: "https://generativelanguage.googleapis.com/v1beta",
+  mistral: "https://api.mistral.ai/v1",
+};
+
 interface APIKeySettingsProps {
   isOpen: boolean;
   onClose: () => void;
@@ -198,7 +207,8 @@ export function APIKeySettings({
         providerId: selectedProvider.id,
         providerName: selectedProvider.name,
         providerNpm: selectedProvider.npm ?? "",
-        providerApi: selectedProvider.api ?? "",
+        providerApi:
+          selectedProvider.api ?? KNOWN_PROVIDER_API[selectedProvider.id] ?? "",
       }
     : {
         providerId: DEFAULT_PROVIDER_ID,
