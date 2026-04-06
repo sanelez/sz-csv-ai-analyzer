@@ -151,9 +151,9 @@ export function ChartSuggestions({
   const handleGenerate = async () => {
     const config = getConfig();
     if (!config) {
-      setError("Please configure your API key first");
+      setError("Please configure your API settings first");
       toast.error("Configuration Required", {
-        description: "Please configure your API key first",
+        description: "Please configure your API settings first",
       });
       return;
     }
@@ -208,9 +208,9 @@ export function ChartSuggestions({
 
     const config = getConfig();
     if (!config) {
-      setError("Please configure your API key first");
+      setError("Please configure your API settings first");
       toast.error("Configuration Required", {
-        description: "Please configure your API key first",
+        description: "Please configure your API settings first",
       });
       return;
     }
@@ -385,7 +385,11 @@ export function ChartSuggestions({
           <button
             type="button"
             onClick={handleGenerate}
-            disabled={disabled || isLoading || !apiSettings?.apiKey}
+            disabled={
+              disabled ||
+              isLoading ||
+              (!apiSettings?.apiKey && !apiSettings?.customEndpoint)
+            }
             className="btn-primary inline-flex items-center gap-2 disabled:opacity-50"
           >
             {isLoading ? (
@@ -417,10 +421,11 @@ export function ChartSuggestions({
         </div>
       )}
 
-      {!apiSettings?.apiKey && (
+      {!apiSettings?.apiKey && !apiSettings?.customEndpoint && (
         <div className="py-6 text-center">
           <p className="text-gray-400">
-            Configure your API key to generate AI-powered chart suggestions
+            Configure your API key or custom endpoint to generate AI-powered
+            chart suggestions
           </p>
         </div>
       )}

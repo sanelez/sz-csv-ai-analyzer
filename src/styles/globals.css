@@ -423,6 +423,9 @@ html.light .bg-gray-950\/90 { background-color: rgba(248, 250, 252, 0.92); }
 
 html.light .bg-gray-800\/50 { background-color: rgba(241, 245, 249, 0.5); }
 
+/* --- Toggle: preserve checked violet color in light mode --- */
+html.light .peer:checked ~ .peer-checked\:bg-violet-600 { background-color: #7c3aed; }
+
 /* --- Hover dark backgrounds --- */
 html.light .hover\:bg-gray-600:hover { background-color: rgba(0, 0, 0, 0.04); }
 html.light .hover\:bg-gray-800:hover { background-color: rgba(0, 0, 0, 0.04); }

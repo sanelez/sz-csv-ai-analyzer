@@ -95,6 +95,8 @@ const LANGUAGE_NAMES: Record<LanguageCode, string> = {
 /**
  * Converts the app's AIServiceConfig to a LanguageModel
  * using the package's createAppModel.
+ * Custom endpoints (Ollama, LM Studio, etc.) are called directly —
+ * the user must enable CORS in the local server settings.
  */
 export function getModel(config: AIServiceConfig) {
   return createAppModel({

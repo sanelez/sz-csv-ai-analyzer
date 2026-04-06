@@ -196,8 +196,9 @@ export function APIKeySettings({
   const handleTestConnection = async () => {
     if (!customEndpoint.trim()) return;
     setIsTestingConnection(true);
+    const base = customEndpoint.trim().replace(/\/+$/, "");
+
     try {
-      const base = customEndpoint.trim().replace(/\/+$/, "");
       const res = await fetch(`${base}/models`, {
         signal: AbortSignal.timeout(5000),
       });
@@ -215,10 +216,12 @@ export function APIKeySettings({
           description: `Server returned status ${res.status}`,
         });
       }
-    } catch (err) {
-      toast.error("Connection failed", {
+    } catch {
+      toast.error("CORS error — enable CORS in your server", {
         description:
-          err instanceof Error ? err.message : "Could not reach the server",
+          "LM Studio: Settings > Enable CORS. " +
+          "Ollama: set OLLAMA_ORIGINS=* then restart.",
+        duration: 10000,
       });
     } finally {
       setIsTestingConnection(false);
@@ -482,6 +485,21 @@ export function APIKeySettings({
                   />
                   <p className="mt-2 text-xs text-gray-500">
                     The model name as configured in your server
+                  </p>
+                </div>
+
+                {/* CORS hint */}
+                <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-3">
+                  <p className="text-xs text-amber-300">
+                    <strong>CORS must be enabled</strong> on your local server.
+                    <br />
+                    LM Studio: Settings &gt; Enable CORS
+                    <br />
+                    Ollama: set{" "}
+                    <code className="rounded bg-black/30 px-1">
+                      OLLAMA_ORIGINS=*
+                    </code>{" "}
+                    then restart
                   </p>
                 </div>
 

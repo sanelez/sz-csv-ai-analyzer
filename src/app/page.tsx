@@ -481,7 +481,7 @@ export default function HomePage() {
                     } disabled:hover:brightness-100`}
                     title={
                       !hasValidConfig
-                        ? "Configure your API key first"
+                        ? "Configure your API settings first"
                         : "Run all AI analyses at once"
                     }
                   >

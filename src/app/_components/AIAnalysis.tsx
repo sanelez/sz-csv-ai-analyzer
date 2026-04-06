@@ -295,9 +295,9 @@ export function AIAnalysis({
   const handleGenerateSummary = async () => {
     const config = getConfig();
     if (!config) {
-      setSummaryError("Please configure your API key");
+      setSummaryError("Please configure your API settings");
       toast.error("Configuration Required", {
-        description: "Please configure your API key",
+        description: "Please configure your API settings",
       });
       return;
     }
@@ -337,9 +337,9 @@ export function AIAnalysis({
   const handleDetectAnomalies = async () => {
     const config = getConfig();
     if (!config) {
-      setAnomaliesError("Please configure your API key");
+      setAnomaliesError("Please configure your API settings");
       toast.error("Configuration Required", {
-        description: "Please configure your API key",
+        description: "Please configure your API settings",
       });
       return;
     }
@@ -382,9 +382,9 @@ export function AIAnalysis({
 
     const config = getConfig();
     if (!config) {
-      setError("Please configure your API key");
+      setError("Please configure your API settings");
       toast.error("Configuration Required", {
-        description: "Please configure your API key",
+        description: "Please configure your API settings",
       });
       return;
     }
@@ -550,10 +550,10 @@ export function AIAnalysis({
       )}
 
       {/* No API Key Warning */}
-      {!apiSettings?.apiKey && (
+      {!apiSettings?.apiKey && !apiSettings?.customEndpoint && (
         <div className="mb-4 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4">
           <p className="text-sm text-amber-400">
-            Configure your API key to use AI analysis
+            Configure your API key or custom endpoint to use AI analysis
           </p>
         </div>
       )}
@@ -587,7 +587,9 @@ export function AIAnalysis({
                   type="button"
                   onClick={handleGenerateSummary}
                   disabled={
-                    disabled || isLoadingSummary || !apiSettings?.apiKey
+                    disabled ||
+                    isLoadingSummary ||
+                    (!apiSettings?.apiKey && !apiSettings?.customEndpoint)
                   }
                   className="btn-primary inline-flex items-center gap-2 disabled:opacity-50"
                 >
@@ -725,7 +727,9 @@ export function AIAnalysis({
                   type="button"
                   onClick={handleDetectAnomalies}
                   disabled={
-                    disabled || isLoadingAnomalies || !apiSettings?.apiKey
+                    disabled ||
+                    isLoadingAnomalies ||
+                    (!apiSettings?.apiKey && !apiSettings?.customEndpoint)
                   }
                   className="btn-primary inline-flex items-center gap-2 disabled:opacity-50"
                 >
@@ -992,7 +996,11 @@ export function AIAnalysis({
                 }}
                 placeholder="Ask a question about your data..."
                 className="input-field flex-1"
-                disabled={disabled || isLoadingCustom || !apiSettings?.apiKey}
+                disabled={
+                  disabled ||
+                  isLoadingCustom ||
+                  (!apiSettings?.apiKey && !apiSettings?.customEndpoint)
+                }
               />
               <button
                 type="button"
@@ -1001,7 +1009,7 @@ export function AIAnalysis({
                   disabled ||
                   isLoadingCustom ||
                   !customPrompt.trim() ||
-                  !apiSettings?.apiKey
+                  (!apiSettings?.apiKey && !apiSettings?.customEndpoint)
                 }
                 className="btn-primary px-4 disabled:opacity-50"
                 aria-label="Send question"
