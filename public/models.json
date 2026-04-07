@@ -62439,40 +62439,6 @@
           "output": 64000
         }
       },
-      "google/gemini-3-pro-preview": {
-        "id": "google/gemini-3-pro-preview",
-        "name": "Gemini 3 Pro Preview",
-        "attachment": true,
-        "reasoning": true,
-        "tool_call": true,
-        "temperature": true,
-        "knowledge": "2025-01-01",
-        "release_date": "2025-11-18",
-        "last_updated": "2025-11-18",
-        "modalities": {
-          "input": [
-            "text",
-            "image",
-            "pdf",
-            "audio",
-            "video"
-          ],
-          "output": [
-            "text"
-          ]
-        },
-        "open_weights": false,
-        "cost": {
-          "input": 2,
-          "output": 12,
-          "cache_read": 0.2,
-          "cache_write": 4.5
-        },
-        "limit": {
-          "context": 1048000,
-          "output": 64000
-        }
-      },
       "google/gemini-3-flash-preview": {
         "id": "google/gemini-3-flash-preview",
         "name": "Gemini 3 Flash Preview",
@@ -62631,6 +62597,61 @@
         "limit": {
           "context": 128000,
           "output": 64000
+        }
+      },
+      "sapiens-ai/agnes-1.5-pro": {
+        "id": "sapiens-ai/agnes-1.5-pro",
+        "name": "Agnes 1.5 Pro",
+        "attachment": false,
+        "reasoning": true,
+        "tool_call": true,
+        "temperature": true,
+        "release_date": "2026-03-21",
+        "last_updated": "2026-03-21",
+        "modalities": {
+          "input": [
+            "text"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": false,
+        "cost": {
+          "input": 0.16,
+          "output": 0.8
+        },
+        "limit": {
+          "context": 256000,
+          "output": 256000
+        }
+      },
+      "sapiens-ai/agnes-1.5-lite": {
+        "id": "sapiens-ai/agnes-1.5-lite",
+        "name": "Agnes 1.5 Lite",
+        "attachment": true,
+        "reasoning": false,
+        "tool_call": true,
+        "temperature": true,
+        "release_date": "2026-03-26",
+        "last_updated": "2026-03-26",
+        "modalities": {
+          "input": [
+            "text",
+            "image"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": false,
+        "cost": {
+          "input": 0.12,
+          "output": 0.6
+        },
+        "limit": {
+          "context": 256000,
+          "output": 256000
         }
       },
       "minimax/minimax-m2.5-lightning": {
@@ -62984,34 +63005,6 @@
           "output": 1020000
         }
       },
-      "xiaomi/mimo-v2-flash-free": {
-        "id": "xiaomi/mimo-v2-flash-free",
-        "name": "MiMo-V2-Flash Free",
-        "attachment": false,
-        "reasoning": true,
-        "tool_call": true,
-        "temperature": true,
-        "knowledge": "2025-01-01",
-        "release_date": "2025-12-17",
-        "last_updated": "2025-12-17",
-        "modalities": {
-          "input": [
-            "text"
-          ],
-          "output": [
-            "text"
-          ]
-        },
-        "open_weights": false,
-        "cost": {
-          "input": 0,
-          "output": 0
-        },
-        "limit": {
-          "context": 262000,
-          "output": 64000
-        }
-      },
       "xiaomi/mimo-v2-pro": {
         "id": "xiaomi/mimo-v2-pro",
         "name": "MiMo V2 Pro",
@@ -63180,63 +63173,6 @@
         "cost": {
           "input": 0.1,
           "output": 0.3
-        },
-        "limit": {
-          "context": 256000,
-          "output": 64000
-        }
-      },
-      "kuaishou/kat-coder-pro-v1-free": {
-        "id": "kuaishou/kat-coder-pro-v1-free",
-        "name": "KAT-Coder-Pro-V1 Free",
-        "attachment": false,
-        "reasoning": false,
-        "tool_call": true,
-        "temperature": true,
-        "knowledge": "2025-01-01",
-        "release_date": "2025-10-23",
-        "last_updated": "2025-10-23",
-        "modalities": {
-          "input": [
-            "text"
-          ],
-          "output": [
-            "text"
-          ]
-        },
-        "open_weights": false,
-        "cost": {
-          "input": 0,
-          "output": 0
-        },
-        "limit": {
-          "context": 256000,
-          "output": 64000
-        }
-      },
-      "kuaishou/kat-coder-pro-v1": {
-        "id": "kuaishou/kat-coder-pro-v1",
-        "name": "KAT-Coder-Pro-V1",
-        "attachment": false,
-        "reasoning": false,
-        "tool_call": true,
-        "temperature": true,
-        "knowledge": "2025-01-01",
-        "release_date": "2025-10-23",
-        "last_updated": "2025-10-23",
-        "modalities": {
-          "input": [
-            "text"
-          ],
-          "output": [
-            "text"
-          ]
-        },
-        "open_weights": false,
-        "cost": {
-          "input": 0.3,
-          "output": 1.2,
-          "cache_read": 0.06
         },
         "limit": {
           "context": 256000,
