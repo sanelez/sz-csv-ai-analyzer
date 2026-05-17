@@ -54965,8 +54965,8 @@
         },
         "open_weights": true,
         "limit": {
-          "context": 262144,
-          "output": 262144
+          "context": 262128,
+          "output": 262128
         },
         "cost": {
           "input": 0.69,
@@ -54993,8 +54993,8 @@
         },
         "open_weights": true,
         "limit": {
-          "context": 200000,
-          "output": 200000
+          "context": 202736,
+          "output": 202736
         },
         "cost": {
           "input": 1.1,
@@ -55021,8 +55021,8 @@
         },
         "open_weights": true,
         "limit": {
-          "context": 200000,
-          "output": 200000
+          "context": 202736,
+          "output": 202736
         },
         "cost": {
           "input": 1.1,
@@ -55050,8 +55050,8 @@
         },
         "open_weights": true,
         "limit": {
-          "context": 262144,
-          "output": 262144
+          "context": 262128,
+          "output": 262128
         },
         "cost": {
           "input": 0.69,
@@ -55079,8 +55079,8 @@
         },
         "open_weights": true,
         "limit": {
-          "context": 131072,
-          "output": 131072
+          "context": 131056,
+          "output": 131056
         },
         "cost": {
           "input": 0.05,
@@ -55108,8 +55108,8 @@
         },
         "open_weights": true,
         "limit": {
-          "context": 262144,
-          "output": 262144
+          "context": 262128,
+          "output": 262128
         },
         "cost": {
           "input": 0.52,
@@ -55140,8 +55140,8 @@
         },
         "open_weights": true,
         "limit": {
-          "context": 262144,
-          "output": 262144
+          "context": 262128,
+          "output": 262128
         },
         "cost": {
           "input": 0.69,
@@ -55172,8 +55172,8 @@
         },
         "open_weights": true,
         "limit": {
-          "context": 262144,
-          "output": 262144
+          "context": 262128,
+          "output": 262128
         },
         "cost": {
           "input": 0.52,
@@ -55200,8 +55200,8 @@
         },
         "open_weights": true,
         "limit": {
-          "context": 16384,
-          "output": 16384
+          "context": 16368,
+          "output": 16368
         },
         "cost": {
           "input": 0.03,
@@ -55231,8 +55231,8 @@
         },
         "open_weights": true,
         "limit": {
-          "context": 200000,
-          "output": 200000
+          "context": 202736,
+          "output": 202736
         },
         "cost": {
           "input": 1.1,
@@ -55260,8 +55260,8 @@
         },
         "open_weights": true,
         "limit": {
-          "context": 262144,
-          "output": 262144
+          "context": 262128,
+          "output": 262128
         },
         "cost": {
           "input": 0.12,
@@ -55291,8 +55291,8 @@
         },
         "open_weights": true,
         "limit": {
-          "context": 196608,
-          "output": 196608
+          "context": 196592,
+          "output": 196592
         },
         "cost": {
           "input": 0.35,
@@ -55322,8 +55322,8 @@
         },
         "open_weights": true,
         "limit": {
-          "context": 262144,
-          "output": 262144
+          "context": 262128,
+          "output": 262128
         },
         "cost": {
           "input": 0.69,
@@ -55354,8 +55354,8 @@
         },
         "open_weights": true,
         "limit": {
-          "context": 131072,
-          "output": 131072
+          "context": 131056,
+          "output": 131056
         },
         "cost": {
           "input": 0.05,
@@ -61200,7 +61200,7 @@
         },
         "cost": {
           "input": 0.017,
-          "output": 0.11
+          "output": 0.112
         }
       },
       "ibm-granite/granite-4.1-8b": {
@@ -61722,8 +61722,7 @@
         },
         "cost": {
           "input": 0.6,
-          "output": 2.5,
-          "cache_read": 0.15
+          "output": 2.5
         }
       },
       "moonshotai/kimi-k2": {
@@ -62075,7 +62074,7 @@
         "attachment": true,
         "reasoning": true,
         "tool_call": true,
-        "structured_output": false,
+        "structured_output": true,
         "temperature": true,
         "knowledge": "2024-12-31",
         "release_date": "2025-08-11",
@@ -65321,80 +65320,6 @@
           "output": 1.1
         }
       },
-      "x-ai/grok-3-mini": {
-        "id": "x-ai/grok-3-mini",
-        "name": "Grok 3 Mini",
-        "family": "grok",
-        "attachment": false,
-        "reasoning": true,
-        "tool_call": true,
-        "structured_output": true,
-        "temperature": true,
-        "knowledge": "2025-02-28",
-        "release_date": "2025-06-10",
-        "last_updated": "2025-06-10",
-        "modalities": {
-          "input": [
-            "text"
-          ],
-          "output": [
-            "text"
-          ]
-        },
-        "open_weights": false,
-        "limit": {
-          "context": 131072,
-          "output": 8192
-        },
-        "cost": {
-          "input": 0.3,
-          "output": 0.5,
-          "cache_read": 0.075
-        }
-      },
-      "x-ai/grok-4": {
-        "id": "x-ai/grok-4",
-        "name": "Grok 4",
-        "family": "grok",
-        "attachment": true,
-        "reasoning": true,
-        "tool_call": true,
-        "structured_output": true,
-        "temperature": true,
-        "knowledge": "2025-07-31",
-        "release_date": "2025-07-09",
-        "last_updated": "2025-07-09",
-        "modalities": {
-          "input": [
-            "image",
-            "text",
-            "pdf"
-          ],
-          "output": [
-            "text"
-          ]
-        },
-        "open_weights": false,
-        "limit": {
-          "context": 256000,
-          "output": 64000
-        },
-        "cost": {
-          "input": 3,
-          "output": 15,
-          "cache_read": 0.75,
-          "tiers": [
-            {
-              "input": 6,
-              "output": 30,
-              "tier": {
-                "type": "context",
-                "size": 128000
-              }
-            }
-          ]
-        }
-      },
       "x-ai/grok-4.20": {
         "id": "x-ai/grok-4.20",
         "name": "Grok 4.20",
@@ -65426,99 +65351,6 @@
           "input": 1.25,
           "output": 2.5,
           "cache_read": 0.2
-        }
-      },
-      "x-ai/grok-code-fast-1": {
-        "id": "x-ai/grok-code-fast-1",
-        "name": "Grok Code Fast 1",
-        "family": "grok",
-        "attachment": false,
-        "reasoning": true,
-        "tool_call": true,
-        "structured_output": true,
-        "temperature": true,
-        "knowledge": "2025-09-30",
-        "release_date": "2025-08-26",
-        "last_updated": "2025-08-26",
-        "modalities": {
-          "input": [
-            "text"
-          ],
-          "output": [
-            "text"
-          ]
-        },
-        "open_weights": false,
-        "limit": {
-          "context": 256000,
-          "output": 10000
-        },
-        "cost": {
-          "input": 0.2,
-          "output": 1.5,
-          "cache_read": 0.02
-        }
-      },
-      "x-ai/grok-3-beta": {
-        "id": "x-ai/grok-3-beta",
-        "name": "Grok 3 Beta",
-        "family": "grok",
-        "attachment": false,
-        "reasoning": false,
-        "tool_call": true,
-        "structured_output": true,
-        "temperature": true,
-        "knowledge": "2025-02-28",
-        "release_date": "2025-04-09",
-        "last_updated": "2025-04-09",
-        "modalities": {
-          "input": [
-            "text"
-          ],
-          "output": [
-            "text"
-          ]
-        },
-        "open_weights": false,
-        "limit": {
-          "context": 131072,
-          "output": 8192
-        },
-        "cost": {
-          "input": 3,
-          "output": 15,
-          "cache_read": 0.75
-        }
-      },
-      "x-ai/grok-3-mini-beta": {
-        "id": "x-ai/grok-3-mini-beta",
-        "name": "Grok 3 Mini Beta",
-        "family": "grok",
-        "attachment": false,
-        "reasoning": true,
-        "tool_call": true,
-        "structured_output": true,
-        "temperature": true,
-        "knowledge": "2025-02-28",
-        "release_date": "2025-04-09",
-        "last_updated": "2025-04-09",
-        "modalities": {
-          "input": [
-            "text"
-          ],
-          "output": [
-            "text"
-          ]
-        },
-        "open_weights": false,
-        "limit": {
-          "context": 131072,
-          "output": 8192
-        },
-        "cost": {
-          "input": 0.3,
-          "output": 0.5,
-          "cache_read": 0.075
         }
       },
       "x-ai/grok-4.20-multi-agent": {
@@ -65599,103 +65431,6 @@
             "output": 5,
             "cache_read": 0.4
           }
-        }
-      },
-      "x-ai/grok-4-fast": {
-        "id": "x-ai/grok-4-fast",
-        "name": "Grok 4 Fast",
-        "family": "grok",
-        "attachment": true,
-        "reasoning": true,
-        "tool_call": true,
-        "structured_output": true,
-        "temperature": true,
-        "knowledge": "2025-09-30",
-        "release_date": "2025-09-19",
-        "last_updated": "2025-09-19",
-        "modalities": {
-          "input": [
-            "text",
-            "image",
-            "pdf"
-          ],
-          "output": [
-            "text"
-          ]
-        },
-        "open_weights": false,
-        "limit": {
-          "context": 2000000,
-          "output": 30000
-        },
-        "cost": {
-          "input": 0.2,
-          "output": 0.5,
-          "cache_read": 0.05
-        }
-      },
-      "x-ai/grok-3": {
-        "id": "x-ai/grok-3",
-        "name": "Grok 3",
-        "family": "grok",
-        "attachment": false,
-        "reasoning": false,
-        "tool_call": true,
-        "structured_output": true,
-        "temperature": true,
-        "knowledge": "2025-02-28",
-        "release_date": "2025-06-10",
-        "last_updated": "2025-06-10",
-        "modalities": {
-          "input": [
-            "text"
-          ],
-          "output": [
-            "text"
-          ]
-        },
-        "open_weights": false,
-        "limit": {
-          "context": 131072,
-          "output": 8192
-        },
-        "cost": {
-          "input": 3,
-          "output": 15,
-          "cache_read": 0.75
-        }
-      },
-      "x-ai/grok-4.1-fast": {
-        "id": "x-ai/grok-4.1-fast",
-        "name": "Grok 4.1 Fast",
-        "family": "grok",
-        "attachment": true,
-        "reasoning": true,
-        "tool_call": true,
-        "structured_output": true,
-        "temperature": true,
-        "knowledge": "2024-11",
-        "release_date": "2025-11-19",
-        "last_updated": "2025-11-19",
-        "modalities": {
-          "input": [
-            "text",
-            "image",
-            "pdf"
-          ],
-          "output": [
-            "text"
-          ]
-        },
-        "open_weights": false,
-        "limit": {
-          "context": 2000000,
-          "output": 30000
-        },
-        "cost": {
-          "input": 0.2,
-          "output": 0.5,
-          "cache_read": 0.05
         }
       },
       "kwaipilot/kat-coder-pro-v2": {
@@ -66709,14 +66444,14 @@
           }
         }
       },
-      "inclusionai/ring-2.6-1t:free": {
-        "id": "inclusionai/ring-2.6-1t:free",
-        "name": "Ring-2.6-1T (free)",
+      "inclusionai/ring-2.6-1t": {
+        "id": "inclusionai/ring-2.6-1t",
+        "name": "Ring-2.6-1T",
         "family": "ring",
         "attachment": false,
         "reasoning": true,
         "tool_call": true,
-        "structured_output": false,
+        "structured_output": true,
         "temperature": true,
         "release_date": "2026-05-08",
         "last_updated": "2026-05-08",
@@ -66734,8 +66469,9 @@
           "output": 65536
         },
         "cost": {
-          "input": 0,
-          "output": 0
+          "input": 0.075,
+          "output": 0.625,
+          "cache_read": 0.015
         }
       },
       "inclusionai/ling-2.6-1t": {
@@ -67553,8 +67289,8 @@
           "output": 8192
         },
         "cost": {
-          "input": 0.35,
-          "output": 0.56
+          "input": 0.351,
+          "output": 0.555
         }
       },
       "qwen/qwen3-vl-8b-thinking": {
@@ -70060,7 +69796,7 @@
         "attachment": false,
         "reasoning": false,
         "tool_call": false,
-        "structured_output": false,
+        "structured_output": true,
         "temperature": true,
         "knowledge": "2024-04-30",
         "release_date": "2024-04-16",
@@ -70369,7 +70105,7 @@
         "attachment": false,
         "reasoning": true,
         "tool_call": true,
-        "structured_output": false,
+        "structured_output": true,
         "temperature": true,
         "knowledge": "2024-07-31",
         "release_date": "2025-01-20",
@@ -70571,13 +70307,13 @@
         },
         "open_weights": true,
         "limit": {
-          "context": 1048576,
+          "context": 1048575,
           "output": 131072
         },
         "cost": {
-          "input": 0.126,
-          "output": 0.252,
-          "cache_read": 0.0252
+          "input": 0.112,
+          "output": 0.224,
+          "cache_read": 0.022
         }
       },
       "deepseek/deepseek-chat-v3-0324": {
@@ -71031,7 +70767,7 @@
         },
         "cost": {
           "input": 0.027,
-          "output": 0.2
+          "output": 0.201
         }
       },
       "meta-llama/llama-3.2-3b-instruct:free": {
@@ -71090,7 +70826,7 @@
           "output": 131072
         },
         "cost": {
-          "input": 0.48,
+          "input": 0.484,
           "output": 0.03
         }
       },
@@ -71101,7 +70837,7 @@
         "attachment": false,
         "reasoning": false,
         "tool_call": false,
-        "structured_output": false,
+        "structured_output": true,
         "temperature": true,
         "knowledge": "2023-12-31",
         "release_date": "2024-04-18",
@@ -71162,7 +70898,7 @@
         "attachment": false,
         "reasoning": false,
         "tool_call": false,
-        "structured_output": false,
+        "structured_output": true,
         "temperature": true,
         "knowledge": "2023-12-31",
         "release_date": "2024-04-18",
@@ -71272,8 +71008,8 @@
           "output": 80000
         },
         "cost": {
-          "input": 0.051,
-          "output": 0.34
+          "input": 0.0509,
+          "output": 0.335
         }
       },
       "meta-llama/llama-guard-4-12b": {
@@ -72076,7 +71812,7 @@
         "attachment": false,
         "reasoning": false,
         "tool_call": false,
-        "structured_output": false,
+        "structured_output": true,
         "temperature": true,
         "knowledge": "2025-03-31",
         "release_date": "2025-06-30",
@@ -93299,6 +93035,42 @@
         "cost": {
           "input": 0.99,
           "output": 0.99
+        }
+      },
+      "moonshotai/Kimi-K2.6": {
+        "id": "moonshotai/Kimi-K2.6",
+        "name": "Kimi K2.6",
+        "family": "kimi-k2.6",
+        "attachment": true,
+        "reasoning": true,
+        "tool_call": true,
+        "interleaved": {
+          "field": "reasoning_content"
+        },
+        "structured_output": true,
+        "temperature": true,
+        "knowledge": "2025-01",
+        "release_date": "2026-05-07",
+        "last_updated": "2026-05-07",
+        "modalities": {
+          "input": [
+            "text",
+            "image",
+            "video"
+          ],
+          "output": [
+            "text"
+          ]
+        },
+        "open_weights": true,
+        "limit": {
+          "context": 262144,
+          "output": 262144
+        },
+        "cost": {
+          "input": 0.83,
+          "output": 3.85,
+          "cache_read": 0.16
         }
       }
     }
